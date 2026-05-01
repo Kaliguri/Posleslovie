@@ -1,49 +1,87 @@
 import Link from "next/link";
 
-const marbleTexture =
-  "https://www.figma.com/api/mcp/asset/74e436ca-b595-4d82-9993-c59a3c088f67";
 const heroImage =
-  "https://www.figma.com/api/mcp/asset/f35d9b7a-f397-4b9e-9392-f3926ab61654";
+  "https://www.figma.com/api/mcp/asset/9638ad4e-233f-464d-bbee-5c797e6bb1a5";
+const marbleTexture =
+  "https://www.figma.com/api/mcp/asset/97a999fb-a48b-4bc3-afaa-0f5e7be70cc4";
 const productionImage =
-  "https://www.figma.com/api/mcp/asset/8877b0ca-c224-4ad3-97ea-312f508e9b5c";
+  "https://www.figma.com/api/mcp/asset/af82c115-065d-46df-9be9-3307ad7191b5";
 const lavenderImage =
-  "https://www.figma.com/api/mcp/asset/5e4ec99b-ad49-4a1b-aaf9-602d33dd6c1a";
-const packagingImage =
-  "https://www.figma.com/api/mcp/asset/49e36fc3-6f20-4066-ae44-2ab5b98a10e0";
+  "https://www.figma.com/api/mcp/asset/c070c1cf-5205-43eb-8156-ce9da004e5d6";
+const aboutImage =
+  "https://www.figma.com/api/mcp/asset/751476ed-ea68-4051-9a4c-caeab929fad9";
+const reviewsBaseImage =
+  "https://www.figma.com/api/mcp/asset/99ae3c5c-9848-404f-babe-063eb02dde6c";
+const reviewBathImage =
+  "https://www.figma.com/api/mcp/asset/dfbf0690-701a-48ba-b075-2d38551f1b5b";
+const reviewBoxImage =
+  "https://www.figma.com/api/mcp/asset/1abfe60e-e57e-4ae5-b0a3-72f9a003dcb0";
+const reviewGiftImage =
+  "https://www.figma.com/api/mcp/asset/1086082f-ee3a-411f-ac88-3bee2497c54c";
 const ctaTexture =
-  "https://www.figma.com/api/mcp/asset/2b22d627-c4f0-4870-b082-74eaac26bf4a";
+  "https://www.figma.com/api/mcp/asset/68c3bc33-9dfb-466e-a676-bc7f5b71fd4a";
+const ctaTextureOverlay =
+  "https://www.figma.com/api/mcp/asset/4748acfa-26e0-4bd7-b5a1-ca20d1e67792";
+const featherVector =
+  "https://www.figma.com/api/mcp/asset/0394767b-6e1a-484c-bd99-d28d74be0559";
+const paperVector =
+  "https://www.figma.com/api/mcp/asset/f867c11c-c462-4556-8a9a-11dea9bdde15";
+const natureIcon =
+  "https://www.figma.com/api/mcp/asset/473d9535-103d-46e3-a91d-eb8bfe893661";
+const giftIcon =
+  "https://www.figma.com/api/mcp/asset/4c435d38-c9ab-4925-84c6-6587c248ad9c";
+const successIcon =
+  "https://www.figma.com/api/mcp/asset/d6b68078-7d3c-4793-817a-506abbfe6528";
 
 const processSections = [
   {
     eyebrow: "Продукция",
-    title: "Как мы делаем бомбочки?",
+    title: "Как мы делаем бомбочки для ванн?",
     description:
-      "Каждая бомбочка — это кусочек спокойствия, созданный вручную. Мы помогаем брендам радовать своих клиентов идеальными комплиментами к заказам, повышая лояльность, а каждому человеку — просто находить время для самого себя.",
+      "Каждая бомбочка сделана в ручную. В составе исключительно натуральные ингредиенты, прошедшие сертификацию в лаборатории. Мы не экономим на вас, главное принести реальную пользу",
     image: productionImage,
     alt: "Бомбочки ручной работы",
     reverse: false,
-    surfaceClassName: "bg-[#f8f8f8]",
   },
   {
     eyebrow: "Натуральные масла",
     title: "Собираем лаванду вручную",
     description:
-      "Мы лично отбираем и отсеиваем соцветия лаванды. В ваших бомбочках — только чистые органические ингредиенты, которые безопасны для кожи и оставляют после себя успокаивающий аромат.",
+      "Наши партнеры собирают лаванду и изготавливают масло в ручную. Букет из 50 сортов лаванды в каждой бомбочке.",
     image: lavenderImage,
     alt: "Поле лаванды",
     reverse: true,
-    surfaceClassName: "bg-white",
-    showPlay: true,
   },
   {
-    eyebrow: "Упаковка и брендирование",
+    eyebrow: "Продукция",
     title: "Упаковываем с любовью",
     description:
-      "Мы можем нанести ваш логотип на упаковку или сделать брендированную печать на подложке коробки. Мы берем на себя все технические моменты, чтобы вы получили готовый брендированный продукт, вызывающий доверие.",
-    image: packagingImage,
+      "Мы нанесем ваш логотип на упаковку, вы выберите цвет сургучной печати. Мы возьмем на себя все технические моменты, чтобы вы получили готовый брендированный бокс, соответствующий эстетике и духу вашей компании",
+    image: productionImage,
     alt: "Подарочная упаковка",
     reverse: false,
-    surfaceClassName: "bg-[#f8f8f8]",
+    cta: true,
+  },
+] as const;
+
+const moodCards = [
+  {
+    title: "Природа в чистом\nвиде",
+    description:
+      "Никакой агрессивной химии. Ручная сборка, натуральные масла и компоненты, которые мы тщательно отбираем сами.",
+    icon: natureIcon,
+  },
+  {
+    title: "Сюрприз в каждом\nзаказе",
+    description:
+      "Наши художники и писатели запечатали внутри культурный опыт и волшебство момента",
+    icon: giftIcon,
+  },
+  {
+    title: "Дизайн по вашим\nправилам",
+    description:
+      "От цвета упаковки до теплых пожеланий на вкладыше. Мы полностью адаптируем внешний вид упаковки под эстетику вашего бренда",
+    icon: successIcon,
   },
 ] as const;
 
@@ -51,106 +89,74 @@ const reasons = [
   {
     title: "Чистый состав",
     description: "Только органические масла и настоящие сухоцветы",
-    icon: <LeafIcon />,
+    icon: natureIcon,
   },
   {
     title: "Гарантия качества",
     description: "Ручная сборка и контроль каждой партии",
-    icon: <BadgeIcon />,
+    icon: successIcon,
   },
   {
     title: "Креативный подарок",
-    description: "Приятный сюрприз в эстетичной обертке",
-    icon: <GiftIcon />,
+    description: "Приятный сюрприз и культурный опыт в каждом наборе",
+    icon: giftIcon,
+  },
+] as const;
+
+const reviews = [
+  {
+    name: "Алиса Ч.",
+    image: reviewBathImage,
+    text: "«Потрясающая бомбочка! Я очень привередлива к запахам и не люблю химозные отдушки, но тут аромат настоящей лаванды, как будто стоишь в поле. Растворяется мягко, кожу не сушит, сухоцветы смотрятся невероятно красиво. И самое главное — ванну после нее отмывать не нужно!»",
+  },
+  {
+    name: "Алиса Ч.",
+    image: reviewBathImage,
+    text: "«Потрясающая бомбочка! Я очень привередлива к запахам и не люблю химозные отдушки, но тут аромат настоящей лаванды, как будто стоишь в поле. Растворяется мягко, кожу не сушит, сухоцветы смотрятся невероятно красиво. И самое главное — ванну после нее отмывать не нужно!»",
+  },
+  {
+    name: "Владимир К.",
+    image: reviewBoxImage,
+    text: "«Искали эстетичные комплименты для наших подарочных боксов, заказали партию с нашим логотипом на упаковке. Качество превзошло ожидания. Выглядит очень премиально, легкий аромат чувствуется даже через коробку. Отличный продукт, который делает распаковку наших товаров особенной»",
+  },
+  {
+    name: "Анна. С",
+    image: reviewGiftImage,
+    text: "«Брала набор себе, чтобы просто отдохнуть от суеты. Очень эстетичный вид, сразу чувствуется ручная работа и внимание к деталям. После тяжелого рабочего дня — идеальный способ, чтобы отключить телефон, расслабиться и устроить себе спа прямо дома»",
   },
 ] as const;
 
 export default function Home() {
   return (
-    <div className="bg-[#eff5fd] text-slate-900">
-      <section className="relative overflow-hidden rounded-b-[56px] bg-[#102038] px-4 pb-12 pt-28 sm:px-6 lg:rounded-b-[120px] lg:px-8 lg:pb-20 lg:pt-36">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-90"
-          style={{ backgroundImage: `url(${marbleTexture})` }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(122deg,rgba(7,15,29,0.92)_22%,rgba(17,31,58,0.5)_72%,rgba(17,31,58,0.18)_100%)]" />
-        <div
-          className="absolute -right-12 top-20 hidden h-[560px] w-[760px] rounded-[72px] bg-cover bg-center opacity-95 lg:block"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
+    <div className="bg-white text-[#0f172a]">
+      <HeroSection />
 
-        <div className="relative mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="text-sm font-medium text-[#e8c880] sm:text-base">
-              Производство бомбочек для селлеров и брендов
-            </p>
-            <h1 className="mt-4 max-w-2xl text-4xl font-medium leading-none text-white sm:text-5xl lg:text-[4rem]">
-              Там, где форма переходит в энергию
-            </h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-white/80 sm:text-lg sm:leading-8">
-              Натуральные бомбочки ручной работы, где каждая деталь выполнена с
-              любовью.
-            </p>
-            <div className="mt-8">
-              <PrimaryOutlineLink href="/checkout">Оформить заказ</PrimaryOutlineLink>
-            </div>
+      <section id="bombs" className="bg-white px-4 py-14 sm:px-6 lg:px-20 lg:py-20">
+        <div className="mx-auto max-w-[1280px] rounded-[48px] bg-[#f8f8f8] px-5 py-12 sm:px-10 lg:rounded-[100px] lg:px-20 lg:py-20">
+          <SectionHeading title="Дарите настроение и заботу тем, кто вам важен и дорог" centered />
+          <div className="mt-14 grid gap-10 lg:grid-cols-3 lg:gap-16">
+            {moodCards.map((card) => (
+              <FeatureCard key={card.title} {...card} />
+            ))}
           </div>
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-20">
-        <div className="space-y-8 lg:space-y-10">
-          {processSections.map((section) => (
-            <ProcessSection key={section.title} {...section} />
-          ))}
-        </div>
+      <div className="relative">
+        {processSections.map((section) => (
+          <ProcessSection key={section.title} {...section} />
+        ))}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-[4%] top-[40%] hidden aspect-[198/224] w-[14vw] max-w-[200px] bg-contain bg-center bg-no-repeat lg:block"
+          style={{ backgroundImage: `url(${paperVector})` }}
+        />
       </div>
 
-      <section className="bg-[#577f98] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-center text-3xl font-extrabold text-white sm:text-4xl lg:text-[3.5rem]">
-            Почему мы?
-          </h2>
-
-          <div className="mt-8 rounded-[36px] bg-white px-6 py-8 shadow-sm sm:px-8 lg:mt-12 lg:rounded-[70px] lg:px-12 lg:py-14">
-            <div className="grid gap-10 lg:grid-cols-3 lg:gap-14">
-              {reasons.map((reason) => (
-                <div key={reason.title} className="text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center text-slate-900">
-                    {reason.icon}
-                  </div>
-                  <h3 className="mt-4 text-2xl font-bold leading-tight text-slate-900">
-                    {reason.title}
-                  </h3>
-                  <p className="mt-3 text-base leading-8 text-slate-700">
-                    {reason.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-        <div
-          className="relative mx-auto max-w-7xl overflow-hidden rounded-[36px] px-6 py-14 text-center text-white sm:px-10 lg:rounded-[70px] lg:px-16 lg:py-20"
-          style={{ backgroundImage: `url(${ctaTexture})`, backgroundSize: "cover" }}
-        >
-          <div className="absolute inset-0 bg-[rgba(12,24,43,0.4)]" />
-          <div className="relative mx-auto max-w-3xl">
-            <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
-              Создадим атмосферу вашего бренда вместе
-            </h2>
-            <p className="mt-4 text-base leading-7 text-white/85 sm:text-xl">
-              Натуральные бомбочки как идеальный комплимент к заказу.
-            </p>
-            <div className="mt-8 flex justify-center">
-              <PrimarySolidLink href="/checkout">Оформить заказ</PrimarySolidLink>
-            </div>
-          </div>
-        </div>
-      </section>
+      <WhyUsSection />
+      <AboutSection />
+      <ReviewsSection />
+      <CtaSection />
     </div>
   );
 }
@@ -162,8 +168,7 @@ type ProcessSectionProps = {
   image: string;
   alt: string;
   reverse?: boolean;
-  showPlay?: boolean;
-  surfaceClassName?: string;
+  cta?: boolean;
 };
 
 function ProcessSection({
@@ -173,57 +178,282 @@ function ProcessSection({
   image,
   alt,
   reverse = false,
-  showPlay = false,
-  surfaceClassName = "bg-white",
+  cta = false,
 }: ProcessSectionProps) {
   return (
-    <section className={surfaceClassName}>
-      <div className="overflow-hidden rounded-[36px] px-5 py-5 shadow-sm sm:px-6 lg:rounded-[70px] lg:px-12 lg:py-12">
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
-          <div className={reverse ? "lg:order-2" : ""}>
-            <div className="relative min-h-[280px] sm:min-h-[360px] lg:min-h-[500px]">
-              <div
-                className={`absolute inset-y-0 ${reverse ? "right-0 rounded-r-[40px]" : "left-0 rounded-l-[40px]"} w-14 bg-cover bg-center lg:w-24`}
-                style={{ backgroundImage: `url(${marbleTexture})` }}
-              />
+    <section
+      className={`${reverse ? "bg-[#f8f8f8]" : "bg-white"} px-4 py-12 sm:px-6 lg:px-20 lg:py-20`}
+    >
+      <div
+        className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-[#f8f8f8] lg:rounded-[70px]"
+      >
+        <div
+          className={`pointer-events-none absolute inset-0 hidden lg:grid ${
+            reverse ? "grid-cols-[1fr_323px]" : "grid-cols-[323px_1fr]"
+          }`}
+        >
+          <div
+            className={`bg-cover bg-center ${reverse ? "order-2" : ""}`}
+            style={{ backgroundImage: `url(${marbleTexture})` }}
+          />
+          <div className={reverse ? "bg-[#f7fafe]" : "bg-[#f8f8f8]"} />
+        </div>
+
+        <div className="relative grid items-center gap-10 p-5 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
+          <div className={`${reverse ? "lg:order-2 lg:justify-self-end" : ""}`}>
+            <div className="relative">
               <div
                 aria-label={alt}
                 role="img"
-                className={`absolute inset-y-4 overflow-hidden rounded-[28px] bg-cover bg-center shadow-sm sm:inset-y-6 lg:rounded-[50px] ${reverse ? "left-0 right-6 lg:right-10" : "left-6 right-0 lg:left-10"}`}
+                className="aspect-square rounded-[32px] bg-cover bg-center shadow-sm lg:h-[525px] lg:w-[525px] lg:rounded-[50px]"
                 style={{ backgroundImage: `url(${image})` }}
-              >
-                {showPlay ? (
-                  <div className="flex h-full items-center justify-center bg-black/10">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-900/80 text-white shadow-lg">
-                      <PlayIcon />
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            {!reverse ? (
-              <div className="mt-4 flex gap-3 lg:mt-6">
+              />
+              <div className={`mt-4 flex gap-4 ${reverse ? "justify-end" : ""}`}>
                 <RoundArrow direction="left" />
                 <RoundArrow direction="right" />
               </div>
-            ) : null}
+            </div>
           </div>
 
-          <div className={`flex items-center ${reverse ? "lg:order-1" : ""}`}>
-            <div className="max-w-xl">
-              <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#e8c880] sm:text-base">
-                {eyebrow}
-              </p>
-              <h2 className="mt-3 text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl lg:text-5xl">
+          <div className={`${reverse ? "lg:order-1" : ""}`}>
+            <div className="max-w-[552px]">
+              <SectionKicker>{eyebrow}</SectionKicker>
+              <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] text-[#0f172a] sm:text-4xl lg:text-5xl">
                 {title}
               </h2>
-              <div className="mt-6 h-px w-40 bg-[#d9d6d1]" />
-              <p className="mt-6 text-base leading-8 text-slate-700 sm:text-lg">
+              <GoldRule />
+              <p className="mt-5 text-base leading-8 text-[#0f172a] sm:text-lg lg:text-xl lg:leading-[1.8]">
                 {description}
+              </p>
+              {cta ? (
+                <div className="mt-10">
+                  <PrimaryOutlineLink href="/checkout">Сделать заказ</PrimaryOutlineLink>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HeroSection() {
+  return (
+    <section className="relative min-h-[760px] overflow-hidden rounded-b-[72px] bg-[#102038] lg:rounded-b-[150px]">
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0.08)_100%)]" />
+      <div className="relative mx-auto max-w-[1280px] px-4 pb-20 pt-56 sm:px-6 lg:px-0 lg:pb-24 lg:pt-[366px]">
+        <div className="max-w-[640px]">
+          <h1 className="text-5xl leading-none text-white sm:text-6xl lg:text-[64px]">
+            Послесловие к вашему дню
+          </h1>
+          <p className="mt-6 text-lg font-light leading-[1.6] text-[#dfdfdf] sm:text-xl">
+            Энергия природы в каждой бомбочке для ванны
+            <br />
+            Внимание и забота к каждой минуте наедине с собой
+          </p>
+          <div className="mt-12">
+            <PrimaryOutlineLink href="/checkout">Оформить заказ</PrimaryOutlineLink>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SectionHeading({
+  kicker,
+  title,
+  centered = false,
+  light = false,
+}: Readonly<{
+  kicker?: string;
+  title: string;
+  centered?: boolean;
+  light?: boolean;
+}>) {
+  return (
+    <div className={`${centered ? "mx-auto text-center" : ""} max-w-[780px]`}>
+      {kicker ? <SectionKicker>{kicker}</SectionKicker> : null}
+      <h2
+        className={`text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-5xl ${
+          light ? "text-white" : "text-[#0f172a]"
+        }`}
+      >
+        {title}
+      </h2>
+      <GoldRule centered={centered} />
+    </div>
+  );
+}
+
+function SectionKicker({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#e8c880] sm:text-base lg:text-xl">
+      {children}
+    </p>
+  );
+}
+
+function GoldRule({ centered = false }: Readonly<{ centered?: boolean }>) {
+  return (
+    <div
+      className={`mt-5 h-px w-[260px] max-w-full bg-[#e8c880] ${
+        centered ? "mx-auto" : ""
+      }`}
+    />
+  );
+}
+
+function FeatureCard({
+  title,
+  description,
+  icon,
+}: Readonly<{ title: string; description: string; icon: string }>) {
+  return (
+    <article className="text-center">
+      <div
+        aria-hidden="true"
+        className="mx-auto h-16 w-16 bg-contain bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${icon})` }}
+      />
+      <h3 className="mt-4 whitespace-pre-line text-2xl font-bold leading-[1.1]">
+        {title}
+      </h3>
+      <p className="mt-4 text-base leading-8 lg:text-xl lg:leading-[1.8]">{description}</p>
+    </article>
+  );
+}
+
+function WhyUsSection() {
+  return (
+    <section
+      className="relative overflow-hidden bg-cover bg-center px-4 py-16 text-white sm:px-6 lg:px-20 lg:py-20"
+      style={{ backgroundImage: `url(${ctaTexture})` }}
+    >
+      <div className="absolute inset-0 bg-[#102038]/35" />
+      <div className="relative mx-auto max-w-[1280px]">
+        <SectionHeading kicker="Преимущества" title="Почему выбирают нас?" centered light />
+        <div className="mt-12 grid gap-10 lg:grid-cols-3 lg:gap-24">
+          {reasons.map((reason) => (
+            <article key={reason.title} className="text-center">
+              <div
+                aria-hidden="true"
+                className="mx-auto h-16 w-16 bg-contain bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${reason.icon})` }}
+              />
+              <h3 className="mt-4 text-2xl font-bold leading-[1.1]">{reason.title}</h3>
+              <p className="mt-2 text-lg leading-[1.8]">{reason.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AboutSection() {
+  return (
+    <section id="about" className="bg-white px-4 py-12 sm:px-6 lg:px-20 lg:py-20">
+      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-[#f8f8f8] lg:rounded-[70px]">
+        <div className="pointer-events-none absolute inset-0 hidden grid-cols-[1fr_323px] lg:grid">
+          <div />
+          <div
+            className="bg-cover bg-center"
+            style={{ backgroundImage: `url(${marbleTexture})` }}
+          />
+        </div>
+        <div className="relative grid items-center gap-10 p-5 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
+          <div className="max-w-[552px]">
+            <SectionKicker>О нас</SectionKicker>
+            <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-5xl">
+              Кто мы такие?
+            </h2>
+            <GoldRule />
+            <div className="mt-5 space-y-6 text-base leading-8 lg:text-xl lg:leading-[1.8]">
+              <p>
+                Послесловие — это команда амбициозных, творческих и талантливых людей,
+                бесконечно целеустремленных и искренне увлеченных процессом создания
+                подарков.
+              </p>
+              <p>
+                Мы прилагаем максимум усилий, чтобы создать продукцию на уровень выше
+                конкурентов. Именно поэтому с нами сотрудничают лидеры рынка в своих нишах.
               </p>
             </div>
           </div>
+          <div
+            aria-label="Бомбочки Послесловие"
+            role="img"
+            className="aspect-square rounded-[32px] bg-cover bg-center lg:h-[525px] lg:w-[525px] lg:rounded-[50px]"
+            style={{ backgroundImage: `url(${aboutImage})` }}
+          />
+        </div>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-10 -bottom-8 hidden aspect-[296/245] w-[296px] bg-contain bg-center bg-no-repeat opacity-90 xl:block"
+          style={{ backgroundImage: `url(${featherVector})` }}
+        />
+      </div>
+    </section>
+  );
+}
+
+function ReviewsSection() {
+  return (
+    <section id="reviews" className="overflow-hidden bg-white px-4 py-16 sm:px-6 lg:px-20 lg:py-20">
+      <div className="mx-auto max-w-[1280px]">
+        <SectionHeading kicker="Отзывы" title="Нам доверяют" centered />
+        <div className="mt-14 flex gap-8 overflow-x-auto pb-4 lg:gap-12">
+          {reviews.map((review, index) => (
+            <article
+              key={`${review.name}-${index}`}
+              className="flex min-h-[600px] w-[320px] shrink-0 flex-col justify-between rounded-[15px] bg-[#f8f8f8] p-6 sm:w-[395px] sm:p-8"
+            >
+              <div>
+                <div
+                  className="h-[220px] rounded-[20px] bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url(${review.image}), url(${reviewsBaseImage})`,
+                  }}
+                />
+                <div className="mt-5 text-2xl tracking-[0.1em] text-[#e8c880]">★★★★★</div>
+                <p className="mt-4 text-base leading-[1.6] sm:text-lg">{review.text}</p>
+              </div>
+              <p className="mt-8 font-medium">{review.name}</p>
+            </article>
+          ))}
+        </div>
+        <div className="mt-2 flex gap-4">
+          <RoundArrow direction="left" />
+          <RoundArrow direction="right" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CtaSection() {
+  return (
+    <section
+      className="relative overflow-hidden bg-[#102038] bg-cover bg-center px-4 py-20 text-center text-white sm:px-6 lg:px-20 lg:py-24"
+      style={{
+        backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${ctaTextureOverlay}), url(${ctaTexture})`,
+      }}
+    >
+      <div className="relative mx-auto flex max-w-[1200px] flex-col items-center">
+        <h2 className="max-w-[760px] text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-5xl">
+          Наши наборы - ваш идеальный комплимент!
+        </h2>
+        <p className="mt-5 max-w-[540px] text-lg font-light leading-[1.6] sm:text-2xl">
+          Подарите минуты душевного равновесия и культурный опыт тем, кто вам важен
+        </p>
+        <div className="mt-8">
+          <PrimaryOutlineLink href="/checkout">Оформить заказ</PrimaryOutlineLink>
         </div>
       </div>
     </section>
@@ -237,22 +467,7 @@ function PrimaryOutlineLink({
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-3 rounded-full border-2 border-[#e8c880] px-6 py-3 text-lg font-bold tracking-[0.02em] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-slate-950"
-    >
-      {children}
-      <ArrowRightIcon />
-    </Link>
-  );
-}
-
-function PrimarySolidLink({
-  href,
-  children,
-}: Readonly<{ href: string; children: React.ReactNode }>) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 text-lg font-bold tracking-[0.02em] text-slate-900 transition hover:bg-slate-100"
+      className="inline-flex items-center gap-4 rounded-full border-2 border-[#e8c880] px-6 py-3 text-lg font-bold tracking-[0.03em] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-slate-950 sm:text-2xl"
     >
       {children}
       <ArrowRightIcon />
@@ -284,71 +499,6 @@ function ArrowRightIcon({ small = false }: Readonly<{ small?: boolean }>) {
     >
       <path d="M5 12h14" />
       <path d="m13 5 7 7-7 7" />
-    </svg>
-  );
-}
-
-function PlayIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8 fill-current">
-      <path d="M8 6.5v11l9-5.5-9-5.5Z" />
-    </svg>
-  );
-}
-
-function LeafIcon() {
-  return (
-    <svg
-      viewBox="0 0 64 64"
-      aria-hidden="true"
-      className="h-12 w-12"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2.5"
-    >
-      <path d="M16 40c14 0 24-10 24-24 8 2 16 10 16 22 0 14-12 26-26 26-10 0-18-8-18-18 0-6 2-10 4-12Z" />
-      <path d="M22 44c6-8 12-14 22-20" />
-    </svg>
-  );
-}
-
-function BadgeIcon() {
-  return (
-    <svg
-      viewBox="0 0 64 64"
-      aria-hidden="true"
-      className="h-12 w-12"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2.5"
-    >
-      <path d="M32 8 13 16v16c0 12 8 22 19 24 11-2 19-12 19-24V16L32 8Z" />
-      <path d="m24 31 6 6 11-13" />
-    </svg>
-  );
-}
-
-function GiftIcon() {
-  return (
-    <svg
-      viewBox="0 0 64 64"
-      aria-hidden="true"
-      className="h-12 w-12"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2.5"
-    >
-      <path d="M10 24h44v12H10z" />
-      <path d="M14 36h36v18H14z" />
-      <path d="M32 24v30" />
-      <path d="M32 24h-9c-5 0-8-3-8-7s3-7 8-7c7 0 9 8 9 14Z" />
-      <path d="M32 24h9c5 0 8-3 8-7s-3-7-8-7c-7 0-9 8-9 14Z" />
     </svg>
   );
 }

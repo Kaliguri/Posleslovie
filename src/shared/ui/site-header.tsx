@@ -12,28 +12,32 @@ export function SiteHeader() {
 
   if (isHomePage) {
     return (
-      <header className="absolute inset-x-0 top-0 z-30">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-6 text-white sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-2xl border border-white text-[13px] font-bold underline">
-              П.С
-            </span>
-            <span className="text-xl">{siteConfig.name}</span>
-          </Link>
+      <header className="absolute inset-x-0 top-0 z-30 text-white">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-0">
+          <div className="flex h-[85px] items-center justify-between border-b border-[#e8c880]">
+            <span className="hidden text-2xl text-transparent lg:block">+7 777 777-77-77</span>
+            <Link href="/" className="flex items-center gap-2">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white text-base font-bold underline">
+                П.С
+              </span>
+              <span className="text-3xl">{siteConfig.name}</span>
+            </Link>
+            <a
+              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
+              className="hidden text-xl font-medium lg:block"
+            >
+              {siteConfig.phone}
+            </a>
+          </div>
 
-          <nav className="hidden items-center gap-1 md:flex">
-            <HeaderPill href="/delivery">Доставка</HeaderPill>
+          <nav className="hidden h-[70px] items-center justify-center lg:flex">
+            <HeaderPill href="#bombs">Бомбочки</HeaderPill>
+            <HeaderPill href="#about">О нас</HeaderPill>
+            <HeaderPill href="#reviews">Отзывы</HeaderPill>
+            <HeaderPill href="/delivery">Оплата и доставка</HeaderPill>
             <HeaderPill href="/distributors">Для партнеров</HeaderPill>
             <HeaderPill href="#contacts">Контакты</HeaderPill>
           </nav>
-
-          <Link
-            href="/checkout"
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#e8c880] px-4 py-2 text-sm font-bold text-[#e8c880] transition hover:bg-[#e8c880] hover:text-slate-950"
-          >
-            Оформить заказ
-            <ArrowRightIcon />
-          </Link>
         </div>
       </header>
     );
@@ -75,27 +79,9 @@ function HeaderPill({
   return (
     <Link
       href={href}
-      className="rounded-full px-4 py-2 text-sm font-bold text-white/90 transition hover:bg-white/10 hover:text-white"
+      className="rounded-full px-5 py-3 text-base font-bold tracking-[0.03em] text-white transition hover:bg-white/10"
     >
       {children}
     </Link>
-  );
-}
-
-function ArrowRightIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-    >
-      <path d="M5 12h14" />
-      <path d="m13 5 7 7-7 7" />
-    </svg>
   );
 }
