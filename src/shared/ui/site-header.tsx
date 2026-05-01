@@ -1,87 +1,73 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
-import { CartButton } from "@/features/cart/ui/cart-button";
 import { siteConfig } from "@/shared/config/site";
 
 export function SiteHeader() {
-  const pathname = usePathname();
-  const isHomePage = pathname === "/";
+  const scrollToSection = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
-  if (isHomePage) {
-    return (
-      <header className="absolute inset-x-0 top-0 z-30 text-white">
-        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-0">
-          <div className="flex h-[85px] items-center justify-between border-b border-[#e8c880]">
-            <span className="hidden text-2xl text-transparent lg:block">+7 777 777-77-77</span>
-            <Link href="/" className="flex items-center gap-2">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white text-base font-bold underline">
-                П.С
-              </span>
-              <span className="text-3xl">{siteConfig.name}</span>
-            </Link>
-            <a
-              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-              className="hidden text-xl font-medium lg:block"
-            >
-              {siteConfig.phone}
-            </a>
-          </div>
-
-          <nav className="hidden h-[70px] items-center justify-center lg:flex">
-            <HeaderPill href="#bombs">Бомбочки</HeaderPill>
-            <HeaderPill href="#about">О нас</HeaderPill>
-            <HeaderPill href="#reviews">Отзывы</HeaderPill>
-            <HeaderPill href="/delivery">Оплата и доставка</HeaderPill>
-            <HeaderPill href="/distributors">Для партнеров</HeaderPill>
-            <HeaderPill href="#contacts">Контакты</HeaderPill>
-          </nav>
-        </div>
-      </header>
-    );
-  }
+  const openHomeModal = (type: "delivery" | "partners" | "contacts" | "checkout") => {
+    window.dispatchEvent(new CustomEvent("posleslovie:open-modal", { detail: type }));
+  };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-white/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-lg font-semibold tracking-[0.2em] text-stone-950">
-          {siteConfig.name}
-        </Link>
-
-        <nav className="hidden items-center gap-6 text-sm text-stone-600 md:flex">
-          {siteConfig.nav.map((item) => (
-            <Link key={item.href} href={item.href} className="transition hover:text-stone-950">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
+    <header className="absolute inset-x-0 top-0 z-30 text-white">
+      <div className="mx-auto max-w-[1720px] px-5 lg:px-[100px]">
+        <div className="relative flex h-[85px] items-center border-b border-[#e8c880]">
+          <Link href="/" className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white text-base font-bold underline">
+              П.С
+            </span>
+            <span className="text-3xl">{siteConfig.name}</span>
+          </Link>
           <a
             href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-            className="hidden text-sm text-stone-600 transition hover:text-stone-950 sm:block"
+            className="ml-auto hidden text-base font-medium lg:block"
           >
             {siteConfig.phone}
           </a>
-          <CartButton />
         </div>
+
+        <nav className="hidden h-[70px] items-center justify-center lg:flex">
+          <div className="flex items-center">
+            <HeaderPill onClick={() => scrollToSection("bombs")}>Бомбочки</HeaderPill>
+            <HeaderPill onClick={() => scrollToSection("about")}>О нас</HeaderPill>
+            <HeaderPill onClick={() => scrollToSection("reviews")}>Отзывы</HeaderPill>
+            <HeaderPill onClick={() => openHomeModal("delivery")}>Оплата и доставка</HeaderPill>
+            <HeaderPill onClick={() => openHomeModal("partners")}>Для партнеров</HeaderPill>
+            <HeaderPill onClick={() => openHomeModal("contacts")}>Контакты</HeaderPill>
+          </div>
+        </nav>
       </div>
     </header>
   );
 }
 
 function HeaderPill({
-  href,
+  onClick,
   children,
-}: Readonly<{ href: string; children: React.ReactNode }>) {
+}: Readonly<{ onClick: () => void; children: React.ReactNode }>) {
   return (
-    <Link
-      href={href}
-      className="rounded-full px-5 py-3 text-base font-bold tracking-[0.03em] text-white transition hover:bg-white/10"
+    <button
+      type="button"
+      onClick={onClick}
+      className="group h-12 overflow-hidden rounded-[30px] pl-6 pr-4 py-3 text-base font-bold tracking-[0.5px] text-white outline-none transition-transform duration-300 ease-out hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
-      {children}
-    </Link>
+      <HeaderPillText>{children}</HeaderPillText>
+    </button>
+  );
+}
+
+function HeaderPillText({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <span className="flex flex-col gap-3 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-9 group-focus-visible:-translate-y-9">
+      <span className="leading-6 whitespace-nowrap">{children}</span>
+      <span className="leading-6 whitespace-nowrap" aria-hidden="true">
+        {children}
+      </span>
+    </span>
   );
 }

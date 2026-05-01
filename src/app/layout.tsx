@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { Providers } from "@/app/providers";
 import { siteConfig } from "@/shared/config/site";
 import { SiteFooter } from "@/shared/ui/site-footer";
 import { SiteHeader } from "@/shared/ui/site-header";
@@ -23,13 +22,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className="min-h-screen text-stone-950 antialiased">
-        <Providers>
-          <div className="relative flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
-        </Providers>
+        <div className="relative flex min-h-screen flex-col">
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
+        </div>
       </body>
     </html>
   );
