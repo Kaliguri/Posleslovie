@@ -2,7 +2,7 @@
 
 Сайт-визитка для продажи бомбочек.
 
-Сайт на GitHub Pages: https://kaliguri.github.io/Site-Test-/
+Сайт на GitHub Pages: https://kaliguri.github.io/Site-1/
 
 ## Контекст проекта
 
