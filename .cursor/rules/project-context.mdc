@@ -1,0 +1,13 @@
+---
+description: Project context and Figma MCP workflow
+alwaysApply: true
+---
+
+# Project Context
+
+- Проект: сайт-визитка для продажи бомбочек.
+- Основной источник дизайна и визуальных решений: Figma через MCP.
+- Figma project: https://www.figma.com/design/WmOedCtt1kVyO6xx1FfEW2/%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D1%81%D0%BB%D0%BE%D0%B2%D0%B8%D0%B5?node-id=0-1&p=f&t=3cGAwdm57tSOHoss-0
+- Перед UI-изменениями сверяйся с Figma MCP и адаптируй дизайн под текущий стек проекта.
+- Не придумывай новый визуальный стиль без необходимости: сначала используй структуру, цвета, типографику и композицию из Figma.
+- Если задача касается дизайна, компонентов или страниц, запроси/используй конкретный Figma frame/node, когда ссылка ведет только на корень файла.
