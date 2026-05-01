@@ -15,3 +15,11 @@
 - При переносе макета в код адаптировать результат под Next.js, React, TypeScript и Tailwind CSS.
 - Сохранять визуальную идею из Figma: композицию, настроение, цвета, типографику и ритм.
 - Если нужна точная верстка, использовать ссылку на конкретный frame/node, а не только на корень файла.
+
+## GitHub Pages
+
+- Сайт должен собираться как статический Next.js export для GitHub Pages.
+- Конфигурация находится в `next.config.ts`: `output: "export"`, `images.unoptimized: true`, GitHub Pages `basePath` берется из имени репозитория при сборке в GitHub Actions.
+- Деплой описан в `.github/workflows/pages.yml` и публикует папку `out/`.
+- Перед изменениями, влияющими на роутинг или сборку, проверять `npm run lint` и `npm run build`.
+- GitHub Pages не запускает backend. Любые `/api/*`, платежи, webhooks и server-side интеграции должны быть вынесены во внешний backend/serverless или заменены статичным клиентским сценарием.
