@@ -123,10 +123,9 @@ const processSections = [
     eyebrow: "Продукция",
     title: "Как мы делаем бомбочки для ванн?",
     description:
-      "Каждая бомбочка — это кусочек спокойствия, созданный вручную. Мы помогаем брендам радовать своих клиентов идеальными комплиментами к заказам, повышая лояльность, а каждому человеку — просто находить время для самого себя.",
+      "Каждая бомбочка сделана в ручную. В составе исключительно натуральные ингредиенты, прошедшие сертификацию в лаборатории. Мы не экономим на вас, главное принести реальную пользу",
     reverse: false,
     gallery: "bombs",
-    button: "Сделать заказ",
   },
   {
     eyebrow: "Натуральные масла",
@@ -492,8 +491,20 @@ function ProcessSection({
           <div className={`bg-white mix-blend-lighten ${reverse ? "order-2" : ""}`} />
           <div className="bg-white" />
         </div>
+        {index === 0 ? (
+          <DecorativeObject
+            image={assets.crystal}
+            className="absolute bottom-[64px] right-[55px] z-10 h-[225px] w-[199px] opacity-90"
+          />
+        ) : null}
+        {index === 2 ? (
+          <DecorativeObject
+            image={assets.pero}
+            className="absolute bottom-[80px] right-[60px] z-10 h-[152px] w-[266px] opacity-75"
+          />
+        ) : null}
 
-        <div className="relative grid items-center gap-10 p-5 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
+        <div className="relative grid items-center gap-10 p-5 sm:p-8 lg:min-h-[665px] lg:grid-cols-[525px_552px] lg:items-start lg:gap-16 lg:p-12">
           <ProductGallery
             reverse={reverse}
             slides={gallerySlides[gallery]}
@@ -502,29 +513,17 @@ function ProcessSection({
           <div className={reverse ? "lg:order-1" : ""}>
             <div className="max-w-[552px]">
               <SectionKicker>{eyebrow}</SectionKicker>
-              <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-5xl">
+              <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-[40px] xl:text-5xl">
                 {title}
               </h2>
               <GoldRule />
-              <p className="mt-5 text-base leading-8 [font-family:var(--font-inter)] lg:text-xl lg:leading-[1.8]">
+              <p className="mt-4 text-base leading-8 [font-family:var(--font-inter)] lg:text-lg lg:leading-[1.8] xl:text-xl">
                 {description}
               </p>
               {button ? (
-                <div className="mt-10">
+                <div className="mt-10 lg:mt-16">
                   <DesignButton onClick={onOrder}>{button}</DesignButton>
                 </div>
-              ) : null}
-              {index === 0 ? (
-                <DecorativeObject
-                  image={assets.crystal}
-                  className="ml-auto mr-10 mt-7 h-[188.95px] w-[121.35px] rotate-[-29.41deg] opacity-90 lg:mr-[65px]"
-                />
-              ) : null}
-              {index === 2 ? (
-                <DecorativeObject
-                  image={assets.pero}
-                  className="ml-auto mt-2 h-[263.01px] w-[158px] rotate-[-88.12deg] opacity-75 lg:mr-[72px]"
-                />
               ) : null}
             </div>
           </div>
@@ -1537,7 +1536,7 @@ function SectionHeading({
 
 function SectionKicker({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <p className="text-sm font-bold uppercase tracking-[0.3em] text-[#e8c880] sm:text-base lg:text-xl">
+    <p className="text-sm font-bold uppercase tracking-[3px] text-[#e8c880] sm:text-base lg:text-lg xl:text-xl">
       {children}
     </p>
   );
@@ -1547,7 +1546,7 @@ function GoldRule({ centered = false }: Readonly<{ centered?: boolean }>) {
   return (
     <div
       aria-hidden="true"
-      className={`mt-5 flex w-full max-w-[700px] items-center ${
+      className={`mt-6 flex w-full max-w-[700px] items-center ${
         centered ? "mx-auto" : ""
       }`}
     >
@@ -1619,12 +1618,12 @@ function DesignButton({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center justify-center gap-4 rounded-full border-2 border-[#e8c880] font-bold tracking-[0.03em] transition ${
+      className={`inline-flex items-center justify-center gap-4 rounded-full border-2 border-[#e8c880] font-bold tracking-[0.5px] transition ${
         isFilled
           ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
           : "text-[#e8c880] hover:bg-[#e8c880] hover:text-[#0f172a]"
       } ${
-        size === "xl" ? "px-7 py-4 text-2xl lg:text-[26.7px]" : "px-6 py-3 text-base lg:text-2xl"
+        size === "xl" ? "px-7 py-4 text-2xl lg:text-[26.7px]" : "px-6 py-3 text-base lg:text-xl xl:text-2xl"
       }`}
     >
       {children}
