@@ -5,49 +5,48 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type ModalType = "delivery" | "partners" | "contacts" | "checkout" | null;
 
 const assets = {
-  hero:
-    "https://www.figma.com/api/mcp/asset/2553a075-0201-4511-ad21-372b888270a6",
-  marble:
-    "https://www.figma.com/api/mcp/asset/ec603b7d-5aec-4ff1-8dee-44ea1f14efab",
-  product1:
-    "https://www.figma.com/api/mcp/asset/46c9a39c-9a9d-413b-a86b-4cf93a0e80b9",
-  product2:
-    "https://www.figma.com/api/mcp/asset/953707e5-2166-4be6-a291-b2ab54556ec2",
-  product3:
-    "https://www.figma.com/api/mcp/asset/b6e2d1e5-3292-4d0b-9d95-825b6b7f7ac1",
-  review1:
-    "https://www.figma.com/api/mcp/asset/c9c4a81f-e942-4010-a778-76e7da9fc679",
-  review2:
-    "https://www.figma.com/api/mcp/asset/d9e8effe-8b9b-4bab-87ad-4f1518c40bbd",
-  review3:
-    "https://www.figma.com/api/mcp/asset/d58fd6d3-b21d-4498-a035-ce4755790260",
-  review4:
-    "https://www.figma.com/api/mcp/asset/329e32e7-67ca-45f2-8f9e-1b763b75cb38",
-  cta:
-    "https://www.figma.com/api/mcp/asset/b82ac1b1-5749-45ed-a8a1-78e42696c8bf",
-  ctaBase:
-    "https://www.figma.com/api/mcp/asset/a89a1f8e-8e72-42ff-80db-0c38c0182a65",
-  ctaOverlay:
-    "https://www.figma.com/api/mcp/asset/8a443bec-949b-4ac2-8f56-5fc1d0047437",
-  ctaBottom:
-    "https://www.figma.com/api/mcp/asset/889da1ae-64fa-4280-bc33-cc31b4925d94",
-  whyUs:
-    "https://www.figma.com/api/mcp/asset/94992ccc-dce1-419e-91b8-0fb4deb12eff",
-  natureIcon:
-    "https://www.figma.com/api/mcp/asset/61e798c5-5d63-4425-8b44-9f0271397f1b",
-  giftIcon:
-    "https://www.figma.com/api/mcp/asset/20d43fbf-571d-429d-8e7c-23e45cb2cc2d",
-  successIcon:
-    "https://www.figma.com/api/mcp/asset/750d3044-8eba-4236-8c86-66a0542818e9",
-  starRow:
-    "https://www.figma.com/api/mcp/asset/54c2e623-e0a3-4f07-9537-aff0c63fd661",
+  hero: "/images/desktop-29/hero.png",
+  bombs1: "/images/desktop-29/bombs-1.png",
+  bombs2: "/images/desktop-29/bombs-2.png",
+  bombs3: "/images/desktop-29/bombs-3.png",
+  lavender1: "/images/desktop-29/product-2.svg",
+  lavender2: "/images/desktop-29/product-1.svg",
+  lavender3: "/images/desktop-29/product-3.svg",
+  packs1: "/images/desktop-29/packs-1.png",
+  packs2: "/images/desktop-29/packs-2.png",
+  packs3: "/images/desktop-29/packs-3.png",
+  review1: "/images/desktop-29/review-1.svg",
+  review2: "/images/desktop-29/review-2.svg",
+  review3: "/images/desktop-29/review-3.svg",
+  review4: "/images/desktop-29/review-4.svg",
+  cta: "/images/desktop-29/cta.png",
+  whyUs: "/images/desktop-29/why-us.png",
+  natureIcon: "/images/desktop-29/icon-nature.png",
+  giftIcon: "/images/desktop-29/icon-gift.png",
+  successIcon: "/images/desktop-29/icon-success.png",
+  starRow: "/images/desktop-29/stars.svg",
 };
 
-const productSlides = [
-  { image: assets.product1, alt: "Мраморные бомбочки для ванны" },
-  { image: assets.product2, alt: "Голубые бомбочки с лавандой" },
-  { image: assets.product3, alt: "Бомбочка крупным планом" },
-] as const;
+const gallerySlides = {
+  bombs: [
+    { image: assets.bombs1, alt: "Мраморные бомбочки для ванны" },
+    { image: assets.bombs2, alt: "Голубые бомбочки с лавандой" },
+    { image: assets.bombs3, alt: "Бомбочка крупным планом" },
+  ],
+  lavender: [
+    { image: assets.lavender1, alt: "Лавандовая бомбочка для ванны" },
+    { image: assets.lavender2, alt: "Натуральные масла и сухоцветы" },
+    { image: assets.lavender3, alt: "Временное изображение лавандового блока" },
+  ],
+  packs: [
+    { image: assets.packs1, alt: "Подарочная упаковка Послесловие" },
+    { image: assets.packs2, alt: "Брендированный набор бомбочек" },
+    { image: assets.packs3, alt: "Упакованные наборы для подарков" },
+  ],
+} as const;
+
+type GalleryKind = keyof typeof gallerySlides;
+type GallerySlide = (typeof gallerySlides)[GalleryKind][number];
 
 const featureCards = [
   {
@@ -77,6 +76,7 @@ const processSections = [
     description:
       "Каждая бомбочка — это кусочек спокойствия, созданный вручную. Мы помогаем брендам радовать своих клиентов идеальными комплиментами к заказам, повышая лояльность, а каждому человеку — просто находить время для самого себя.",
     reverse: false,
+    gallery: "bombs",
     button: "Сделать заказ",
   },
   {
@@ -85,6 +85,7 @@ const processSections = [
     description:
       "Наши партнеры собирают лаванду и изготавливают масло в ручную. Букет из 50 сортов лаванды в каждой бомбочке.",
     reverse: true,
+    gallery: "lavender",
   },
   {
     eyebrow: "Продукция",
@@ -92,6 +93,7 @@ const processSections = [
     description:
       "Мы нанесем ваш логотип на упаковку, вы выберите цвет сургучной печати. Мы возьмем на себя все технические моменты, чтобы вы получили готовый брендированный бокс, соответствующий эстетике и духу вашей компании",
     reverse: false,
+    gallery: "packs",
     button: "Сделать заказ",
   },
 ] as const;
@@ -138,13 +140,19 @@ const reviews = [
 ] as const;
 
 const CAROUSEL_DURATION_MS = 500;
+const CAROUSEL_FAST_DURATION_MS = 250;
+
+type CarouselDirection = 1 | -1;
 
 function useInfiniteCarousel<T>(items: readonly T[]) {
   const [orderedItems, setOrderedItems] = useState<T[]>(() => [...items]);
   const [offset, setOffset] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDuration, setTransitionDuration] = useState(CAROUSEL_DURATION_MS);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const frameRef = useRef<number | null>(null);
+  const queuedMovesRef = useRef<CarouselDirection[]>([]);
+  const isAnimatingRef = useRef(false);
 
   const clearPendingAnimation = useCallback(() => {
     if (timeoutRef.current) {
@@ -156,45 +164,83 @@ function useInfiniteCarousel<T>(items: readonly T[]) {
       window.cancelAnimationFrame(frameRef.current);
       frameRef.current = null;
     }
+
+    queuedMovesRef.current = [];
+    isAnimatingRef.current = false;
   }, []);
 
-  useEffect(() => clearPendingAnimation, [clearPendingAnimation]);
+  function startNextMove() {
+    if (isAnimatingRef.current) {
+      return;
+    }
 
-  const move = useCallback(
-    (direction: 1 | -1) => {
-      clearPendingAnimation();
+    const direction = queuedMovesRef.current.shift();
 
-      if (direction === 1) {
-        setIsTransitioning(true);
-        setOffset(-1);
+    if (!direction) {
+      return;
+    }
 
-        timeoutRef.current = setTimeout(() => {
-          setIsTransitioning(false);
-          setOrderedItems((current) => [...current.slice(1), current[0]]);
-          setOffset(0);
-        }, CAROUSEL_DURATION_MS);
-        return;
-      }
+    const duration =
+      queuedMovesRef.current.length > 0 ? CAROUSEL_FAST_DURATION_MS : CAROUSEL_DURATION_MS;
 
-      setIsTransitioning(false);
-      setOrderedItems((current) => [current[current.length - 1], ...current.slice(0, -1)]);
+    isAnimatingRef.current = true;
+    setTransitionDuration(duration);
+
+    if (direction === 1) {
+      setIsTransitioning(true);
       setOffset(-1);
 
-      frameRef.current = window.requestAnimationFrame(() => {
+      timeoutRef.current = setTimeout(() => {
+        timeoutRef.current = null;
+        setIsTransitioning(false);
+        setOrderedItems((current) =>
+          current.length > 0 ? [...current.slice(1), current[0]] : current,
+        );
+        setOffset(0);
+        isAnimatingRef.current = false;
+
         frameRef.current = window.requestAnimationFrame(() => {
-          setIsTransitioning(true);
-          setOffset(0);
-
-          timeoutRef.current = setTimeout(() => {
-            setIsTransitioning(false);
-          }, CAROUSEL_DURATION_MS);
+          frameRef.current = null;
+          startNextMove();
         });
-      });
-    },
-    [clearPendingAnimation],
-  );
+      }, duration);
+      return;
+    }
 
-  return { orderedItems, offset, isTransitioning, move };
+    setIsTransitioning(false);
+    setOrderedItems((current) =>
+      current.length > 0 ? [current[current.length - 1], ...current.slice(0, -1)] : current,
+    );
+    setOffset(-1);
+
+    frameRef.current = window.requestAnimationFrame(() => {
+      frameRef.current = window.requestAnimationFrame(() => {
+        frameRef.current = null;
+        setIsTransitioning(true);
+        setOffset(0);
+
+        timeoutRef.current = setTimeout(() => {
+          timeoutRef.current = null;
+          setIsTransitioning(false);
+          isAnimatingRef.current = false;
+
+          frameRef.current = window.requestAnimationFrame(() => {
+            frameRef.current = null;
+            startNextMove();
+          });
+        }, duration);
+      });
+    });
+  }
+
+  useEffect(() => () => clearPendingAnimation(), [clearPendingAnimation]);
+
+  const move = (direction: CarouselDirection) => {
+    queuedMovesRef.current.push(direction);
+    startNextMove();
+  };
+
+  return { orderedItems, offset, isTransitioning, transitionDuration, move };
 }
 
 export default function Home() {
@@ -232,11 +278,11 @@ export default function Home() {
   }, [modal]);
 
   return (
-    <div className="bg-white text-[#0f172a]">
+    <div className="bg-[#f8f8f8] text-[#0f172a]">
       <HeroSection onOrder={() => setModal("checkout")} />
 
-      <section id="bombs" className="px-5 py-16 lg:px-[100px] lg:py-20">
-        <div className="mx-auto max-w-[1280px] rounded-[48px] bg-[#f8f8f8] px-6 py-14 lg:rounded-[100px] lg:px-20 lg:py-20">
+      <section id="bombs" className="px-5 py-16 lg:px-[100px] lg:py-[100px]">
+        <div className="mx-auto max-w-[1280px] rounded-[48px] bg-white px-6 py-14 lg:min-h-[750px] lg:rounded-[100px] lg:px-20 lg:py-20">
           <SectionHeading title="Дарите настроение и заботу тем, кто вам важен и дорог" centered />
           <div className="mt-14 grid gap-10 lg:grid-cols-3 lg:gap-16">
             {featureCards.map((card) => (
@@ -269,24 +315,25 @@ export default function Home() {
 
 function HeroSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
   return (
-    <section className="relative min-h-[720px] overflow-hidden rounded-b-[72px] bg-[#102038] lg:min-h-[1080px] lg:rounded-b-[150px]">
+    <section className="relative min-h-[760px] overflow-hidden bg-[#102038] lg:min-h-[1080px]">
       <div
-        className="absolute inset-0 scale-[1.02] bg-cover bg-center"
+        className="absolute inset-x-[-5vw] top-0 h-full scale-[1.01] bg-cover bg-center lg:inset-x-[-103px]"
         style={{ backgroundImage: `url(${assets.hero})` }}
       />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.34)_0%,rgba(0,0,0,0.04)_100%)]" />
-      <div className="relative mx-auto max-w-[1720px] px-5 pb-20 pt-56 lg:px-[100px] lg:pt-[340px]">
-        <div className="max-w-[790px]">
-          <h1 className="text-5xl leading-none text-white sm:text-7xl lg:text-[97px]">
+      <div className="absolute inset-0 bg-black/20" />
+      <div className="absolute left-1/2 top-[265px] hidden h-[572px] w-[64.3vw] max-w-[1234px] -translate-x-1/2 rounded-[385px] bg-black/[0.01] backdrop-blur-[5px] lg:block" />
+      <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-20 pt-64 text-center lg:px-[100px] lg:pt-[355px]">
+        <div className="max-w-[1234px]">
+          <h1 className="text-6xl font-normal leading-none text-white [font-family:var(--font-educational)] sm:text-7xl lg:text-[126px]">
             Послесловие к вашему дню
           </h1>
-          <p className="mt-8 text-xl font-light leading-[1.6] text-[#dfdfdf] lg:text-[30px]">
+          <p className="mt-7 text-xl font-medium leading-[1.6] text-[#dfdfdf] lg:text-[25px]">
             Энергия природы в каждой бомбочке для ванны
             <br />
             Внимание и забота к каждой минуте наедине с собой
           </p>
-          <div className="mt-14">
-            <DesignButton size="xl" onClick={onOrder}>
+          <div className="mt-16">
+            <DesignButton size="xl" variant="filled" onClick={onOrder}>
               Оформить заказ
             </DesignButton>
           </div>
@@ -301,6 +348,7 @@ function ProcessSection({
   title,
   description,
   reverse,
+  gallery,
   button,
   onOrder,
 }: Readonly<{
@@ -308,27 +356,26 @@ function ProcessSection({
   title: string;
   description: string;
   reverse: boolean;
+  gallery: GalleryKind;
   button?: string;
   onOrder: () => void;
 }>) {
   return (
-    <section className={`${reverse ? "bg-[#f8f8f8]" : "bg-white"} px-5 py-12 lg:px-[100px] lg:py-20`}>
-      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-[#f8f8f8] lg:rounded-[70px]">
+    <section className="bg-[#f8f8f8] px-5 py-12 lg:px-[100px] lg:py-[100px]">
+      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-white shadow-[0_5px_5px_rgba(255,93,93,0.1)] lg:rounded-[70px]">
         <div
           className={`pointer-events-none absolute inset-0 hidden lg:grid ${
             reverse ? "grid-cols-[1fr_323px]" : "grid-cols-[323px_1fr]"
           }`}
         >
-          <div
-            className={`bg-cover bg-center ${reverse ? "order-2" : ""}`}
-            style={{ backgroundImage: `url(${assets.marble})` }}
-          />
-          <div className={reverse ? "bg-[#f7fafe]" : "bg-[#f8f8f8]"} />
+          <div className={`bg-white mix-blend-lighten ${reverse ? "order-2" : ""}`} />
+          <div className="bg-white" />
         </div>
 
         <div className="relative grid items-center gap-10 p-5 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
           <ProductGallery
             reverse={reverse}
+            slides={gallerySlides[gallery]}
           />
 
           <div className={reverse ? "lg:order-1" : ""}>
@@ -338,7 +385,7 @@ function ProcessSection({
                 {title}
               </h2>
               <GoldRule />
-              <p className="mt-5 text-base leading-8 lg:text-xl lg:leading-[1.8]">
+              <p className="mt-5 text-base leading-8 [font-family:var(--font-inter)] lg:text-xl lg:leading-[1.8]">
                 {description}
               </p>
               {button ? (
@@ -356,10 +403,13 @@ function ProcessSection({
 
 function ProductGallery({
   reverse,
+  slides,
 }: Readonly<{
   reverse: boolean;
+  slides: readonly GallerySlide[];
 }>) {
-  const { orderedItems, offset, isTransitioning, move } = useInfiniteCarousel(productSlides);
+  const { orderedItems, offset, isTransitioning, transitionDuration, move } =
+    useInfiniteCarousel(slides);
 
   return (
     <div className={`${reverse ? "lg:order-2 lg:justify-self-end" : ""}`}>
@@ -368,6 +418,7 @@ function ProductGallery({
           slides={orderedItems}
           offset={offset}
           isTransitioning={isTransitioning}
+          transitionDuration={transitionDuration}
         />
         <div className={`mt-4 flex gap-4 ${reverse ? "justify-end" : ""}`}>
           <ArrowButton direction="left" onClick={() => move(-1)} />
@@ -382,16 +433,21 @@ function TapeImageCarousel({
   slides,
   offset,
   isTransitioning,
+  transitionDuration,
 }: Readonly<{
-  slides: (typeof productSlides)[number][];
+  slides: GallerySlide[];
   offset: number;
   isTransitioning: boolean;
+  transitionDuration: number;
 }>) {
   return (
     <div className="aspect-square overflow-hidden rounded-[32px] bg-[#f8f8f8] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]">
       <div
-        className={`flex h-full ${isTransitioning ? "transition-transform duration-500 ease-out" : ""}`}
-        style={{ transform: `translateX(${offset * 100}%)` }}
+        className={`flex h-full ${isTransitioning ? "transition-transform ease-out" : ""}`}
+        style={{
+          transform: `translateX(${offset * 100}%)`,
+          transitionDuration: isTransitioning ? `${transitionDuration}ms` : undefined,
+        }}
       >
         {slides.map((slide) => (
           <div key={slide.image} className="h-full w-full shrink-0 overflow-hidden">
@@ -411,18 +467,18 @@ function TapeImageCarousel({
 function WhyUsSection() {
   return (
     <section
-      className="relative overflow-hidden bg-cover bg-center px-5 py-16 text-white lg:px-[100px] lg:py-20"
+      className="relative overflow-hidden bg-cover bg-center px-5 py-16 text-white lg:px-[235px] lg:py-20"
       style={{ backgroundImage: `url(${assets.whyUs})` }}
     >
-      <div className="absolute inset-0 bg-[#102038]/35" />
-      <div className="relative mx-auto max-w-[1280px]">
+      <div className="absolute inset-0 bg-white/10" />
+      <div className="relative mx-auto max-w-[1456px]">
         <SectionHeading kicker="Преимущества" title="Почему выбирают нас?" centered light />
         <div className="mt-12 grid gap-10 lg:grid-cols-3 lg:gap-24">
           {reasons.map((reason) => (
             <article key={reason.title} className="text-center">
-              <IconImage src={reason.icon} light />
+              <IconImage src={reason.icon} />
               <h3 className="mt-4 text-2xl font-bold leading-[1.1]">{reason.title}</h3>
-              <p className="mt-2 text-lg leading-[1.8]">{reason.description}</p>
+              <p className="mt-2 text-lg leading-[1.8] [font-family:var(--font-inter)] lg:text-xl">{reason.description}</p>
             </article>
           ))}
         </div>
@@ -433,11 +489,11 @@ function WhyUsSection() {
 
 function AboutSection() {
   return (
-    <section id="about" className="bg-white px-5 py-12 lg:px-[100px] lg:py-20">
-      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-[#f8f8f8] lg:rounded-[70px]">
+    <section id="about" className="bg-[#f8f8f8] px-5 py-12 lg:px-[100px] lg:py-[100px]">
+      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-white lg:rounded-[70px]">
         <div className="pointer-events-none absolute inset-0 hidden grid-cols-[1fr_323px] lg:grid">
           <div />
-          <div className="bg-cover bg-center" style={{ backgroundImage: `url(${assets.marble})` }} />
+          <div className="bg-white mix-blend-lighten" />
         </div>
         <div className="relative grid items-center gap-10 p-5 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
           <div className="max-w-[552px]">
@@ -446,7 +502,7 @@ function AboutSection() {
               Кто мы такие?
             </h2>
             <GoldRule />
-            <div className="mt-5 space-y-6 text-base leading-8 lg:text-xl lg:leading-[1.8]">
+            <div className="mt-5 space-y-6 text-base leading-8 [font-family:var(--font-inter)] lg:text-xl lg:leading-[1.8]">
               <p>
                 Послесловие — это команда амбициозных, творческих и талантливых людей,
                 бесконечно целеустремленных и искренне увлеченных процессом создания подарков.
@@ -458,7 +514,7 @@ function AboutSection() {
             </div>
           </div>
           <ZoomImage
-            image={assets.product1}
+            image={assets.bombs1}
             label="Бомбочки Послесловие"
             className="aspect-square rounded-[32px] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]"
           />
@@ -469,23 +525,25 @@ function AboutSection() {
 }
 
 function ReviewsSection() {
-  const { orderedItems, offset, isTransitioning, move } = useInfiniteCarousel(reviews);
+  const { orderedItems, offset, isTransitioning, transitionDuration, move } =
+    useInfiniteCarousel(reviews);
 
   return (
-    <section id="reviews" className="overflow-hidden bg-white px-5 py-16 lg:px-[100px] lg:py-20">
+    <section id="reviews" className="overflow-hidden bg-[#f8f8f8] px-5 py-16 lg:px-[100px] lg:py-20">
       <div className="mx-auto max-w-[1280px]">
         <SectionHeading kicker="Отзывы" title="Нам доверяют" centered />
         <div className="mt-14 overflow-hidden [--carousel-gap:2rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] lg:[--carousel-gap:3rem] lg:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
           <div
-            className={`flex gap-[var(--carousel-gap)] ${isTransitioning ? "transition-transform duration-500 ease-out" : ""}`}
+            className={`flex gap-[var(--carousel-gap)] ${isTransitioning ? "transition-transform ease-out" : ""}`}
             style={{
               transform: offset === 0 ? "translateX(0)" : "translateX(calc(-1 * var(--carousel-step)))",
+              transitionDuration: isTransitioning ? `${transitionDuration}ms` : undefined,
             }}
           >
             {orderedItems.map((review) => (
               <article
                 key={review.name}
-                className="group flex min-h-[600px] w-full shrink-0 basis-full flex-col justify-between rounded-[15px] bg-[#f8f8f8] p-6 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:p-8 lg:basis-[calc((100%_-_var(--carousel-gap)*2)/3)]"
+                className="group flex min-h-[600px] w-full shrink-0 basis-full flex-col justify-between rounded-[15px] bg-white p-6 transition duration-300 hover:-translate-y-2 hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:p-8 lg:basis-[calc((100%_-_var(--carousel-gap)*2)/3)]"
               >
                 <div>
                   <ZoomImage image={review.image} label="" className="h-[220px] rounded-[20px]" zoom={false} />
@@ -494,7 +552,7 @@ function ReviewsSection() {
                     className="mt-5 h-[21px] w-[131px] bg-contain bg-left bg-no-repeat"
                     style={{ backgroundImage: `url(${assets.starRow})` }}
                   />
-                  <p className="mt-4 text-base leading-[1.6] lg:text-lg">{review.text}</p>
+                  <p className="mt-4 text-base leading-[1.6] [font-family:var(--font-inter)] lg:text-lg">{review.text}</p>
                 </div>
                 <p className="mt-8 font-medium">{review.name}</p>
               </article>
@@ -513,10 +571,8 @@ function ReviewsSection() {
 function CtaSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
   return (
     <section
-      className="relative overflow-hidden bg-[#102038] bg-cover bg-center px-5 py-20 text-center text-white lg:px-[100px] lg:py-24"
-      style={{
-        backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${assets.ctaBottom}), url(${assets.ctaOverlay}), url(${assets.cta}), url(${assets.ctaBase})`,
-      }}
+      className="relative overflow-hidden bg-[#c1aeff] bg-cover bg-center px-5 py-20 text-center text-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:px-[100px] lg:py-20"
+      style={{ backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${assets.cta})` }}
     >
       <div className="relative mx-auto flex max-w-[1200px] flex-col items-center">
         <h2 className="max-w-[760px] text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-5xl">
@@ -526,7 +582,7 @@ function CtaSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
           Подарите минуты душевного равновесия и культурный опыт тем, кто вам важен
         </p>
         <div className="mt-8">
-          <DesignButton onClick={onOrder}>Оформить заказ</DesignButton>
+          <DesignButton size="xl" onClick={onOrder}>Оформить заказ</DesignButton>
         </div>
       </div>
     </section>
@@ -678,7 +734,7 @@ function CheckoutModal() {
           <h3 className="text-2xl font-extrabold">Детали заказа</h3>
           <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
           <div className="mt-6 flex items-center justify-between gap-6">
-            <ZoomImage image={assets.product2} label="Бомбочка для ванны" className="h-[108px] w-[108px] rounded-[10px]" />
+            <ZoomImage image={assets.bombs2} label="Бомбочка для ванны" className="h-[108px] w-[108px] rounded-[10px]" />
             <div className="flex-1">
               <p className="font-bold">Бомбочка для ванны</p>
               <div className="mt-4 flex items-center gap-4">
@@ -888,11 +944,10 @@ function FeatureCard({
   icon,
 }: Readonly<{ title: string; description: string; icon: string }>) {
   return (
-    <article className="group rounded-[10px] p-4 text-center transition duration-300 hover:-translate-y-2 hover:bg-gradient-to-b hover:from-[#f4f4f4]/70 hover:to-[#e8c880]/70 hover:shadow-[0_4px_9px_rgba(0,0,0,0.15)]">
+    <article className="group rounded-[10px] px-4 py-3 text-center transition duration-300 hover:-translate-y-2 hover:bg-[#f8f8f8] hover:shadow-[0_4px_9px_rgba(0,0,0,0.15)]">
       <IconImage src={icon} />
       <h3 className="mt-4 text-2xl font-bold leading-[1.1]">{title}</h3>
-      <div className="mx-auto mt-4 h-px w-[150px] scale-x-0 bg-[#e8c880] transition group-hover:scale-x-100" />
-      <p className="mt-4 text-base leading-8 lg:text-xl lg:leading-[1.8]">{description}</p>
+      <p className="mt-4 text-base leading-8 [font-family:var(--font-inter)] lg:text-xl lg:leading-[1.8]">{description}</p>
     </article>
   );
 }
@@ -933,13 +988,25 @@ function DesignButton({
   children,
   onClick,
   size = "md",
-}: Readonly<{ children: React.ReactNode; onClick: () => void; size?: "md" | "xl" }>) {
+  variant = "outline",
+}: Readonly<{
+  children: React.ReactNode;
+  onClick: () => void;
+  size?: "md" | "xl";
+  variant?: "outline" | "filled";
+}>) {
+  const isFilled = variant === "filled";
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center justify-center gap-4 rounded-full border-2 border-[#e8c880] font-bold tracking-[0.03em] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a] ${
-        size === "xl" ? "px-7 py-4 text-2xl lg:text-[30px]" : "px-6 py-3 text-base"
+      className={`inline-flex items-center justify-center gap-4 rounded-full border-2 border-[#e8c880] font-bold tracking-[0.03em] transition ${
+        isFilled
+          ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
+          : "text-[#e8c880] hover:bg-[#e8c880] hover:text-[#0f172a]"
+      } ${
+        size === "xl" ? "px-7 py-4 text-2xl lg:text-[26.7px]" : "px-6 py-3 text-base lg:text-2xl"
       }`}
     >
       {children}

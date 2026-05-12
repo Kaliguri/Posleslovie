@@ -19,20 +19,22 @@ export function SiteHeader() {
         <div className="relative flex h-[85px] items-center">
           <HeaderRule />
           <Link href="/" className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white text-base font-bold underline">
+            <span className="flex h-10 w-10 items-center justify-center rounded-[20px] border-2 border-white text-[16px] font-bold underline [font-family:var(--font-ermilov)]">
               П.С
             </span>
-            <span className="text-3xl">{siteConfig.name}</span>
+            <span className="text-[30px] font-normal leading-[1.1] [font-family:var(--font-educational)]">
+              {siteConfig.name}
+            </span>
           </Link>
           <a
             href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-            className="ml-auto hidden text-base font-medium lg:block"
+            className="ml-auto hidden text-base font-medium leading-[1.1] [font-family:var(--font-inter)] lg:block"
           >
             {siteConfig.phone}
           </a>
         </div>
 
-        <nav className="hidden h-[70px] items-center justify-center lg:flex">
+        <nav className="hidden h-[100px] items-center justify-center lg:flex">
           <div className="flex items-center">
             <HeaderPill onClick={() => scrollToSection("bombs")}>Бомбочки</HeaderPill>
             <HeaderPill onClick={() => scrollToSection("about")}>О нас</HeaderPill>
