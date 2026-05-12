@@ -2,9 +2,40 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type ModalType = "delivery" | "partners" | "contacts" | "checkout" | null;
+import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
+import { siteConfig } from "@/shared/config/site";
+
+type ModalType = "delivery" | "partners" | "contacts" | "checkout" | LegalDocumentSlug | null;
+type CheckoutField = keyof CheckoutFormValues;
+
+type CheckoutFormValues = {
+  name: string;
+  phone: string;
+  email: string;
+  company: string;
+  contactMethod: string;
+  address: string;
+};
+
+type CheckoutState = {
+  quantity: number;
+  formValues: CheckoutFormValues;
+};
 
 const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
+const checkoutStorageKey = "posleslovie:checkout-state";
+const productPrice = 999;
+const initialCheckoutState: CheckoutState = {
+  quantity: 3,
+  formValues: {
+    name: "",
+    phone: "",
+    email: "",
+    company: "",
+    contactMethod: "",
+    address: "",
+  },
+};
 
 const assets = {
   hero: assetPath("/images/desktop-29/hero.jpg"),
@@ -27,6 +58,8 @@ const assets = {
   giftIcon: assetPath("/images/desktop-29/icon-gift.png"),
   successIcon: assetPath("/images/desktop-29/icon-success.png"),
   starRow: assetPath("/images/desktop-29/stars.svg"),
+  crystal: assetPath("/images/desktop-29/crystal.png"),
+  pero: assetPath("/images/desktop-29/pero.png"),
 };
 
 const gallerySlides = {
@@ -245,9 +278,66 @@ function useInfiniteCarousel<T>(items: readonly T[]) {
   return { orderedItems, offset, isTransitioning, transitionDuration, move };
 }
 
+function parseCheckoutState(value: string | null): CheckoutState {
+  if (!value) {
+    return initialCheckoutState;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as Partial<CheckoutState>;
+    return {
+      quantity: Math.max(1, Number(parsed.quantity) || initialCheckoutState.quantity),
+      formValues: {
+        ...initialCheckoutState.formValues,
+        ...(parsed.formValues ?? {}),
+      },
+    };
+  } catch {
+    return initialCheckoutState;
+  }
+}
+
+function useCheckoutState() {
+  const [checkoutState, setCheckoutState] = useState<CheckoutState>(initialCheckoutState);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    setCheckoutState(parseCheckoutState(window.localStorage.getItem(checkoutStorageKey)));
+    setIsReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    window.localStorage.setItem(checkoutStorageKey, JSON.stringify(checkoutState));
+  }, [checkoutState, isReady]);
+
+  const updateQuantity = (quantity: number) => {
+    setCheckoutState((current) => ({
+      ...current,
+      quantity: Math.max(1, Math.floor(quantity) || 1),
+    }));
+  };
+
+  const updateField = (field: CheckoutField, value: string) => {
+    setCheckoutState((current) => ({
+      ...current,
+      formValues: {
+        ...current.formValues,
+        [field]: value,
+      },
+    }));
+  };
+
+  return { checkoutState, updateQuantity, updateField };
+}
+
 export default function Home() {
   const [modal, setModal] = useState<ModalType>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const { checkoutState, updateQuantity, updateField } = useCheckoutState();
 
   useEffect(() => {
     if (window.location.hash) {
@@ -295,10 +385,11 @@ export default function Home() {
       </section>
 
       <div className="space-y-8 lg:space-y-0">
-        {processSections.map((section) => (
+        {processSections.map((section, index) => (
           <ProcessSection
             key={section.title}
             {...section}
+            index={index}
             onOrder={() => setModal("checkout")}
           />
         ))}
@@ -310,7 +401,13 @@ export default function Home() {
       <CtaSection onOrder={() => setModal("checkout")} />
 
       <ScrollTopButton visible={showScrollTop} />
-      <HomeModal type={modal} onClose={() => setModal(null)} />
+      <HomeModal
+        type={modal}
+        checkoutState={checkoutState}
+        onCheckoutFieldChange={updateField}
+        onCheckoutQuantityChange={updateQuantity}
+        onClose={() => setModal(null)}
+      />
     </div>
   );
 }
@@ -353,6 +450,7 @@ function ProcessSection({
   gallery,
   button,
   onOrder,
+  index,
 }: Readonly<{
   eyebrow: string;
   title: string;
@@ -361,9 +459,10 @@ function ProcessSection({
   gallery: GalleryKind;
   button?: string;
   onOrder: () => void;
+  index: number;
 }>) {
   return (
-    <section className="bg-[#f8f8f8] px-5 py-12 lg:px-[100px] lg:py-[100px]">
+    <section className="relative bg-[#f8f8f8] px-5 py-12 lg:px-[100px] lg:py-[100px]">
       <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-white shadow-[0_5px_5px_rgba(255,93,93,0.1)] lg:rounded-[70px]">
         <div
           className={`pointer-events-none absolute inset-0 hidden lg:grid ${
@@ -394,6 +493,18 @@ function ProcessSection({
                 <div className="mt-10">
                   <DesignButton onClick={onOrder}>{button}</DesignButton>
                 </div>
+              ) : null}
+              {index === 0 ? (
+                <DecorativeObject
+                  image={assets.crystal}
+                  className="ml-auto mr-10 mt-10 h-[150px] w-[96px] rotate-[-29.41deg] opacity-90 lg:mr-[65px] lg:mt-7 lg:h-[188.95px] lg:w-[121.35px]"
+                />
+              ) : null}
+              {index === 2 ? (
+                <DecorativeObject
+                  image={assets.pero}
+                  className="ml-auto mt-8 h-[210px] w-[126px] rotate-[-88.12deg] opacity-75 lg:mr-[72px] lg:mt-2 lg:h-[263.01px] lg:w-[158px]"
+                />
               ) : null}
             </div>
           </div>
@@ -452,11 +563,11 @@ function TapeImageCarousel({
         }}
       >
         {slides.map((slide) => (
-          <div key={slide.image} className="h-full w-full shrink-0 overflow-hidden">
+          <div key={slide.image} className="zoom-frame h-full w-full shrink-0 overflow-hidden">
             <div
               aria-label={slide.alt}
               role="img"
-              className="h-full w-full bg-cover bg-center transition duration-500 hover:scale-125"
+              className="zoom-media h-full w-full bg-cover bg-center"
               style={{ backgroundImage: `url(${slide.image})` }}
             />
           </div>
@@ -591,10 +702,68 @@ function CtaSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
   );
 }
 
+function DecorativeObject({
+  image,
+  className,
+}: Readonly<{ image: string; className: string }>) {
+  return (
+    <img
+      src={image}
+      alt=""
+      aria-hidden="true"
+      className={`pointer-events-none hidden object-contain lg:block ${className}`}
+    />
+  );
+}
+
+function isLegalDocumentSlug(type: ModalType): type is LegalDocumentSlug {
+  return Boolean(type && legalDocuments.some((document) => document.slug === type));
+}
+
+function getModalHeader(type: Exclude<ModalType, null>) {
+  if (isLegalDocumentSlug(type)) {
+    const document = legalDocuments.find((item) => item.slug === type);
+    return {
+      kicker: "Документы",
+      title: document?.title ?? "Документ",
+    };
+  }
+
+  const headers = {
+    delivery: {
+      kicker: "Оплата и доставка",
+      title: "Условия оплаты и доставки",
+    },
+    partners: {
+      kicker: "Партнерство",
+      title: "Хотите стать нашим партнером?",
+    },
+    contacts: {
+      kicker: "Контактные данные",
+      title: "Свяжитесь с нами",
+    },
+    checkout: {
+      kicker: "Оформление заказа",
+      title: "Бомбочка для ванны",
+    },
+  } satisfies Record<Exclude<ModalType, LegalDocumentSlug | null>, { kicker: string; title: string }>;
+
+  return headers[type];
+}
+
 function HomeModal({
   type,
+  checkoutState,
+  onCheckoutFieldChange,
+  onCheckoutQuantityChange,
   onClose,
-}: Readonly<{ type: ModalType; onClose: () => void }>) {
+}: Readonly<{
+  type: ModalType;
+  checkoutState: CheckoutState;
+  onCheckoutFieldChange: (field: CheckoutField, value: string) => void;
+  onCheckoutQuantityChange: (quantity: number) => void;
+  onClose: () => void;
+}>) {
   useEffect(() => {
     if (!type) {
       return;
@@ -614,6 +783,8 @@ function HomeModal({
     return null;
   }
 
+  const header = getModalHeader(type);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm"
@@ -626,20 +797,38 @@ function HomeModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="relative max-h-[92vh] w-full max-w-[920px] overflow-y-auto rounded-[36px] bg-white px-6 py-8 shadow-2xl lg:rounded-[50px] lg:px-12 lg:py-12"
+        className="relative flex max-h-[92vh] w-full max-w-[920px] flex-col overflow-hidden rounded-[36px] bg-white pb-8 shadow-2xl lg:rounded-[50px] lg:pb-12"
       >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Закрыть"
-          className="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#e8c880] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a]"
-        >
-          <CrossIcon />
-        </button>
-        {type === "delivery" ? <DeliveryModal /> : null}
-        {type === "partners" ? <PartnersModal /> : null}
-        {type === "contacts" ? <ContactsModal /> : null}
-        {type === "checkout" ? <CheckoutModal /> : null}
+        <div className="sticky top-0 z-20 bg-white px-6 pb-6 pt-8 shadow-[0_12px_30px_rgba(15,23,42,0.08)] lg:px-12 lg:pt-12">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Закрыть"
+            className="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#e8c880] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a]"
+          >
+            <CrossIcon />
+          </button>
+          <div className="max-w-[760px] pr-16">
+            <SectionKicker>{header.kicker}</SectionKicker>
+            <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] lg:text-[40px]">
+              {header.title}
+            </h2>
+            <GoldRule />
+          </div>
+        </div>
+        <div className="modal-scroll min-h-0 flex-1 overflow-y-auto px-6 pb-4 pt-8 lg:px-12 lg:pb-4">
+          {type === "delivery" ? <DeliveryModal /> : null}
+          {type === "partners" ? <PartnersModal /> : null}
+          {type === "contacts" ? <ContactsModal /> : null}
+          {type === "checkout" ? (
+            <CheckoutModal
+              checkoutState={checkoutState}
+              onFieldChange={onCheckoutFieldChange}
+              onQuantityChange={onCheckoutQuantityChange}
+            />
+          ) : null}
+          {isLegalDocumentSlug(type) ? <LegalDocumentModal slug={type} /> : null}
+        </div>
       </div>
     </div>
   );
@@ -648,12 +837,7 @@ function HomeModal({
 function PartnersModal() {
   return (
     <div className="max-w-[760px]">
-      <SectionKicker>Партнерство</SectionKicker>
-      <h2 className="mt-2 max-w-[552px] text-4xl font-extrabold leading-[1.1] lg:text-[40px]">
-        Хотите стать нашим партнером?
-      </h2>
-      <GoldRule />
-      <p className="mt-5 max-w-[700px] text-base leading-[1.8] lg:text-lg">
+      <p className="max-w-[700px] text-base leading-[1.8] lg:text-lg">
         Предлагаем выгодные условия для региональных дистрибьюторов, розничных магазинов и
         селлеров. Расширьте свой ассортимент продуктом, который продает сам себя.
       </p>
@@ -669,12 +853,7 @@ function PartnersModal() {
 function DeliveryModal() {
   return (
     <div className="max-w-[760px]">
-      <SectionKicker>Оплата и доставка</SectionKicker>
-      <h2 className="mt-2 text-4xl font-extrabold leading-[1.1] lg:text-[40px]">
-        Условия оплаты и доставки
-      </h2>
-      <GoldRule />
-      <div className="mt-7 space-y-6 text-base leading-[1.75] text-[#0f172a]">
+      <div className="space-y-6 text-base leading-[1.75] text-[#0f172a]">
         <InfoBlock title="1. Оплата">
           Доступны СБП, банковская карта и оплата при получении. Онлайн-оплата будет
           подключаться через отдельный backend, потому что GitHub Pages обслуживает только
@@ -695,31 +874,36 @@ function DeliveryModal() {
 
 function ContactsModal() {
   return (
-    <div className="max-w-[760px]">
-      <SectionKicker>Контакты</SectionKicker>
-      <h2 className="mt-2 text-4xl font-extrabold leading-[1.1] lg:text-[40px]">
-        Связаться с нами
-      </h2>
-      <GoldRule />
-      <dl className="mt-8 grid gap-4 text-base lg:grid-cols-2">
-        <ContactItem label="Почта" value="example@posleslovie.ru" />
-        <ContactItem label="Телефон" value="+7 (000) 000-00-00" />
-        <ContactItem label="ИП" value="ИП Иванов Иван Иванович" />
-        <ContactItem label="ИНН" value="000000000000" />
-        <ContactItem label="ОГРН" value="000000000000000" />
-        <ContactItem label="Адрес" value="г. Москва, ул. Примерная, д. 1" />
+    <div className="max-w-[552px]">
+      <dl className="grid gap-3 text-base">
+        <ContactItem label="Телефон" value={siteConfig.phone} href={`tel:${siteConfig.phone.replace(/\D/g, "")}`} />
+        <ContactItem label="Почта" value={siteConfig.email} href={`mailto:${siteConfig.email}`} />
+        <ContactItem label="Адрес" value="г. Севастополь, ул. Бориса Михайлова 3А, кв. 44" />
+        <div className="grid gap-3 sm:grid-cols-[234px_1fr]">
+          <ContactItem label="ИНН" value="Будет указан после открытия ИП" compact />
+          <ContactItem label="ОГРНИП" value="Будет указан после открытия ИП" compact />
+        </div>
+        <ContactItem label="ИП" value="Серебренникова Полина Кирилловна" />
       </dl>
     </div>
   );
 }
 
-function CheckoutModal() {
+function CheckoutModal({
+  checkoutState,
+  onFieldChange,
+  onQuantityChange,
+}: Readonly<{
+  checkoutState: CheckoutState;
+  onFieldChange: (field: CheckoutField, value: string) => void;
+  onQuantityChange: (quantity: number) => void;
+}>) {
+  const total = checkoutState.quantity * productPrice;
+
   return (
     <div>
       <div className="text-center">
-        <h2 className="text-4xl font-extrabold leading-[1.1] lg:text-5xl">Оформление заказа</h2>
-        <GoldRule centered />
-        <div className="mx-auto mt-8 grid max-w-[600px] grid-cols-2 rounded-full bg-[#d7d7d7] p-0">
+        <div className="mx-auto grid max-w-[600px] grid-cols-2 rounded-full bg-[#d7d7d7] p-0">
           <span className="rounded-full bg-[#e8c880] px-8 py-4 text-sm font-extrabold">
             Для себя
           </span>
@@ -730,32 +914,146 @@ function CheckoutModal() {
         <div>
           <h3 className="text-2xl font-extrabold">Контактная информация</h3>
           <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
-          <LeadForm submitLabel="Оставить заявку" requiredOnly />
+          <CheckoutContactForm values={checkoutState.formValues} onFieldChange={onFieldChange} />
         </div>
         <div>
           <h3 className="text-2xl font-extrabold">Детали заказа</h3>
           <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
-          <div className="mt-6 flex items-center justify-between gap-6">
+          <div className="mt-6 flex items-center justify-between gap-6 rounded-2xl bg-[#f8f8f8] p-4">
             <ZoomImage image={assets.bombs2} label="Бомбочка для ванны" className="h-[108px] w-[108px] rounded-[10px]" />
             <div className="flex-1">
               <p className="font-bold">Бомбочка для ванны</p>
-              <div className="mt-4 flex items-center gap-4">
-                <CounterButton>-</CounterButton>
-                <span className="font-bold">5</span>
-                <CounterButton>+</CounterButton>
+              <div className="mt-4 flex items-center gap-3">
+                <CounterButton onClick={() => onQuantityChange(checkoutState.quantity - 1)} disabled={checkoutState.quantity <= 1}>
+                  -
+                </CounterButton>
+                <input
+                  type="number"
+                  min={1}
+                  value={checkoutState.quantity}
+                  title="Product quantity"
+                  aria-label="Количество бомбочек"
+                  onChange={(event) => onQuantityChange(Number(event.target.value))}
+                  className="h-10 w-16 rounded-full border border-[#e8c880] bg-white text-center font-bold outline-none"
+                />
+                <CounterButton onClick={() => onQuantityChange(checkoutState.quantity + 1)}>
+                  +
+                </CounterButton>
               </div>
             </div>
-            <p className="font-bold">9999Р</p>
+            <p className="font-bold">{productPrice} ₽</p>
           </div>
           <div className="mt-6 h-[3px] rounded-full bg-[#c5c5c5]" />
           <div className="mt-6 space-y-4 text-xl">
-            <p className="font-light">Сумма: 1199 руб.</p>
-            <p className="font-light">Скидка: 200 руб.</p>
-            <p className="font-extrabold">Итоговая сумма: 999 руб.</p>
+            <p className="font-light">Количество: {checkoutState.quantity} шт.</p>
+            <p className="font-light">Цена за 1 шт.: {productPrice} руб.</p>
+            <p className="font-extrabold">Итоговая сумма: {total} руб.</p>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function LegalDocumentModal({ slug }: Readonly<{ slug: LegalDocumentSlug }>) {
+  const document = legalDocuments.find((item) => item.slug === slug);
+
+  if (!document) {
+    return null;
+  }
+
+  return (
+    <article className="max-w-[760px]">
+      <div className="space-y-4 text-sm leading-[1.7] text-[#0f172a] lg:text-base">
+        {document.content.map((paragraph, index) => (
+          <p key={`${document.slug}-${index}`}>{paragraph}</p>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function CheckoutContactForm({
+  values,
+  onFieldChange,
+}: Readonly<{
+  values: CheckoutFormValues;
+  onFieldChange: (field: CheckoutField, value: string) => void;
+}>) {
+  const [debugMessage, setDebugMessage] = useState<string | null>(null);
+
+  return (
+    <form
+      className="mt-6 grid gap-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        setDebugMessage(
+          `Заявка сохранена. Имя: ${values.name || "не указано"}, телефон: ${
+            values.phone || "не указан"
+          }, количество: сохранено в деталях заказа.`,
+        );
+      }}
+    >
+      <div className="grid gap-3 sm:grid-cols-2">
+        <FormField
+          label="Имя*"
+          placeholder="Ваше имя"
+          value={values.name}
+          onChange={(value) => onFieldChange("name", value)}
+        />
+        <FormField
+          label="Телефон*"
+          placeholder="+7 (000) 000-00-00"
+          value={values.phone}
+          onChange={(value) => onFieldChange("phone", value)}
+        />
+      </div>
+      <FormField
+        label="Email*"
+        placeholder="Ваш email"
+        value={values.email}
+        onChange={(value) => onFieldChange("email", value)}
+      />
+      <FormField
+        label="Адрес доставки"
+        placeholder="Город, улица, дом"
+        value={values.address}
+        onChange={(value) => onFieldChange("address", value)}
+      />
+      <FormField
+        label="Компания"
+        placeholder="Название компании"
+        value={values.company}
+        onChange={(value) => onFieldChange("company", value)}
+      />
+      <FormField
+        label="Как с вами удобнее связаться?"
+        placeholder="Телеграм"
+        value={values.contactMethod}
+        onChange={(value) => onFieldChange("contactMethod", value)}
+      />
+      <p className="text-xs font-light">( * - обязательные для заполнения )</p>
+      <label className="mt-2 flex gap-3 text-base leading-[1.4]">
+        <input type="checkbox" className="mt-1 h-4 w-4 rounded border-[#0f172a]" />
+        <span>
+          Нажимая на кнопку, вы соглашаетесь с обработкой <u>персональных данных</u> и
+          ознакомлены с <u>политикой конфиденциальности</u>.
+        </span>
+      </label>
+      <button
+        type="submit"
+        title="Submit checkout request"
+        className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-2xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf]"
+      >
+        Оставить заявку
+        <ArrowIcon />
+      </button>
+      {debugMessage ? (
+        <div className="rounded-2xl border border-[#e8c880] bg-[#fff8e8] p-4 text-sm text-[#0f172a]">
+          {debugMessage}
+        </div>
+      ) : null}
+    </form>
   );
 }
 
@@ -882,11 +1180,24 @@ function InfoBlock({ title, children }: Readonly<{ title: string; children: Reac
   );
 }
 
-function ContactItem({ label, value }: Readonly<{ label: string; value: string }>) {
+function ContactItem({
+  label,
+  value,
+  href,
+  compact = false,
+}: Readonly<{ label: string; value: string; href?: string; compact?: boolean }>) {
   return (
-    <div className="rounded-2xl bg-[#f8f8f8] p-5">
-      <dt className="font-bold text-[#e8c880]">{label}</dt>
-      <dd className="mt-2">{value}</dd>
+    <div className={`bg-[#f8f8f8] px-4 py-3 ${compact ? "" : "min-h-16"}`}>
+      <dt className="font-bold text-[#0f172a]">{label}</dt>
+      <dd className="mt-2 text-xs font-bold text-black [font-family:var(--font-inter)]">
+        {href ? (
+          <a href={href} title="Open contact link" className="underline underline-offset-2">
+            {value}
+          </a>
+        ) : (
+          value
+        )}
+      </dd>
     </div>
   );
 }
@@ -974,12 +1285,10 @@ function ZoomImage({
     <div
       aria-label={label || undefined}
       role={label ? "img" : undefined}
-      className={`overflow-hidden bg-[#f8f8f8] ${zoom ? "group" : ""} ${className}`}
+      className={`overflow-hidden bg-[#f8f8f8] ${zoom ? "zoom-frame" : ""} ${className}`}
     >
       <div
-        className={`h-full w-full bg-cover bg-center transition duration-500 ${
-          zoom ? "group-hover:scale-125" : ""
-        }`}
+        className={`h-full w-full bg-cover bg-center ${zoom ? "zoom-media" : ""}`}
         style={{ backgroundImage: `url(${image})` }}
       />
     </div>
@@ -1052,9 +1361,19 @@ function ScrollTopButton({ visible }: Readonly<{ visible: boolean }>) {
   );
 }
 
-function CounterButton({ children }: Readonly<{ children: React.ReactNode }>) {
+function CounterButton({
+  children,
+  disabled = false,
+  onClick,
+}: Readonly<{ children: React.ReactNode; disabled?: boolean; onClick: () => void }>) {
   return (
-    <button type="button" className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#0f172a]/50">
+    <button
+      type="button"
+      title={children === "+" ? "Increase product quantity" : "Decrease product quantity"}
+      disabled={disabled}
+      onClick={onClick}
+      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0f172a]/50 font-bold transition hover:border-[#e8c880] hover:text-[#e8c880] disabled:cursor-not-allowed disabled:opacity-40"
+    >
       {children}
     </button>
   );
