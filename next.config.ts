@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
   },
   basePath: githubPagesBasePath,
   assetPrefix: githubPagesBasePath,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: githubPagesBasePath,
+  },
 };
 
 export default nextConfig;

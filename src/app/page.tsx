@@ -4,27 +4,29 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 type ModalType = "delivery" | "partners" | "contacts" | "checkout" | null;
 
+const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
+
 const assets = {
-  hero: "/images/desktop-29/hero.png",
-  bombs1: "/images/desktop-29/bombs-1.png",
-  bombs2: "/images/desktop-29/bombs-2.png",
-  bombs3: "/images/desktop-29/bombs-3.png",
-  lavender1: "/images/desktop-29/product-2.svg",
-  lavender2: "/images/desktop-29/product-1.svg",
-  lavender3: "/images/desktop-29/product-3.svg",
-  packs1: "/images/desktop-29/packs-1.png",
-  packs2: "/images/desktop-29/packs-2.png",
-  packs3: "/images/desktop-29/packs-3.png",
-  review1: "/images/desktop-29/review-1.svg",
-  review2: "/images/desktop-29/review-2.svg",
-  review3: "/images/desktop-29/review-3.svg",
-  review4: "/images/desktop-29/review-4.svg",
-  cta: "/images/desktop-29/cta.png",
-  whyUs: "/images/desktop-29/why-us.png",
-  natureIcon: "/images/desktop-29/icon-nature.png",
-  giftIcon: "/images/desktop-29/icon-gift.png",
-  successIcon: "/images/desktop-29/icon-success.png",
-  starRow: "/images/desktop-29/stars.svg",
+  hero: assetPath("/images/desktop-29/hero.png"),
+  bombs1: assetPath("/images/desktop-29/bombs-1.png"),
+  bombs2: assetPath("/images/desktop-29/bombs-2.png"),
+  bombs3: assetPath("/images/desktop-29/bombs-3.png"),
+  lavender1: assetPath("/images/desktop-29/product-2.svg"),
+  lavender2: assetPath("/images/desktop-29/product-1.svg"),
+  lavender3: assetPath("/images/desktop-29/product-3.svg"),
+  packs1: assetPath("/images/desktop-29/packs-1.png"),
+  packs2: assetPath("/images/desktop-29/packs-2.png"),
+  packs3: assetPath("/images/desktop-29/packs-3.png"),
+  review1: assetPath("/images/desktop-29/review-1.svg"),
+  review2: assetPath("/images/desktop-29/review-2.svg"),
+  review3: assetPath("/images/desktop-29/review-3.svg"),
+  review4: assetPath("/images/desktop-29/review-4.svg"),
+  cta: assetPath("/images/desktop-29/cta.png"),
+  whyUs: assetPath("/images/desktop-29/why-us.png"),
+  natureIcon: assetPath("/images/desktop-29/icon-nature.png"),
+  giftIcon: assetPath("/images/desktop-29/icon-gift.png"),
+  successIcon: assetPath("/images/desktop-29/icon-success.png"),
+  starRow: assetPath("/images/desktop-29/stars.svg"),
 };
 
 const gallerySlides = {
