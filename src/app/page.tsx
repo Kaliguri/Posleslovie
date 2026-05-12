@@ -13,12 +13,19 @@ type CheckoutFormValues = {
   phone: string;
   email: string;
   company: string;
+  inn: string;
+  ogrn: string;
   contactMethod: string;
-  address: string;
+  contactHandle: string;
+  city: string;
+  comment: string;
+  sealColor: string;
+  artist: string;
 };
 
 type CheckoutState = {
   quantity: number;
+  tab: "personal" | "company";
   formValues: CheckoutFormValues;
 };
 
@@ -27,13 +34,20 @@ const checkoutStorageKey = "posleslovie:checkout-state";
 const productPrice = 999;
 const initialCheckoutState: CheckoutState = {
   quantity: 3,
+  tab: "personal",
   formValues: {
     name: "",
     phone: "",
     email: "",
     company: "",
+    inn: "",
+    ogrn: "",
     contactMethod: "",
-    address: "",
+    contactHandle: "",
+    city: "",
+    comment: "",
+    sealColor: "",
+    artist: "",
   },
 };
 
@@ -287,6 +301,7 @@ function parseCheckoutState(value: string | null): CheckoutState {
     const parsed = JSON.parse(value) as Partial<CheckoutState>;
     return {
       quantity: Math.max(1, Number(parsed.quantity) || initialCheckoutState.quantity),
+      tab: parsed.tab === "company" ? "company" : "personal",
       formValues: {
         ...initialCheckoutState.formValues,
         ...(parsed.formValues ?? {}),
@@ -331,13 +346,17 @@ function useCheckoutState() {
     }));
   };
 
-  return { checkoutState, updateQuantity, updateField };
+  const updateTab = (tab: "personal" | "company") => {
+    setCheckoutState((current) => ({ ...current, tab }));
+  };
+
+  return { checkoutState, updateQuantity, updateField, updateTab };
 }
 
 export default function Home() {
   const [modal, setModal] = useState<ModalType>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const { checkoutState, updateQuantity, updateField } = useCheckoutState();
+  const { checkoutState, updateQuantity, updateField, updateTab } = useCheckoutState();
 
   useEffect(() => {
     if (window.location.hash) {
@@ -406,6 +425,7 @@ export default function Home() {
         checkoutState={checkoutState}
         onCheckoutFieldChange={updateField}
         onCheckoutQuantityChange={updateQuantity}
+        onCheckoutTabChange={updateTab}
         onClose={() => setModal(null)}
       />
     </div>
@@ -756,12 +776,14 @@ function HomeModal({
   checkoutState,
   onCheckoutFieldChange,
   onCheckoutQuantityChange,
+  onCheckoutTabChange,
   onClose,
 }: Readonly<{
   type: ModalType;
   checkoutState: CheckoutState;
   onCheckoutFieldChange: (field: CheckoutField, value: string) => void;
   onCheckoutQuantityChange: (quantity: number) => void;
+  onCheckoutTabChange: (tab: "personal" | "company") => void;
   onClose: () => void;
 }>) {
   useEffect(() => {
@@ -825,6 +847,7 @@ function HomeModal({
               checkoutState={checkoutState}
               onFieldChange={onCheckoutFieldChange}
               onQuantityChange={onCheckoutQuantityChange}
+              onTabChange={onCheckoutTabChange}
             />
           ) : null}
           {isLegalDocumentSlug(type) ? <LegalDocumentModal slug={type} /> : null}
@@ -893,64 +916,389 @@ function CheckoutModal({
   checkoutState,
   onFieldChange,
   onQuantityChange,
+  onTabChange,
 }: Readonly<{
   checkoutState: CheckoutState;
   onFieldChange: (field: CheckoutField, value: string) => void;
   onQuantityChange: (quantity: number) => void;
+  onTabChange: (tab: "personal" | "company") => void;
 }>) {
-  const total = checkoutState.quantity * productPrice;
+  const [step, setStep] = useState<1 | 2>(1);
+  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+  const { tab, quantity, formValues } = checkoutState;
+  const total = quantity * productPrice;
+
+  const handleTabChange = (newTab: "personal" | "company") => {
+    onTabChange(newTab);
+    setStep(1);
+    setSubmitMessage(null);
+  };
 
   return (
     <div>
-      <div className="text-center">
-        <div className="mx-auto grid max-w-[600px] grid-cols-2 rounded-full bg-[#d7d7d7] p-0">
-          <span className="rounded-full bg-[#e8c880] px-8 py-4 text-sm font-extrabold">
+      <div className="mb-8 flex items-center gap-4">
+        {step === 2 ? (
+          <button
+            type="button"
+            title="Back to step 1"
+            onClick={() => setStep(1)}
+            className="flex h-11 w-11 shrink-0 rotate-180 items-center justify-center rounded-full bg-[#e8c880] text-[#0f172a] transition hover:bg-[#ffecbf]"
+          >
+            <ArrowIcon size={20} />
+          </button>
+        ) : null}
+        <div className="grid flex-1 max-w-[600px] grid-cols-2 overflow-hidden rounded-full bg-[#d7d7d7]">
+          <button
+            type="button"
+            title="Order for personal use"
+            onClick={() => handleTabChange("personal")}
+            className={`py-3 text-sm font-extrabold transition ${
+              tab === "personal"
+                ? "rounded-full bg-[#e8c880] text-[#0f172a]"
+                : "text-[#9a9b9c] hover:text-[#0f172a]"
+            }`}
+          >
             Для себя
-          </span>
-          <span className="px-8 py-4 text-sm font-extrabold text-[#9a9b9c]">Для компании</span>
+          </button>
+          <button
+            type="button"
+            title="Order for company"
+            onClick={() => handleTabChange("company")}
+            className={`py-3 text-sm font-extrabold transition ${
+              tab === "company"
+                ? "rounded-full bg-[#e8c880] text-[#0f172a]"
+                : "text-[#9a9b9c] hover:text-[#0f172a]"
+            }`}
+          >
+            Для компании
+          </button>
         </div>
       </div>
-      <div className="mt-12 grid gap-10 lg:grid-cols-2">
+
+      <div className="grid gap-10 lg:grid-cols-2">
         <div>
-          <h3 className="text-2xl font-extrabold">Контактная информация</h3>
-          <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
-          <CheckoutContactForm values={checkoutState.formValues} onFieldChange={onFieldChange} />
+          {step === 1 ? (
+            <CheckoutStep1Form
+              tab={tab}
+              values={formValues}
+              onFieldChange={onFieldChange}
+              onContinue={() => setStep(2)}
+            />
+          ) : (
+            <CheckoutStep2Form
+              tab={tab}
+              values={formValues}
+              onFieldChange={onFieldChange}
+              submitMessage={submitMessage}
+              onSubmit={() =>
+                setSubmitMessage(
+                  "Ваша заявка принята! Мы свяжемся с вами в ближайшее время.",
+                )
+              }
+            />
+          )}
         </div>
-        <div>
-          <h3 className="text-2xl font-extrabold">Детали заказа</h3>
-          <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
-          <div className="mt-6 flex items-center justify-between gap-6 rounded-2xl bg-[#f8f8f8] p-4">
-            <ZoomImage image={assets.bombs2} label="Бомбочка для ванны" className="h-[108px] w-[108px] rounded-[10px]" />
-            <div className="flex-1">
-              <p className="font-bold">Бомбочка для ванны</p>
-              <div className="mt-4 flex items-center gap-3">
-                <CounterButton onClick={() => onQuantityChange(checkoutState.quantity - 1)} disabled={checkoutState.quantity <= 1}>
-                  -
-                </CounterButton>
-                <input
-                  type="number"
-                  min={1}
-                  value={checkoutState.quantity}
-                  title="Product quantity"
-                  aria-label="Количество бомбочек"
-                  onChange={(event) => onQuantityChange(Number(event.target.value))}
-                  className="h-10 w-16 rounded-full border border-[#e8c880] bg-white text-center font-bold outline-none"
-                />
-                <CounterButton onClick={() => onQuantityChange(checkoutState.quantity + 1)}>
-                  +
-                </CounterButton>
-              </div>
+
+        <CheckoutOrderPanel
+          quantity={quantity}
+          total={total}
+          onQuantityChange={onQuantityChange}
+        />
+      </div>
+    </div>
+  );
+}
+
+function CheckoutStep1Form({
+  tab,
+  values,
+  onFieldChange,
+  onContinue,
+}: Readonly<{
+  tab: "personal" | "company";
+  values: CheckoutFormValues;
+  onFieldChange: (field: CheckoutField, value: string) => void;
+  onContinue: () => void;
+}>) {
+  return (
+    <div>
+      <h3 className="text-2xl font-extrabold">Контактная информация</h3>
+      <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
+      <div className="mt-6 grid gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <FormField
+            label="Имя*"
+            placeholder="Ваше имя"
+            value={values.name}
+            onChange={(v) => onFieldChange("name", v)}
+          />
+          <FormField
+            label="Телефон*"
+            placeholder="+7 (000) 000-00-00"
+            value={values.phone}
+            onChange={(v) => onFieldChange("phone", v)}
+          />
+        </div>
+        <FormField
+          label="Email*"
+          placeholder="Ваш email"
+          value={values.email}
+          onChange={(v) => onFieldChange("email", v)}
+        />
+        {tab === "company" ? (
+          <>
+            <FormField
+              label="Компания"
+              placeholder="Название компании"
+              value={values.company}
+              onChange={(v) => onFieldChange("company", v)}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FormField
+                label="ИНН"
+                placeholder="ИНН"
+                value={values.inn}
+                onChange={(v) => onFieldChange("inn", v)}
+              />
+              <FormField
+                label="ОГРН"
+                placeholder="ОГРН"
+                value={values.ogrn}
+                onChange={(v) => onFieldChange("ogrn", v)}
+              />
             </div>
-            <p className="font-bold">{productPrice} ₽</p>
-          </div>
-          <div className="mt-6 h-[3px] rounded-full bg-[#c5c5c5]" />
-          <div className="mt-6 space-y-4 text-xl">
-            <p className="font-light">Количество: {checkoutState.quantity} шт.</p>
-            <p className="font-light">Цена за 1 шт.: {productPrice} руб.</p>
-            <p className="font-extrabold">Итоговая сумма: {total} руб.</p>
+          </>
+        ) : null}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <FormField
+            label="Как с вами удобнее связаться?"
+            placeholder="Телеграм / WhatsApp / Телефон"
+            value={values.contactMethod}
+            onChange={(v) => onFieldChange("contactMethod", v)}
+          />
+          <FormField
+            label="Ник или номер"
+            placeholder="@username"
+            value={values.contactHandle}
+            onChange={(v) => onFieldChange("contactHandle", v)}
+          />
+        </div>
+        {tab === "personal" ? (
+          <FormField
+            label="Город доставки"
+            placeholder="Москва"
+            value={values.city}
+            onChange={(v) => onFieldChange("city", v)}
+          />
+        ) : (
+          <FormFieldTextarea
+            label="Комментарий к заказу"
+            placeholder="Комментарии, которые помогут нам лучше узнать о задаче"
+            value={values.comment}
+            onChange={(v) => onFieldChange("comment", v)}
+          />
+        )}
+        <button
+          type="button"
+          title="Continue to step 2"
+          onClick={onContinue}
+          className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf]"
+        >
+          Продолжить оформление
+          <ArrowIcon size={22} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CheckoutStep2Form({
+  tab,
+  values,
+  onFieldChange,
+  submitMessage,
+  onSubmit,
+}: Readonly<{
+  tab: "personal" | "company";
+  values: CheckoutFormValues;
+  onFieldChange: (field: CheckoutField, value: string) => void;
+  submitMessage: string | null;
+  onSubmit: () => void;
+}>) {
+  const sealColors = [
+    { id: "red", label: "Красный", color: "#b03020" },
+    { id: "green", label: "Зелёный", color: "#2e7d32" },
+    { id: "white", label: "Белый", color: "#e8e6e1" },
+    { id: "blue", label: "Синий", color: "#1565c0" },
+  ];
+
+  return (
+    <div>
+      <h3 className="text-2xl font-extrabold">Пожелания в подарок</h3>
+      <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
+      <div className="mt-6 grid gap-3">
+        <div className="relative rounded bg-[#f8f8f8] p-4">
+          <p className="text-base font-bold text-[#0f172a]">Логотип</p>
+          <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">Файлы формата .jpg .png не больше 3мб</p>
+          <label
+            title="Upload logo file"
+            className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <input type="file" accept=".jpg,.png" className="hidden" />
+          </label>
+        </div>
+
+        <div className="rounded bg-[#f8f8f8] p-4">
+          <p className="text-base font-bold text-[#0f172a]">Выбор художника</p>
+          <select
+            title="Choose artist"
+            value={values.artist}
+            onChange={(e) => onFieldChange("artist", e.target.value)}
+            className="mt-2 w-full bg-transparent text-sm text-[rgba(101,101,101,0.7)] outline-none"
+          >
+            <option value="">Художник 1</option>
+            <option value="artist2">Художник 2</option>
+            <option value="artist3">Художник 3</option>
+          </select>
+        </div>
+
+        <div className="rounded bg-[#f8f8f8] p-4">
+          <p className="text-base font-bold text-[#0f172a]">Цвет сургутной печати</p>
+          <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">Фото не является эталонным продуктом*</p>
+          <div className="mt-3 flex gap-4">
+            {sealColors.map((sc) => (
+              <button
+                key={sc.id}
+                type="button"
+                title={`Выбрать цвет: ${sc.label}`}
+                onClick={() => onFieldChange("sealColor", sc.id)}
+                className="flex flex-col items-center gap-2"
+              >
+                <div
+                  className={`h-[80px] w-[80px] rounded border-2 transition ${
+                    values.sealColor === sc.id ? "border-[#e8c880]" : "border-transparent"
+                  }`}
+                  style={{ backgroundColor: sc.color }}
+                />
+                <span className="text-xs text-[rgba(0,0,0,0.5)]">{sc.label}</span>
+              </button>
+            ))}
           </div>
         </div>
+
+        <FormFieldTextarea
+          label="Комментарий к заказу"
+          placeholder="Комментарии, которые помогут нам лучше узнать о задаче"
+          value={values.comment}
+          onChange={(v) => onFieldChange("comment", v)}
+        />
+
+        <label className="mt-2 flex gap-3 text-sm leading-[1.4]">
+          <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#0f172a]" />
+          <span>
+            Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
+            <u>персональных данных</u> и ознакомлены с{" "}
+            <u>политикой конфиденциальности</u>.
+          </span>
+        </label>
+
+        <button
+          type="button"
+          title="Submit order"
+          onClick={onSubmit}
+          className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf]"
+        >
+          {tab === "personal" ? "Оплатить" : "Оставить заявку"}
+          <ArrowIcon size={22} />
+        </button>
+
+        {submitMessage ? (
+          <div className="rounded-2xl border border-[#e8c880] bg-[#fff8e8] p-4 text-sm text-[#0f172a]">
+            {submitMessage}
+          </div>
+        ) : null}
       </div>
+    </div>
+  );
+}
+
+function CheckoutOrderPanel({
+  quantity,
+  total,
+  onQuantityChange,
+}: Readonly<{
+  quantity: number;
+  total: number;
+  onQuantityChange: (q: number) => void;
+}>) {
+  return (
+    <div>
+      <h3 className="text-2xl font-extrabold">Детали заказа</h3>
+      <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
+      <div className="mt-6 flex items-center justify-between gap-6 rounded-2xl bg-[#f8f8f8] p-4">
+        <ZoomImage
+          image={assets.bombs2}
+          label="Бомбочка для ванны"
+          className="h-[108px] w-[108px] shrink-0 rounded-[10px]"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="font-bold">Бомбочка для ванны</p>
+          <div className="mt-4 flex items-center gap-3">
+            <CounterButton
+              onClick={() => onQuantityChange(quantity - 1)}
+              disabled={quantity <= 1}
+            >
+              -
+            </CounterButton>
+            <input
+              type="number"
+              min={1}
+              value={quantity}
+              title="Product quantity"
+              aria-label="Количество бомбочек"
+              onChange={(event) => onQuantityChange(Number(event.target.value))}
+              className="h-10 w-16 rounded-full border border-[#e8c880] bg-white text-center font-bold outline-none"
+            />
+            <CounterButton onClick={() => onQuantityChange(quantity + 1)}>+</CounterButton>
+          </div>
+        </div>
+        <p className="shrink-0 font-bold">{productPrice} ₽</p>
+      </div>
+      <div className="mt-6 h-[3px] rounded-full bg-[#c5c5c5]" />
+      <div className="mt-6 space-y-4 text-xl">
+        <p className="font-light">Количество: {quantity} шт.</p>
+        <p className="font-light">Цена за 1 шт.: {productPrice} руб.</p>
+        <p className="font-extrabold">Итоговая сумма: {total} руб.</p>
+      </div>
+    </div>
+  );
+}
+
+function FormFieldTextarea({
+  label,
+  placeholder,
+  value,
+  onChange,
+}: Readonly<{
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+}>) {
+  return (
+    <div className="rounded bg-[#f8f8f8] px-4 py-3">
+      <p className="text-base font-bold text-[#0f172a]">{label}</p>
+      <textarea
+        placeholder={placeholder}
+        value={value}
+        title={label}
+        onChange={(e) => onChange(e.target.value)}
+        rows={4}
+        className="mt-2 w-full resize-none bg-transparent text-sm text-[#0f172a] placeholder-[rgba(101,101,101,0.5)] outline-none"
+      />
     </div>
   );
 }
@@ -970,90 +1318,6 @@ function LegalDocumentModal({ slug }: Readonly<{ slug: LegalDocumentSlug }>) {
         ))}
       </div>
     </article>
-  );
-}
-
-function CheckoutContactForm({
-  values,
-  onFieldChange,
-}: Readonly<{
-  values: CheckoutFormValues;
-  onFieldChange: (field: CheckoutField, value: string) => void;
-}>) {
-  const [debugMessage, setDebugMessage] = useState<string | null>(null);
-
-  return (
-    <form
-      className="mt-6 grid gap-3"
-      onSubmit={(event) => {
-        event.preventDefault();
-        setDebugMessage(
-          `Заявка сохранена. Имя: ${values.name || "не указано"}, телефон: ${
-            values.phone || "не указан"
-          }, количество: сохранено в деталях заказа.`,
-        );
-      }}
-    >
-      <div className="grid gap-3 sm:grid-cols-2">
-        <FormField
-          label="Имя*"
-          placeholder="Ваше имя"
-          value={values.name}
-          onChange={(value) => onFieldChange("name", value)}
-        />
-        <FormField
-          label="Телефон*"
-          placeholder="+7 (000) 000-00-00"
-          value={values.phone}
-          onChange={(value) => onFieldChange("phone", value)}
-        />
-      </div>
-      <FormField
-        label="Email*"
-        placeholder="Ваш email"
-        value={values.email}
-        onChange={(value) => onFieldChange("email", value)}
-      />
-      <FormField
-        label="Адрес доставки"
-        placeholder="Город, улица, дом"
-        value={values.address}
-        onChange={(value) => onFieldChange("address", value)}
-      />
-      <FormField
-        label="Компания"
-        placeholder="Название компании"
-        value={values.company}
-        onChange={(value) => onFieldChange("company", value)}
-      />
-      <FormField
-        label="Как с вами удобнее связаться?"
-        placeholder="Телеграм"
-        value={values.contactMethod}
-        onChange={(value) => onFieldChange("contactMethod", value)}
-      />
-      <p className="text-xs font-light">( * - обязательные для заполнения )</p>
-      <label className="mt-2 flex gap-3 text-base leading-[1.4]">
-        <input type="checkbox" className="mt-1 h-4 w-4 rounded border-[#0f172a]" />
-        <span>
-          Нажимая на кнопку, вы соглашаетесь с обработкой <u>персональных данных</u> и
-          ознакомлены с <u>политикой конфиденциальности</u>.
-        </span>
-      </label>
-      <button
-        type="submit"
-        title="Submit checkout request"
-        className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-2xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf]"
-      >
-        Оставить заявку
-        <ArrowIcon />
-      </button>
-      {debugMessage ? (
-        <div className="rounded-2xl border border-[#e8c880] bg-[#fff8e8] p-4 text-sm text-[#0f172a]">
-          {debugMessage}
-        </div>
-      ) : null}
-    </form>
   );
 }
 
