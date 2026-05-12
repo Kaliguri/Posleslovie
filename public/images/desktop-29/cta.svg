@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 535" role="img" aria-label="Gift set call to action background">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#c1aeff"/>
+      <stop offset="1" stop-color="#e8c880"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="535" fill="url(#bg)"/>
+  <circle cx="320" cy="280" r="210" fill="#ffffff" opacity="0.15"/>
+  <circle cx="1560" cy="220" r="260" fill="#ffffff" opacity="0.12"/>
+  <path d="M170 470c260-180 520-190 780-30" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" opacity="0.3"/>
+  <path d="M1020 450c220-146 470-160 750-44" fill="none" stroke="#0f172a" stroke-width="10" stroke-linecap="round" opacity="0.18"/>
+</svg>

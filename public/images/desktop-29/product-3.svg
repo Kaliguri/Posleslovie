@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 525 525" role="img" aria-label="Gift packaging with bath bombs">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f7f1ea"/>
+      <stop offset="1" stop-color="#cfc8e8"/>
+    </linearGradient>
+  </defs>
+  <rect width="525" height="525" rx="50" fill="url(#bg)"/>
+  <rect x="96" y="178" width="330" height="220" rx="32" fill="#fff"/>
+  <rect x="96" y="236" width="330" height="34" fill="#e8c880"/>
+  <rect x="240" y="178" width="42" height="220" fill="#e8c880"/>
+  <circle cx="195" cy="315" r="58" fill="#efe6dc"/>
+  <circle cx="330" cy="315" r="58" fill="#e6e0f4"/>
+  <path d="M200 150c45-68 85-68 120 0" fill="none" stroke="#7e729c" stroke-width="12" stroke-linecap="round"/>
+</svg>
