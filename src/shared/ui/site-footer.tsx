@@ -1,15 +1,11 @@
-"use client";
-
 import Link from "next/link";
 
 import { legalDocuments } from "@/shared/config/legal-documents";
 import { siteConfig } from "@/shared/config/site";
 
-export function SiteFooter() {
-  const openLegalDocument = (slug: string) => {
-    window.dispatchEvent(new CustomEvent("posleslovie:open-modal", { detail: slug }));
-  };
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+export function SiteFooter() {
   return (
     <footer id="contacts" className="bg-white">
       <div className="mx-auto max-w-[1760px] px-5 py-10 lg:px-20">
@@ -58,15 +54,16 @@ export function SiteFooter() {
 
         <div className="grid gap-x-10 gap-y-4 border-t border-[#e8c880]/50 pt-6 text-sm text-[#0f172a] sm:grid-cols-2 lg:grid-cols-3">
           {legalDocuments.map((document) => (
-            <button
+            <a
               key={document.slug}
-              type="button"
-              title="Open legal document"
-              onClick={() => openLegalDocument(document.slug)}
-              className="text-left leading-[1.4] underline-offset-4 transition hover:text-[#e8c880] hover:underline focus-visible:text-[#e8c880] focus-visible:outline-none"
+              href={`${basePath}${document.pdfPath}`}
+              title={`Open ${document.shortTitle} PDF`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="leading-[1.4] underline-offset-4 transition hover:text-[#e8c880] hover:underline focus-visible:text-[#e8c880] focus-visible:outline-none"
             >
               {document.shortTitle}
-            </button>
+            </a>
           ))}
         </div>
       </div>

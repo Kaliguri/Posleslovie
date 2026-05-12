@@ -1,6 +1,7 @@
 export const legalDocuments = [
   {
     slug: "privacy",
+    pdfPath: "/docs/privacy.pdf",
     title: "Политика в отношении обработки персональных данных",
     shortTitle: "Политика конфиденциальности",
     content: [
@@ -48,6 +49,7 @@ export const legalDocuments = [
   },
   {
     slug: "offer",
+    pdfPath: "/docs/offer.pdf",
     title: "Договор публичной оферты",
     shortTitle: "Договор оферты",
     content: [
@@ -100,6 +102,7 @@ export const legalDocuments = [
   },
   {
     slug: "personal-data-consent",
+    pdfPath: "/docs/personal-data-consent.pdf",
     title: "Согласие на обработку персональных данных",
     shortTitle: "Согласие на обработку данных",
     content: [
@@ -111,6 +114,7 @@ export const legalDocuments = [
   },
   {
     slug: "personal-data-distribution",
+    pdfPath: "/docs/personal-data-distribution.pdf",
     title: "Согласие на распространение персональных данных",
     shortTitle: "Согласие на распространение данных",
     content: [
@@ -124,6 +128,7 @@ export const legalDocuments = [
   },
   {
     slug: "marketing-consent",
+    pdfPath: "/docs/marketing-consent.pdf",
     title: "Согласие на получение рекламных и информационных материалов",
     shortTitle: "Согласие на рассылку",
     content: [
