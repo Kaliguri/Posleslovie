@@ -46,7 +46,7 @@ const initialCheckoutState: CheckoutState = {
     contactHandle: "",
     city: "",
     comment: "",
-    sealColor: "",
+    sealColor: "red",
     artist: "",
   },
 };
@@ -517,13 +517,13 @@ function ProcessSection({
               {index === 0 ? (
                 <DecorativeObject
                   image={assets.crystal}
-                  className="ml-auto mr-10 mt-10 h-[150px] w-[96px] rotate-[-29.41deg] opacity-90 lg:mr-[65px] lg:mt-7 lg:h-[188.95px] lg:w-[121.35px]"
+                  className="ml-auto mr-10 mt-7 h-[188.95px] w-[121.35px] rotate-[-29.41deg] opacity-90 lg:mr-[65px]"
                 />
               ) : null}
               {index === 2 ? (
                 <DecorativeObject
                   image={assets.pero}
-                  className="ml-auto mt-8 h-[210px] w-[126px] rotate-[-88.12deg] opacity-75 lg:mr-[72px] lg:mt-2 lg:h-[263.01px] lg:w-[158px]"
+                  className="ml-auto mt-2 h-[263.01px] w-[158px] rotate-[-88.12deg] opacity-75 lg:mr-[72px]"
                 />
               ) : null}
             </div>
@@ -786,6 +786,14 @@ function HomeModal({
   onCheckoutTabChange: (tab: "personal" | "company") => void;
   onClose: () => void;
 }>) {
+  const [checkoutStep, setCheckoutStep] = useState<1 | 2>(1);
+
+  useEffect(() => {
+    if (type !== "checkout") {
+      setCheckoutStep(1);
+    }
+  }, [type]);
+
   useEffect(() => {
     if (!type) {
       return;
@@ -806,6 +814,12 @@ function HomeModal({
   }
 
   const header = getModalHeader(type);
+  const isCheckout = type === "checkout";
+
+  const handleCheckoutTabChange = (newTab: "personal" | "company") => {
+    onCheckoutTabChange(newTab);
+    setCheckoutStep(1);
+  };
 
   return (
     <div
@@ -837,17 +851,61 @@ function HomeModal({
             </h2>
             <GoldRule />
           </div>
+          {isCheckout ? (
+            <div className="mt-5 flex items-center justify-center gap-4">
+              <button
+                type="button"
+                title="Back to step 1"
+                onClick={() => { if (checkoutStep === 2) setCheckoutStep(1); }}
+                disabled={checkoutStep === 1}
+                className={`flex h-10 w-10 shrink-0 rotate-180 items-center justify-center rounded-full transition ${
+                  checkoutStep === 2
+                    ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
+                    : "cursor-default bg-[#d7d7d7] text-[#9a9b9c]"
+                }`}
+              >
+                <ArrowIcon size={18} />
+              </button>
+              <div className="grid w-full max-w-[560px] grid-cols-2 overflow-hidden rounded-full bg-[#d7d7d7]">
+                <button
+                  type="button"
+                  title="Order for personal use"
+                  onClick={() => handleCheckoutTabChange("personal")}
+                  className={`py-3 text-sm font-extrabold transition ${
+                    checkoutState.tab === "personal"
+                      ? "rounded-full bg-[#e8c880] text-[#0f172a]"
+                      : "text-[#9a9b9c] hover:text-[#0f172a]"
+                  }`}
+                >
+                  Для себя
+                </button>
+                <button
+                  type="button"
+                  title="Order for company"
+                  onClick={() => handleCheckoutTabChange("company")}
+                  className={`py-3 text-sm font-extrabold transition ${
+                    checkoutState.tab === "company"
+                      ? "rounded-full bg-[#e8c880] text-[#0f172a]"
+                      : "text-[#9a9b9c] hover:text-[#0f172a]"
+                  }`}
+                >
+                  Для компании
+                </button>
+              </div>
+            </div>
+          ) : null}
         </div>
         <div className="modal-scroll min-h-0 flex-1 overflow-y-auto px-6 pb-4 pt-8 lg:px-12 lg:pb-4">
           {type === "delivery" ? <DeliveryModal /> : null}
           {type === "partners" ? <PartnersModal /> : null}
           {type === "contacts" ? <ContactsModal /> : null}
-          {type === "checkout" ? (
+          {isCheckout ? (
             <CheckoutModal
               checkoutState={checkoutState}
+              step={checkoutStep}
+              onStepChange={setCheckoutStep}
               onFieldChange={onCheckoutFieldChange}
               onQuantityChange={onCheckoutQuantityChange}
-              onTabChange={onCheckoutTabChange}
             />
           ) : null}
           {isLegalDocumentSlug(type) ? <LegalDocumentModal slug={type} /> : null}
@@ -914,67 +972,23 @@ function ContactsModal() {
 
 function CheckoutModal({
   checkoutState,
+  step,
+  onStepChange,
   onFieldChange,
   onQuantityChange,
-  onTabChange,
 }: Readonly<{
   checkoutState: CheckoutState;
+  step: 1 | 2;
+  onStepChange: (step: 1 | 2) => void;
   onFieldChange: (field: CheckoutField, value: string) => void;
   onQuantityChange: (quantity: number) => void;
-  onTabChange: (tab: "personal" | "company") => void;
 }>) {
-  const [step, setStep] = useState<1 | 2>(1);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const { tab, quantity, formValues } = checkoutState;
   const total = quantity * productPrice;
 
-  const handleTabChange = (newTab: "personal" | "company") => {
-    onTabChange(newTab);
-    setStep(1);
-    setSubmitMessage(null);
-  };
-
   return (
     <div>
-      <div className="mb-8 flex items-center gap-4">
-        {step === 2 ? (
-          <button
-            type="button"
-            title="Back to step 1"
-            onClick={() => setStep(1)}
-            className="flex h-11 w-11 shrink-0 rotate-180 items-center justify-center rounded-full bg-[#e8c880] text-[#0f172a] transition hover:bg-[#ffecbf]"
-          >
-            <ArrowIcon size={20} />
-          </button>
-        ) : null}
-        <div className="grid flex-1 max-w-[600px] grid-cols-2 overflow-hidden rounded-full bg-[#d7d7d7]">
-          <button
-            type="button"
-            title="Order for personal use"
-            onClick={() => handleTabChange("personal")}
-            className={`py-3 text-sm font-extrabold transition ${
-              tab === "personal"
-                ? "rounded-full bg-[#e8c880] text-[#0f172a]"
-                : "text-[#9a9b9c] hover:text-[#0f172a]"
-            }`}
-          >
-            Для себя
-          </button>
-          <button
-            type="button"
-            title="Order for company"
-            onClick={() => handleTabChange("company")}
-            className={`py-3 text-sm font-extrabold transition ${
-              tab === "company"
-                ? "rounded-full bg-[#e8c880] text-[#0f172a]"
-                : "text-[#9a9b9c] hover:text-[#0f172a]"
-            }`}
-          >
-            Для компании
-          </button>
-        </div>
-      </div>
-
       <div className="grid gap-10 lg:grid-cols-2">
         <div>
           {step === 1 ? (
@@ -982,7 +996,7 @@ function CheckoutModal({
               tab={tab}
               values={formValues}
               onFieldChange={onFieldChange}
-              onContinue={() => setStep(2)}
+              onContinue={() => onStepChange(2)}
             />
           ) : (
             <CheckoutStep2Form
@@ -1070,12 +1084,19 @@ function CheckoutStep1Form({
           </>
         ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
-          <FormField
-            label="Как с вами удобнее связаться?"
-            placeholder="Телеграм / WhatsApp / Телефон"
-            value={values.contactMethod}
-            onChange={(v) => onFieldChange("contactMethod", v)}
-          />
+          <div className="rounded bg-[#f8f8f8] px-4 py-3">
+            <p className="text-base font-bold text-[#0f172a]">Как с вами удобнее связаться?</p>
+            <select
+              title="Contact method"
+              value={values.contactMethod}
+              onChange={(e) => onFieldChange("contactMethod", e.target.value)}
+              className="mt-2 w-full bg-transparent text-sm text-[#0f172a] outline-none"
+            >
+              <option value="">Выберите способ</option>
+              <option value="tg">Telegram</option>
+              <option value="max">MAX</option>
+            </select>
+          </div>
           <FormField
             label="Ник или номер"
             placeholder="@username"
@@ -1132,6 +1153,8 @@ function CheckoutStep2Form({
     { id: "blue", label: "Синий", color: "#1565c0" },
   ];
 
+  const activeSeal = values.sealColor || "red";
+
   return (
     <div>
       <h3 className="text-2xl font-extrabold">Пожелания в подарок</h3>
@@ -1178,12 +1201,16 @@ function CheckoutStep2Form({
                 className="flex flex-col items-center gap-2"
               >
                 <div
-                  className={`h-[80px] w-[80px] rounded border-2 transition ${
-                    values.sealColor === sc.id ? "border-[#e8c880]" : "border-transparent"
+                  className={`h-[80px] w-[80px] rounded transition ${
+                    activeSeal === sc.id
+                      ? "outline outline-[3px] outline-offset-2 outline-[#e8c880]"
+                      : "opacity-60 hover:opacity-90"
                   }`}
                   style={{ backgroundColor: sc.color }}
                 />
-                <span className="text-xs text-[rgba(0,0,0,0.5)]">{sc.label}</span>
+                <span className={`text-xs ${activeSeal === sc.id ? "font-bold text-[#0f172a]" : "text-[rgba(0,0,0,0.5)]"}`}>
+                  {sc.label}
+                </span>
               </button>
             ))}
           </div>
@@ -1200,8 +1227,24 @@ function CheckoutStep2Form({
           <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#0f172a]" />
           <span>
             Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
-            <u>персональных данных</u> и ознакомлены с{" "}
-            <u>политикой конфиденциальности</u>.
+            <a
+              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/docs/personal-data-consent.pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[#e8c880]"
+            >
+              персональных данных
+            </a>{" "}
+            и ознакомлены с{" "}
+            <a
+              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/docs/privacy.pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[#e8c880]"
+            >
+              политикой конфиденциальности
+            </a>
+            .
           </span>
         </label>
 
