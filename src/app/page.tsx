@@ -1,12 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type InputHTMLAttributes } from "react";
 
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
+import { russianCities } from "@/shared/config/russian-cities";
 import { siteConfig } from "@/shared/config/site";
 
 type ModalType = "delivery" | "partners" | "contacts" | "checkout" | LegalDocumentSlug | null;
 type CheckoutField = keyof CheckoutFormValues;
+type CheckoutErrorField = CheckoutField | "quantity" | "consent";
+type CheckoutErrors = Partial<Record<CheckoutErrorField, string>>;
 
 type CheckoutFormValues = {
   name: string;
@@ -36,17 +39,20 @@ type AmoCRMCheckoutPayload = CheckoutState & {
 const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
 const checkoutStorageKey = "posleslovie:checkout-state";
 const productPrice = 999;
+const normalizedRussianCities = new Map(
+  russianCities.map((city) => [normalizeCitySearchValue(city), city]),
+);
 const initialCheckoutState: CheckoutState = {
   quantity: 3,
   tab: "personal",
   formValues: {
     name: "",
-    phone: "",
+    phone: "+7 ",
     email: "",
     company: "",
     inn: "",
     ogrn: "",
-    contactMethod: "",
+    contactMethod: "tg",
     contactHandle: "",
     city: "",
     comment: "",
@@ -304,17 +310,171 @@ function parseCheckoutState(value: string | null): CheckoutState {
 
   try {
     const parsed = JSON.parse(value) as Partial<CheckoutState>;
+    const formValues = {
+      ...initialCheckoutState.formValues,
+      ...(parsed.formValues ?? {}),
+    };
+
     return {
       quantity: Math.max(1, Number(parsed.quantity) || initialCheckoutState.quantity),
       tab: parsed.tab === "company" ? "company" : "personal",
       formValues: {
-        ...initialCheckoutState.formValues,
-        ...(parsed.formValues ?? {}),
+        ...formValues,
+        phone: formatRussianPhoneInput(formValues.phone),
+        contactMethod: formValues.contactMethod === "max" ? "max" : "tg",
       },
     };
   } catch {
     return initialCheckoutState;
   }
+}
+
+function getRussianPhoneDigits(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const hasVisibleCountryCode = value.trim().startsWith("+7");
+
+  if (hasVisibleCountryCode && digits.startsWith("7")) {
+    return digits.slice(1, 11);
+  }
+
+  if (digits.length > 10 && /^[78]/.test(digits)) {
+    return digits.slice(1, 11);
+  }
+
+  return digits.slice(0, 10);
+}
+
+function formatRussianPhoneInput(value: string) {
+  const digits = getRussianPhoneDigits(value);
+  const parts = ["+7"];
+
+  if (digits.length > 0) {
+    parts.push(` (${digits.slice(0, 3)}`);
+  }
+
+  if (digits.length >= 3) {
+    parts[1] += ")";
+  }
+
+  if (digits.length > 3) {
+    parts.push(` ${digits.slice(3, 6)}`);
+  }
+
+  if (digits.length > 6) {
+    parts.push(`-${digits.slice(6, 8)}`);
+  }
+
+  if (digits.length > 8) {
+    parts.push(`-${digits.slice(8, 10)}`);
+  }
+
+  return digits.length > 0 ? parts.join("") : "+7 ";
+}
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(value.trim());
+}
+
+function isValidRussianPhone(value: string) {
+  return getRussianPhoneDigits(value).length === 10;
+}
+
+function isValidTelegramHandle(value: string) {
+  return /^@[a-zA-Z0-9_]{5,32}$/.test(value.trim());
+}
+
+function normalizeCitySearchValue(value: string) {
+  return value.toLocaleLowerCase("ru").replaceAll("ё", "е").trim();
+}
+
+function getRussianCityName(value: string) {
+  return normalizedRussianCities.get(normalizeCitySearchValue(value)) ?? null;
+}
+
+function validateCheckout(values: CheckoutFormValues, tab: "personal" | "company", quantity: number) {
+  const errors: CheckoutErrors = {};
+
+  if (!Number.isFinite(quantity) || quantity < 1) {
+    errors.quantity = "Укажите количество от 1 штуки.";
+  }
+
+  if (!values.name.trim()) {
+    errors.name = "Укажите имя.";
+  }
+
+  if (!values.phone.trim()) {
+    errors.phone = "Укажите телефон.";
+  } else if (!isValidRussianPhone(values.phone)) {
+    errors.phone = "Введите российский номер в формате +7XXXXXXXXXX.";
+  }
+
+  if (!values.email.trim()) {
+    errors.email = "Укажите email.";
+  } else if (!isValidEmail(values.email)) {
+    errors.email = "Введите корректный email, например name@example.ru.";
+  }
+
+  if (tab === "company" && !values.company.trim()) {
+    errors.company = "Укажите название компании.";
+  }
+
+  if (values.contactMethod === "tg" && !values.contactHandle.trim()) {
+    errors.contactHandle = "Укажите ник в Telegram.";
+  } else if (values.contactMethod === "tg" && !isValidTelegramHandle(values.contactHandle)) {
+    errors.contactHandle = "Введите ник в формате @username.";
+  }
+
+  if (tab === "personal" && !values.city.trim()) {
+    errors.city = "Укажите город доставки.";
+  } else if (tab === "personal" && !getRussianCityName(values.city)) {
+    errors.city = "Выберите город из списка подсказок.";
+  }
+
+  return errors;
+}
+
+function getStep1Errors(errors: CheckoutErrors) {
+  const step1Fields: CheckoutErrorField[] = [
+    "name",
+    "phone",
+    "email",
+    "company",
+    "contactHandle",
+    "city",
+    "quantity",
+  ];
+
+  return step1Fields.reduce<CheckoutErrors>((acc, field) => {
+    if (errors[field]) {
+      acc[field] = errors[field];
+    }
+
+    return acc;
+  }, {});
+}
+
+function hasErrors(errors: CheckoutErrors) {
+  return Object.keys(errors).length > 0;
+}
+
+function prepareCheckoutPayload({ tab, quantity, formValues, total }: AmoCRMCheckoutPayload): AmoCRMCheckoutPayload {
+  const trimmedValues = Object.fromEntries(
+    Object.entries(formValues).map(([key, value]) => [key, value.trim()]),
+  ) as CheckoutFormValues;
+
+  return {
+    tab,
+    quantity,
+    total,
+    formValues: {
+      ...trimmedValues,
+      company: tab === "company" ? trimmedValues.company : "",
+      inn: tab === "company" ? trimmedValues.inn : "",
+      ogrn: tab === "company" ? trimmedValues.ogrn : "",
+      city: tab === "personal" ? getRussianCityName(trimmedValues.city) ?? trimmedValues.city : "",
+      contactHandle: trimmedValues.contactMethod === "tg" ? trimmedValues.contactHandle : "",
+    },
+  };
 }
 
 async function submitCheckoutToAmoCRM(payload: AmoCRMCheckoutPayload) {
@@ -1006,15 +1166,93 @@ function CheckoutModal({
 }>) {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<CheckoutErrors>({});
+  const [isConsentAccepted, setIsConsentAccepted] = useState(false);
   const { tab, quantity, formValues } = checkoutState;
   const total = quantity * productPrice;
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      setErrors({});
+      setSubmitMessage(null);
+    });
+  }, [tab]);
+
+  const handleFieldChange = (field: CheckoutField, value: string) => {
+    onFieldChange(field, field === "phone" ? formatRussianPhoneInput(value) : value);
+    setErrors((current) => {
+      if (!current[field] && !(field === "contactMethod" && current.contactHandle)) {
+        return current;
+      }
+
+      const next = { ...current };
+      delete next[field];
+      if (field === "contactMethod") {
+        delete next.contactHandle;
+      }
+      return next;
+    });
+  };
+
+  const handleConsentChange = (isAccepted: boolean) => {
+    setIsConsentAccepted(isAccepted);
+    setErrors((current) => {
+      if (!current.consent) {
+        return current;
+      }
+
+      const next = { ...current };
+      delete next.consent;
+      return next;
+    });
+  };
+
+  const handleQuantityChange = (nextQuantity: number) => {
+    onQuantityChange(nextQuantity);
+    setErrors((current) => {
+      if (!current.quantity) {
+        return current;
+      }
+
+      const next = { ...current };
+      delete next.quantity;
+      return next;
+    });
+  };
+
+  const handleContinue = () => {
+    const nextErrors = getStep1Errors(validateCheckout(formValues, tab, quantity));
+    setErrors(nextErrors);
+    setSubmitMessage(null);
+
+    if (!hasErrors(nextErrors)) {
+      onStepChange(2);
+    }
+  };
+
   const handleSubmit = async () => {
+    const nextErrors = validateCheckout(formValues, tab, quantity);
+
+    if (!isConsentAccepted) {
+      nextErrors.consent = "Подтвердите согласие с условиями, чтобы оформить заказ.";
+    }
+
+    if (hasErrors(nextErrors)) {
+      setErrors(nextErrors);
+      setSubmitMessage("Проверьте выделенные поля и исправьте ошибки.");
+
+      if (hasErrors(getStep1Errors(nextErrors))) {
+        onStepChange(1);
+      }
+
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitMessage("Отправляем заявку в AmoCRM...");
 
     try {
-      await submitCheckoutToAmoCRM({ tab, quantity, formValues, total });
+      await submitCheckoutToAmoCRM(prepareCheckoutPayload({ tab, quantity, formValues, total }));
       setSubmitMessage("Ваша заявка отправлена в AmoCRM. Мы свяжемся с вами в ближайшее время.");
     } catch (error) {
       console.error(error);
@@ -1034,14 +1272,18 @@ function CheckoutModal({
             <CheckoutStep1Form
               tab={tab}
               values={formValues}
-              onFieldChange={onFieldChange}
-              onContinue={() => onStepChange(2)}
+              errors={errors}
+              onFieldChange={handleFieldChange}
+              onContinue={handleContinue}
             />
           ) : (
             <CheckoutStep2Form
               tab={tab}
               values={formValues}
-              onFieldChange={onFieldChange}
+              errors={errors}
+              onFieldChange={handleFieldChange}
+              isConsentAccepted={isConsentAccepted}
+              onConsentChange={handleConsentChange}
               submitMessage={submitMessage}
               isSubmitting={isSubmitting}
               onSubmit={handleSubmit}
@@ -1052,7 +1294,8 @@ function CheckoutModal({
         <CheckoutOrderPanel
           quantity={quantity}
           total={total}
-          onQuantityChange={onQuantityChange}
+          error={errors.quantity}
+          onQuantityChange={handleQuantityChange}
         />
       </div>
     </div>
@@ -1062,37 +1305,55 @@ function CheckoutModal({
 function CheckoutStep1Form({
   tab,
   values,
+  errors,
   onFieldChange,
   onContinue,
 }: Readonly<{
   tab: "personal" | "company";
   values: CheckoutFormValues;
+  errors: CheckoutErrors;
   onFieldChange: (field: CheckoutField, value: string) => void;
   onContinue: () => void;
 }>) {
+  const hasStepErrors = hasErrors(getStep1Errors(errors));
+
   return (
     <div>
       <h3 className="text-2xl font-extrabold">Контактная информация</h3>
       <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
       <div className="mt-6 grid gap-3">
+        {hasStepErrors ? (
+          <FormErrorSummary message="Проверьте контактные данные и детали заказа." />
+        ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
           <FormField
-            label="Имя*"
+            label="Имя"
             placeholder="Ваше имя"
             value={values.name}
+            error={errors.name}
+            required
+            autoComplete="name"
             onChange={(v) => onFieldChange("name", v)}
           />
           <FormField
-            label="Телефон*"
+            label="Телефон"
             placeholder="+7 (000) 000-00-00"
             value={values.phone}
+            error={errors.phone}
+            required
+            autoComplete="tel"
+            inputMode="tel"
             onChange={(v) => onFieldChange("phone", v)}
           />
         </div>
         <FormField
-          label="Email*"
+          label="Email"
           placeholder="Ваш email"
           value={values.email}
+          error={errors.email}
+          required
+          type="email"
+          autoComplete="email"
           onChange={(v) => onFieldChange("email", v)}
         />
         {tab === "company" ? (
@@ -1101,6 +1362,9 @@ function CheckoutStep1Form({
               label="Компания"
               placeholder="Название компании"
               value={values.company}
+              error={errors.company}
+              required
+              autoComplete="organization"
               onChange={(v) => onFieldChange("company", v)}
             />
             <div className="grid gap-3 sm:grid-cols-2">
@@ -1108,19 +1372,21 @@ function CheckoutStep1Form({
                 label="ИНН"
                 placeholder="ИНН"
                 value={values.inn}
+                inputMode="numeric"
                 onChange={(v) => onFieldChange("inn", v)}
               />
               <FormField
                 label="ОГРН"
                 placeholder="ОГРН"
                 value={values.ogrn}
+                inputMode="numeric"
                 onChange={(v) => onFieldChange("ogrn", v)}
               />
             </div>
           </>
         ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded bg-[#f8f8f8] px-4 py-3">
+          <div className="rounded border border-transparent bg-[#f8f8f8] px-4 py-3">
             <p className="text-base font-bold text-[#0f172a]">Как с вами удобнее связаться?</p>
             <select
               title="Contact method"
@@ -1128,23 +1394,26 @@ function CheckoutStep1Form({
               onChange={(e) => onFieldChange("contactMethod", e.target.value)}
               className="mt-2 w-full bg-transparent text-sm text-[#0f172a] outline-none"
             >
-              <option value="">Выберите способ</option>
               <option value="tg">Telegram</option>
               <option value="max">MAX</option>
             </select>
           </div>
           <FormField
-            label="Ник или номер"
+            label="Ник (TG)"
             placeholder="@username"
             value={values.contactHandle}
+            error={errors.contactHandle}
+            required={values.contactMethod === "tg"}
             onChange={(v) => onFieldChange("contactHandle", v)}
           />
         </div>
         {tab === "personal" ? (
-          <FormField
+          <CitySelectField
             label="Город доставки"
             placeholder="Москва"
             value={values.city}
+            error={errors.city}
+            required
             onChange={(v) => onFieldChange("city", v)}
           />
         ) : (
@@ -1155,6 +1424,7 @@ function CheckoutStep1Form({
             onChange={(v) => onFieldChange("comment", v)}
           />
         )}
+        <RequiredFieldsNote />
         <button
           type="button"
           title="Continue to step 2"
@@ -1172,14 +1442,20 @@ function CheckoutStep1Form({
 function CheckoutStep2Form({
   tab,
   values,
+  errors,
   onFieldChange,
+  isConsentAccepted,
+  onConsentChange,
   submitMessage,
   isSubmitting,
   onSubmit,
 }: Readonly<{
   tab: "personal" | "company";
   values: CheckoutFormValues;
+  errors: CheckoutErrors;
   onFieldChange: (field: CheckoutField, value: string) => void;
+  isConsentAccepted: boolean;
+  onConsentChange: (isAccepted: boolean) => void;
   submitMessage: string | null;
   isSubmitting: boolean;
   onSubmit: () => void;
@@ -1198,6 +1474,9 @@ function CheckoutStep2Form({
       <h3 className="text-2xl font-extrabold">Пожелания в подарок</h3>
       <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
       <div className="mt-6 grid gap-3">
+        {hasErrors(errors) ? (
+          <FormErrorSummary message="В заказе остались ошибки. Вернитесь к выделенным полям." />
+        ) : null}
         <div className="relative rounded bg-[#f8f8f8] p-4">
           <p className="text-base font-bold text-[#0f172a]">Логотип</p>
           <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">Файлы формата .jpg .png не больше 3мб</p>
@@ -1261,9 +1540,25 @@ function CheckoutStep2Form({
           onChange={(v) => onFieldChange("comment", v)}
         />
 
-        <label className="mt-2 flex gap-3 text-sm leading-[1.4]">
-          <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#0f172a]" />
+        <label
+          className={`mt-2 flex gap-3 rounded-2xl border p-4 text-sm leading-[1.4] ${
+            errors.consent ? "border-red-500 bg-red-50" : "border-transparent"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={isConsentAccepted}
+            onChange={(event) => onConsentChange(event.target.checked)}
+            aria-invalid={Boolean(errors.consent)}
+            aria-required="true"
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#0f172a]"
+          />
           <span>
+            <span className="font-bold">
+              Согласие с условиями
+              <span className="ml-1 text-red-600" aria-label="обязательное поле">*</span>
+            </span>
+            <br />
             Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
             <a
               href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/docs/personal-data-consent.pdf`}
@@ -1285,6 +1580,8 @@ function CheckoutStep2Form({
             .
           </span>
         </label>
+        {errors.consent ? <FieldErrorMessage message={errors.consent} /> : null}
+        <RequiredFieldsNote />
 
         <button
           type="button"
@@ -1310,10 +1607,12 @@ function CheckoutStep2Form({
 function CheckoutOrderPanel({
   quantity,
   total,
+  error,
   onQuantityChange,
 }: Readonly<{
   quantity: number;
   total: number;
+  error?: string;
   onQuantityChange: (q: number) => void;
 }>) {
   return (
@@ -1341,11 +1640,15 @@ function CheckoutOrderPanel({
               value={quantity}
               title="Product quantity"
               aria-label="Количество бомбочек"
+              aria-invalid={Boolean(error)}
               onChange={(event) => onQuantityChange(Number(event.target.value))}
-              className="h-10 w-16 rounded-full border border-[#e8c880] bg-white text-center font-bold outline-none"
+              className={`h-10 w-16 rounded-full border bg-white text-center font-bold outline-none ${
+                error ? "border-red-500" : "border-[#e8c880]"
+              }`}
             />
             <CounterButton onClick={() => onQuantityChange(quantity + 1)}>+</CounterButton>
           </div>
+          {error ? <FieldErrorMessage message={error} /> : null}
         </div>
         <p className="shrink-0 font-bold">{productPrice} ₽</p>
       </div>
@@ -1363,24 +1666,28 @@ function FormFieldTextarea({
   label,
   placeholder,
   value,
+  error,
   onChange,
 }: Readonly<{
   label: string;
   placeholder: string;
   value: string;
+  error?: string;
   onChange: (value: string) => void;
 }>) {
   return (
-    <div className="rounded bg-[#f8f8f8] px-4 py-3">
+    <div className={`rounded border bg-[#f8f8f8] px-4 py-3 ${error ? "border-red-500" : "border-transparent"}`}>
       <p className="text-base font-bold text-[#0f172a]">{label}</p>
       <textarea
         placeholder={placeholder}
         value={value}
         title={label}
+        aria-invalid={Boolean(error)}
         onChange={(e) => onChange(e.target.value)}
         rows={4}
         className="mt-2 w-full resize-none bg-transparent text-sm text-[#0f172a] placeholder-[rgba(101,101,101,0.5)] outline-none"
       />
+      {error ? <FieldErrorMessage message={error} /> : null}
     </div>
   );
 }
@@ -1497,24 +1804,142 @@ function FormField({
   label,
   placeholder,
   value,
+  error,
+  required = false,
+  type = "text",
+  autoComplete,
+  inputMode,
+  list,
   onChange,
 }: Readonly<{
   label: string;
   placeholder: string;
   value: string;
+  error?: string;
+  required?: boolean;
+  type?: InputHTMLAttributes<HTMLInputElement>["type"];
+  autoComplete?: string;
+  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
+  list?: string;
   onChange: (value: string) => void;
 }>) {
   return (
-    <label className="grid min-h-16 gap-1 bg-[#f8f8f8] px-4 py-3">
-      <span className="font-bold">{label}</span>
+    <label className={`grid min-h-16 gap-1 rounded border bg-[#f8f8f8] px-4 py-3 ${error ? "border-red-500" : "border-transparent"}`}>
+      <span className="font-bold">
+        {label}
+        {required ? <span className="ml-1 text-red-600" aria-label="обязательное поле">*</span> : null}
+      </span>
       <input
+        type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        list={list}
+        aria-invalid={Boolean(error)}
+        aria-required={required}
         className="bg-transparent text-xs text-[#0f172a] outline-none placeholder:text-[#656565]/50"
       />
+      {error ? <FieldErrorMessage message={error} /> : null}
     </label>
   );
+}
+
+function CitySelectField({
+  label,
+  placeholder,
+  value,
+  error,
+  required = false,
+  onChange,
+}: Readonly<{
+  label: string;
+  placeholder: string;
+  value: string;
+  error?: string;
+  required?: boolean;
+  onChange: (value: string) => void;
+}>) {
+  const [isFocused, setIsFocused] = useState(false);
+  const query = normalizeCitySearchValue(value);
+  const suggestions = query
+    ? russianCities
+        .filter((city) => normalizeCitySearchValue(city).startsWith(query))
+        .slice(0, 8)
+    : [];
+  const showSuggestions = isFocused && query.length > 0 && suggestions.length > 0;
+
+  const handleSelect = (city: string) => {
+    onChange(city);
+    setIsFocused(false);
+  };
+
+  return (
+    <div className="relative">
+      <label className={`grid min-h-16 gap-1 rounded border bg-[#f8f8f8] px-4 py-3 ${error ? "border-red-500" : "border-transparent"}`}>
+        <span className="font-bold">
+          {label}
+          {required ? <span className="ml-1 text-red-600" aria-label="обязательное поле">*</span> : null}
+        </span>
+        <input
+          type="text"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => {
+            window.setTimeout(() => setIsFocused(false), 120);
+          }}
+          placeholder={placeholder}
+          autoComplete="off"
+          aria-autocomplete="list"
+          aria-invalid={Boolean(error)}
+          aria-required={required}
+          className="bg-transparent text-xs text-[#0f172a] outline-none placeholder:text-[#656565]/50"
+        />
+        {error ? <FieldErrorMessage message={error} /> : null}
+      </label>
+
+      {showSuggestions ? (
+        <div className="absolute bottom-[calc(100%+6px)] left-0 right-0 z-30 overflow-hidden rounded-2xl border border-[#e8c880] bg-white shadow-[0_-14px_40px_rgba(15,23,42,0.16)]">
+          <div className="max-h-[190px] overflow-y-auto py-2">
+            {suggestions.map((city) => (
+              <button
+                key={city}
+                type="button"
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  handleSelect(city);
+                }}
+                className="block w-full px-4 py-3 text-left text-sm font-bold text-[#0f172a] transition hover:bg-[#fff4d8]"
+              >
+                {city}
+              </button>
+            ))}
+          </div>
+          <p className="border-t border-[#e8c880]/40 px-4 py-2 text-xs text-[#656565]">
+            Выберите город из списка
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function RequiredFieldsNote() {
+  return <p className="text-xs text-[#656565]"><span className="font-bold text-red-600">*</span> обязательные поля</p>;
+}
+
+function FormErrorSummary({ message }: Readonly<{ message: string }>) {
+  return (
+    <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm font-bold text-red-700">
+      {message}
+    </div>
+  );
+}
+
+function FieldErrorMessage({ message }: Readonly<{ message: string }>) {
+  return <span className="mt-1 text-xs font-bold text-red-600">{message}</span>;
 }
 
 function InfoBlock({ title, children }: Readonly<{ title: string; children: React.ReactNode }>) {

@@ -30,30 +30,54 @@ function getContactMethodLabel(method) {
   return methods[method] ?? method;
 }
 
+function addLineIfValue(lines, label, value) {
+  if (value) {
+    lines.push(`${label}: ${value}`);
+  }
+}
+
 function buildOrderNote({ tab, quantity, total, formValues }) {
-  return [
+  const isCompanyOrder = tab === "company";
+  const lines = [
     "Заказ с сайта Posleslovie",
-    `Тип клиента: ${tab === "company" ? "Компания" : "Для себя"}`,
+    "",
+    "1. Детали заказа",
+    `Тип заказа: ${isCompanyOrder ? "Для компании" : "Для себя"}`,
     "Товар: Бомбочка для ванны",
     `Количество: ${quantity} шт.`,
     `Цена за 1 шт.: ${PRODUCT_PRICE} руб.`,
     `Сумма: ${total} руб.`,
     "",
-    `Имя: ${formValues.name || "не указано"}`,
-    `Телефон: ${formValues.phone || "не указан"}`,
-    `Email: ${formValues.email || "не указан"}`,
-    `Компания: ${formValues.company || "не указана"}`,
-    `ИНН: ${formValues.inn || "не указан"}`,
-    `ОГРН: ${formValues.ogrn || "не указан"}`,
-    `Предпочтительный способ связи: ${
-      formValues.contactMethod ? getContactMethodLabel(formValues.contactMethod) : "не указан"
-    }`,
-    `Ник или номер: ${formValues.contactHandle || "не указан"}`,
-    `Город доставки: ${formValues.city || "не указан"}`,
-    `Цвет сургучной печати: ${formValues.sealColor || "не указан"}`,
-    `Художник: ${formValues.artist || "не указан"}`,
-    `Комментарий: ${formValues.comment || "не указан"}`,
-  ].join("\n");
+    "2. Контакты",
+    `Имя: ${formValues.name}`,
+    `Телефон: ${formValues.phone}`,
+    `Email: ${formValues.email}`,
+  ];
+
+  if (formValues.contactMethod) {
+    lines.push(`Предпочтительный способ связи: ${getContactMethodLabel(formValues.contactMethod)}`);
+  }
+
+  if (formValues.contactMethod === "tg") {
+    addLineIfValue(lines, "Ник (TG)", formValues.contactHandle);
+  }
+
+  if (isCompanyOrder) {
+    lines.push("", "3. Компания");
+    addLineIfValue(lines, "Компания", formValues.company);
+    addLineIfValue(lines, "ИНН", formValues.inn);
+    addLineIfValue(lines, "ОГРН", formValues.ogrn);
+  } else {
+    lines.push("", "3. Доставка");
+    addLineIfValue(lines, "Город доставки", formValues.city);
+  }
+
+  lines.push("", "4. Пожелания");
+  addLineIfValue(lines, "Цвет сургучной печати", formValues.sealColor);
+  addLineIfValue(lines, "Художник", formValues.artist);
+  addLineIfValue(lines, "Комментарий", formValues.comment);
+
+  return lines.join("\n");
 }
 
 async function amoRequest(path, token, body) {
@@ -85,7 +109,8 @@ function getLeadId(createdLeadResponse) {
 }
 
 async function createAmoCRMCheckout(payload, token) {
-  const { quantity, total, formValues } = payload;
+  const { tab, quantity, total, formValues } = payload;
+  const isCompanyOrder = tab === "company";
   const contactFields = [
     formValues.phone
       ? {
@@ -103,7 +128,9 @@ async function createAmoCRMCheckout(payload, token) {
 
   const createdLeadResponse = await amoRequest("/api/v4/leads/complex", token, [
     {
-      name: `Заказ с сайта: Бомбочка для ванны x${quantity}`,
+      name: `${isCompanyOrder ? "B2B" : "B2C"} заказ с сайта: Бомбочка для ванны x${quantity}${
+        isCompanyOrder && formValues.company ? `, ${formValues.company}` : ""
+      }`,
       price: total,
       _embedded: {
         contacts: [
