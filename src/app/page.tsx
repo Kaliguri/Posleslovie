@@ -55,12 +55,7 @@ const initialCheckoutState: CheckoutState = {
   },
 };
 
-const amoCRMConfig = {
-  baseUrl: "https://kailgurika.amocrm.ru",
-  // Temporary client-side test token for GitHub Pages. Revoke it after integration testing.
-  accessToken:
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImNlYmRkZTExYjM2NTUwODM2ODNkNTc2MDBiZTZlOGYyYjEyNGVmZjQwYWJkOTI4MzM4ZDQ5NGZjNmEyOTFlYTZmZDBlYTYyM2NlMjlhZTAzIn0.eyJhdWQiOiI5YTZjYTA5My1jZjIyLTRlN2ItOTUxMC01NWJmZTZlN2E2YjciLCJqdGkiOiJjZWJkZGUxMWIzNjU1MDgzNjgzZDU3NjAwYmU2ZThmMmIxMjRlZmY0MGFiZDkyODMzOGQ0OTRmYzZhMjkxZWE2ZmQwZWE2MjNjZTI5YWUwMyIsImlhdCI6MTc3OTE3NzU4NCwibmJmIjoxNzc5MTc3NTg0LCJleHAiOjE3Nzk0MDgwMDAsInN1YiI6IjEzODE3ODgyIiwiZ3JhbnRfdHlwZSI6IiIsImFjY291bnRfaWQiOjMzMDUyMzMwLCJiYXNlX2RvbWFpbiI6ImFtb2NybS5ydSIsInZlcnNpb24iOjIsInNjb3BlcyI6WyJwdXNoX25vdGlmaWNhdGlvbnMiLCJmaWxlcyIsImNybSIsImZpbGVzX2RlbGV0ZSIsIm5vdGlmaWNhdGlvbnMiXSwiaGFzaF91dWlkIjoiMGFkNGZjNzEtYmUyYy00NjI3LTgxOWYtMDRkYzhkNGMyNGM3IiwiYXBpX2RvbWFpbiI6ImFwaS1iLmFtb2NybS5ydSJ9.hDwHtyvt0s58NVylXtvCAi81pAtZyffWoHtz7VH5EBBfRvZO4mFgRXvWutWR_ZtnlhtHnoieqjvMNqen_njAFSyY_yTj3izaQMz1idBlrFUNuxpR0bsrobaWr_wxrD8uv1x-IGRbWmwx4dSdUpb91OA2-CSEUpYJbG-l0hF_2XRPh17GpFgAT33xpF327JpDaegFeeJ8Y1vz4GOtCyGz9ehswNlDTblUtGiXug8dwp4pJtdoigDKcXEWjw828AvdHRDJI7K6D13YBB3wDOIvHFBo_qxGOXjZeZLeEYybzWUHWFTo8Qv000eU-IVjSmriNxaRRQKel_-LYZ875cuscg",
-} as const;
+const amoCRMWorkerUrl = "https://posleslovie-amocrm.kailgurika.workers.dev/";
 
 const assets = {
   hero: assetPath("/images/desktop-29/hero.jpg"),
@@ -322,109 +317,17 @@ function parseCheckoutState(value: string | null): CheckoutState {
   }
 }
 
-function getContactMethodLabel(method: string) {
-  const methods: Record<string, string> = {
-    tg: "Telegram",
-    max: "MAX",
-  };
-
-  return methods[method] ?? method;
-}
-
-function buildAmoCRMOrderNote({ tab, quantity, total, formValues }: AmoCRMCheckoutPayload) {
-  return [
-    "Заказ с сайта Posleslovie",
-    `Тип клиента: ${tab === "company" ? "Компания" : "Для себя"}`,
-    `Товар: Бомбочка для ванны`,
-    `Количество: ${quantity} шт.`,
-    `Цена за 1 шт.: ${productPrice} руб.`,
-    `Сумма: ${total} руб.`,
-    "",
-    `Имя: ${formValues.name || "не указано"}`,
-    `Телефон: ${formValues.phone || "не указан"}`,
-    `Email: ${formValues.email || "не указан"}`,
-    `Компания: ${formValues.company || "не указана"}`,
-    `ИНН: ${formValues.inn || "не указан"}`,
-    `ОГРН: ${formValues.ogrn || "не указан"}`,
-    `Предпочтительный способ связи: ${
-      formValues.contactMethod ? getContactMethodLabel(formValues.contactMethod) : "не указан"
-    }`,
-    `Ник или номер: ${formValues.contactHandle || "не указан"}`,
-    `Город доставки: ${formValues.city || "не указан"}`,
-    `Цвет сургучной печати: ${formValues.sealColor || "не указан"}`,
-    `Художник: ${formValues.artist || "не указан"}`,
-    `Комментарий: ${formValues.comment || "не указан"}`,
-  ].join("\n");
-}
-
 async function submitCheckoutToAmoCRM(payload: AmoCRMCheckoutPayload) {
-  const { tab, quantity, total, formValues } = payload;
-  const contactFields = [
-    formValues.phone
-      ? {
-          field_code: "PHONE",
-          values: [{ value: formValues.phone, enum_code: "WORK" }],
-        }
-      : null,
-    formValues.email
-      ? {
-          field_code: "EMAIL",
-          values: [{ value: formValues.email, enum_code: "WORK" }],
-        }
-      : null,
-  ].filter(Boolean);
-
-  const leadResponse = await fetch(`${amoCRMConfig.baseUrl}/api/v4/leads/complex`, {
+  const response = await fetch(amoCRMWorkerUrl, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${amoCRMConfig.accessToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify([
-      {
-        name: `Заказ с сайта: Бомбочка для ванны x${quantity}`,
-        price: total,
-        _embedded: {
-          contacts: [
-            {
-              first_name: formValues.name || "Клиент с сайта",
-              custom_fields_values: contactFields,
-            },
-          ],
-        },
-      },
-    ]),
+    body: JSON.stringify(payload),
   });
 
-  if (!leadResponse.ok) {
-    throw new Error(`AmoCRM rejected lead request: ${leadResponse.status}`);
-  }
-
-  const createdLeads = (await leadResponse.json()) as Array<{ id?: number }>;
-  const leadId = createdLeads[0]?.id;
-
-  if (!leadId) {
-    return;
-  }
-
-  const noteResponse = await fetch(`${amoCRMConfig.baseUrl}/api/v4/leads/${leadId}/notes`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${amoCRMConfig.accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify([
-      {
-        note_type: "common",
-        params: {
-          text: buildAmoCRMOrderNote({ tab, quantity, total, formValues }),
-        },
-      },
-    ]),
-  });
-
-  if (!noteResponse.ok) {
-    throw new Error(`AmoCRM rejected note request: ${noteResponse.status}`);
+  if (!response.ok) {
+    throw new Error(`AmoCRM worker rejected checkout request: ${response.status}`);
   }
 }
 
