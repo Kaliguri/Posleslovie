@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalize line endings to LF in the repo (reduces noisy CRLF/LF diffs on Windows).
+* text=auto eol=lf

@@ -1,0 +1,19 @@
+﻿# Heavy trees on disk after install/build. Git ignores them via .gitignore; Cursor still needs this file
+# so indexing / Review does not treat ~millions of lines in node_modules as your diff.
+**/node_modules/**
+**/.next/**
+**/out/**
+**/build/**
+**/coverage/**
+**/dist/**
+**/.turbo/**
+**/.cache/**
+**/temp/**
+
+.env*
+!.env.example
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

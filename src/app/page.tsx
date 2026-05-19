@@ -605,13 +605,13 @@ export default function Home() {
   }, [modal]);
 
   return (
-    <div className="bg-[#f8f8f8] text-[#0f172a]">
+    <div className="overflow-x-hidden bg-[#f8f8f8] text-[#0f172a]">
       <HeroSection onOrder={() => setModal("checkout")} />
 
-      <section id="bombs" className="px-5 py-16 lg:px-[100px] lg:py-[100px]">
-        <div className="mx-auto max-w-[1280px] rounded-[48px] bg-white px-6 py-14 lg:min-h-[750px] lg:rounded-[100px] lg:px-20 lg:py-20">
+      <section id="bombs" className="px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]">
+        <div className="mx-auto max-w-[1280px] rounded-[28px] bg-white px-4 py-10 sm:rounded-[48px] sm:px-6 sm:py-14 lg:min-h-[750px] lg:rounded-[100px] lg:px-20 lg:py-20">
           <SectionHeading title="Дарите настроение и заботу тем, кто вам важен и дорог" centered />
-          <div className="mt-14 grid gap-10 lg:grid-cols-3 lg:gap-16">
+          <div className="mt-8 grid gap-6 sm:mt-14 lg:grid-cols-3 lg:gap-16">
             {featureCards.map((card) => (
               <FeatureCard key={card.title} {...card} />
             ))}
@@ -619,7 +619,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="space-y-8 lg:space-y-0">
+      <div className="space-y-6 lg:space-y-0">
         {processSections.map((section, index) => (
           <ProcessSection
             key={section.title}
@@ -650,24 +650,24 @@ export default function Home() {
 
 function HeroSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
   return (
-    <section className="relative min-h-[760px] overflow-hidden bg-[#102038] lg:min-h-[1080px]">
+    <section className="relative min-h-[600px] overflow-hidden bg-[#102038] sm:min-h-[720px] lg:min-h-[1080px]">
       <div
-        className="absolute inset-x-[-5vw] top-0 h-full scale-[1.01] bg-cover bg-center lg:inset-x-[-103px]"
+        className="absolute inset-x-[-16vw] top-0 h-full scale-[1.01] bg-cover bg-center sm:inset-x-[-5vw] lg:inset-x-[-103px]"
         style={{ backgroundImage: `url(${assets.hero})` }}
       />
-      <div className="absolute inset-0 bg-black/20" />
+      <div className="absolute inset-0 bg-black/45 sm:bg-black/25" />
       <div className="absolute left-1/2 top-[265px] hidden h-[572px] w-[64.3vw] max-w-[1234px] -translate-x-1/2 rounded-[385px] bg-black/[0.01] backdrop-blur-[5px] lg:block" />
-      <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-20 pt-64 text-center lg:px-[100px] lg:pt-[355px]">
+      <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-32 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">
         <div className="max-w-[1234px]">
-          <h1 className="text-6xl font-normal leading-none text-white [font-family:var(--font-educational)] sm:text-7xl lg:text-[126px]">
+          <h1 className="text-[44px] font-normal leading-[0.95] text-white [font-family:var(--font-educational)] min-[390px]:text-[48px] sm:text-7xl lg:text-[126px]">
             Послесловие к вашему дню
           </h1>
-          <p className="mt-7 text-xl font-medium leading-[1.6] text-[#dfdfdf] lg:text-[25px]">
-            Энергия природы в каждой бомбочке для ванны
-            <br />
-            Внимание и забота к каждой минуте наедине с собой
+          <p className="mx-auto mt-5 max-w-[340px] text-[15px] font-medium leading-[1.55] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] sm:text-xl lg:max-w-none lg:text-[25px]">
+            <span className="block sm:inline">Энергия природы в каждой бомбочке для ванны</span>
+            <br className="hidden sm:block" />
+            <span className="block sm:inline">Внимание и забота к каждой минуте наедине с собой</span>
           </p>
-          <div className="mt-16">
+          <div className="mt-9 sm:mt-16">
             <DesignButton size="xl" variant="filled" onClick={onOrder}>
               Оформить заказ
             </DesignButton>
@@ -698,8 +698,8 @@ function ProcessSection({
   index: number;
 }>) {
   return (
-    <section className="relative bg-[#f8f8f8] px-5 py-12 lg:px-[100px] lg:py-[100px]">
-      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-white shadow-[0_5px_5px_rgba(255,93,93,0.1)] lg:rounded-[70px]">
+    <section className="relative bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
+      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white shadow-[0_5px_5px_rgba(255,93,93,0.1)] sm:rounded-[42px] lg:rounded-[70px]">
         <div
           className={`pointer-events-none absolute inset-0 hidden lg:grid ${
             reverse ? "grid-cols-[1fr_323px]" : "grid-cols-[323px_1fr]"
@@ -721,7 +721,7 @@ function ProcessSection({
           />
         ) : null}
 
-        <div className="relative grid items-center gap-10 p-5 sm:p-8 lg:min-h-[665px] lg:grid-cols-[525px_552px] lg:items-start lg:gap-16 lg:p-12">
+        <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:min-h-[665px] lg:grid-cols-[525px_552px] lg:items-start lg:gap-16 lg:p-12">
           <ProductGallery
             reverse={reverse}
             slides={gallerySlides[gallery]}
@@ -730,15 +730,15 @@ function ProcessSection({
           <div className={reverse ? "lg:order-1" : ""}>
             <div className="max-w-[552px]">
               <SectionKicker>{eyebrow}</SectionKicker>
-              <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-[40px] xl:text-5xl">
+              <h2 className="mt-2 text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-[40px] xl:text-5xl">
                 {title}
               </h2>
               <GoldRule />
-              <p className="mt-4 text-base leading-8 [font-family:var(--font-inter)] lg:text-lg lg:leading-[1.8] xl:text-xl">
+              <p className="mt-4 text-[15px] leading-7 [font-family:var(--font-inter)] sm:text-base sm:leading-8 lg:text-lg lg:leading-[1.8] xl:text-xl">
                 {description}
               </p>
               {button ? (
-                <div className="mt-10 lg:mt-16">
+                <div className="mt-8 lg:mt-16">
                   <DesignButton onClick={onOrder}>{button}</DesignButton>
                 </div>
               ) : null}
@@ -769,7 +769,7 @@ function ProductGallery({
           isTransitioning={isTransitioning}
           transitionDuration={transitionDuration}
         />
-        <div className={`mt-4 flex gap-4 ${reverse ? "justify-end" : ""}`}>
+        <div className={`mt-4 flex justify-center gap-4 ${reverse ? "lg:justify-end" : "lg:justify-start"}`}>
           <ArrowButton direction="left" onClick={() => move(-1)} />
           <ArrowButton direction="right" onClick={() => move(1)} />
         </div>
@@ -790,7 +790,7 @@ function TapeImageCarousel({
   transitionDuration: number;
 }>) {
   return (
-    <div className="aspect-square overflow-hidden rounded-[32px] bg-[#f8f8f8] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]">
+    <div className="mx-auto aspect-square w-full max-w-[525px] overflow-hidden rounded-[24px] bg-[#f8f8f8] sm:rounded-[32px] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]">
       <div
         className={`flex h-full ${isTransitioning ? "transition-transform ease-out" : ""}`}
         style={{
@@ -816,18 +816,18 @@ function TapeImageCarousel({
 function WhyUsSection() {
   return (
     <section
-      className="relative overflow-hidden bg-cover bg-center px-5 py-16 text-white lg:px-[235px] lg:py-20"
+      className="relative overflow-hidden bg-cover bg-center px-4 py-12 text-white sm:px-5 sm:py-16 lg:px-[235px] lg:py-20"
       style={{ backgroundImage: `url(${assets.whyUs})` }}
     >
-      <div className="absolute inset-0 bg-white/10" />
+      <div className="absolute inset-0 bg-black/35 sm:bg-white/10" />
       <div className="relative mx-auto max-w-[1456px]">
         <SectionHeading kicker="Преимущества" title="Почему выбирают нас?" centered light />
-        <div className="mt-12 grid gap-10 lg:grid-cols-3 lg:gap-24">
+        <div className="mt-8 grid gap-7 sm:mt-12 lg:grid-cols-3 lg:gap-24">
           {reasons.map((reason) => (
             <article key={reason.title} className="text-center">
               <IconImage src={reason.icon} />
-              <h3 className="mt-4 text-2xl font-bold leading-[1.1]">{reason.title}</h3>
-              <p className="mt-2 text-lg leading-[1.8] [font-family:var(--font-inter)] lg:text-xl">{reason.description}</p>
+              <h3 className="mt-4 text-xl font-bold leading-[1.1] sm:text-2xl">{reason.title}</h3>
+              <p className="mx-auto mt-2 max-w-[280px] text-[15px] leading-[1.6] [font-family:var(--font-inter)] sm:text-lg lg:text-xl">{reason.description}</p>
             </article>
           ))}
         </div>
@@ -838,20 +838,20 @@ function WhyUsSection() {
 
 function AboutSection() {
   return (
-    <section id="about" className="bg-[#f8f8f8] px-5 py-12 lg:px-[100px] lg:py-[100px]">
-      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[42px] bg-white lg:rounded-[70px]">
+    <section id="about" className="bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
+      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white sm:rounded-[42px] lg:rounded-[70px]">
         <div className="pointer-events-none absolute inset-0 hidden grid-cols-[1fr_323px] lg:grid">
           <div />
           <div className="bg-white mix-blend-lighten" />
         </div>
-        <div className="relative grid items-center gap-10 p-5 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
+        <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
           <div className="max-w-[552px]">
             <SectionKicker>О нас</SectionKicker>
-            <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-5xl">
+            <h2 className="mt-2 text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
               Кто мы такие?
             </h2>
             <GoldRule />
-            <div className="mt-5 space-y-6 text-base leading-8 [font-family:var(--font-inter)] lg:text-xl lg:leading-[1.8]">
+            <div className="mt-4 space-y-3 text-[15px] leading-7 [font-family:var(--font-inter)] sm:mt-5 sm:space-y-6 sm:text-base sm:leading-8 lg:text-xl lg:leading-[1.8]">
               <p>
                 Послесловие — это команда амбициозных, творческих и талантливых людей,
                 бесконечно целеустремленных и искренне увлеченных процессом создания подарков.
@@ -865,7 +865,7 @@ function AboutSection() {
           <ZoomImage
             image={assets.bombs1}
             label="Бомбочки Послесловие"
-            className="aspect-square rounded-[32px] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]"
+            className="mx-auto aspect-square w-full max-w-[525px] rounded-[24px] sm:rounded-[32px] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]"
           />
         </div>
       </div>
@@ -878,10 +878,10 @@ function ReviewsSection() {
     useInfiniteCarousel(reviews);
 
   return (
-    <section id="reviews" className="overflow-hidden bg-[#f8f8f8] px-5 py-16 lg:px-[100px] lg:py-20">
+    <section id="reviews" className="overflow-hidden bg-[#f8f8f8] px-3 py-12 sm:px-5 sm:py-16 lg:px-[100px] lg:py-20">
       <div className="mx-auto max-w-[1280px]">
         <SectionHeading kicker="Отзывы" title="Нам доверяют" centered />
-        <div className="mt-14 overflow-hidden [--carousel-gap:2rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] lg:[--carousel-gap:3rem] lg:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
+        <div className="mt-8 overflow-hidden [--carousel-gap:1rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] sm:mt-14 sm:[--carousel-gap:2rem] lg:[--carousel-gap:3rem] lg:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
           <div
             className={`flex gap-[var(--carousel-gap)] ${isTransitioning ? "transition-transform ease-out" : ""}`}
             style={{
@@ -892,23 +892,23 @@ function ReviewsSection() {
             {orderedItems.map((review) => (
               <article
                 key={review.name}
-                className="group flex min-h-[600px] w-full shrink-0 basis-full flex-col justify-between rounded-[15px] bg-white p-6 transition duration-300 hover:-translate-y-2 hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:p-8 lg:basis-[calc((100%_-_var(--carousel-gap)*2)/3)]"
+                className="group flex min-h-[470px] w-full shrink-0 basis-full flex-col justify-between rounded-[18px] bg-white p-4 transition duration-300 hover:-translate-y-2 hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:min-h-[560px] sm:p-8 lg:min-h-[600px] lg:basis-[calc((100%_-_var(--carousel-gap)*2)/3)]"
               >
                 <div>
-                  <ZoomImage image={review.image} label="" className="h-[220px] rounded-[20px]" zoom={false} />
+                  <ZoomImage image={review.image} label="" className="h-[170px] rounded-[20px] sm:h-[220px]" zoom={false} />
                   <div
                     aria-label="5 звезд"
                     className="mt-5 h-[21px] w-[131px] bg-contain bg-left bg-no-repeat"
                     style={{ backgroundImage: `url(${assets.starRow})` }}
                   />
-                  <p className="mt-4 text-base leading-[1.6] [font-family:var(--font-inter)] lg:text-lg">{review.text}</p>
+                  <p className="mt-4 text-sm leading-[1.55] [font-family:var(--font-inter)] sm:text-base lg:text-lg">{review.text}</p>
                 </div>
                 <p className="mt-8 font-medium">{review.name}</p>
               </article>
             ))}
           </div>
         </div>
-        <div className="mt-8 flex gap-4">
+        <div className="mt-8 flex justify-center gap-4 sm:justify-start">
           <ArrowButton direction="left" onClick={() => move(-1)} />
           <ArrowButton direction="right" onClick={() => move(1)} />
         </div>
@@ -920,14 +920,14 @@ function ReviewsSection() {
 function CtaSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
   return (
     <section
-      className="relative overflow-hidden bg-[#c1aeff] bg-cover bg-center px-5 py-20 text-center text-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:px-[100px] lg:py-20"
+      className="relative overflow-hidden bg-[#c1aeff] bg-cover bg-center px-4 py-14 text-center text-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] sm:px-5 sm:py-20 lg:px-[100px] lg:py-20"
       style={{ backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${assets.cta})` }}
     >
       <div className="relative mx-auto flex max-w-[1200px] flex-col items-center">
-        <h2 className="max-w-[760px] text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-5xl">
+        <h2 className="max-w-[760px] text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
           Наши наборы - ваш идеальный комплимент!
         </h2>
-        <p className="mt-5 max-w-[540px] text-lg font-light leading-[1.6] sm:text-2xl">
+        <p className="mt-4 max-w-[540px] text-base font-light leading-[1.55] sm:text-2xl">
           Подарите минуты душевного равновесия и культурный опыт тем, кто вам важен
         </p>
         <div className="mt-8">
@@ -1039,7 +1039,7 @@ function HomeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-2 py-2 backdrop-blur-sm sm:px-4 sm:py-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -1049,32 +1049,32 @@ function HomeModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="relative flex max-h-[92vh] w-full max-w-[920px] flex-col overflow-hidden rounded-[36px] bg-white pb-8 shadow-2xl lg:rounded-[50px] lg:pb-12"
+        className="relative flex max-h-[calc(100dvh-16px)] w-full max-w-[920px] flex-col overflow-hidden rounded-[22px] bg-white pb-3 shadow-2xl sm:max-h-[92vh] sm:rounded-[36px] sm:pb-8 lg:rounded-[50px] lg:pb-12"
       >
-        <div className="sticky top-0 z-20 bg-white px-6 pb-6 pt-8 shadow-[0_12px_30px_rgba(15,23,42,0.08)] lg:px-12 lg:pt-12">
+        <div className="sticky top-0 z-20 bg-white px-4 pb-4 pt-5 shadow-[0_12px_30px_rgba(15,23,42,0.08)] sm:px-6 sm:pb-6 sm:pt-8 lg:px-12 lg:pt-12">
           <button
             type="button"
             onClick={onClose}
             aria-label="Закрыть"
-            className="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#e8c880] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a]"
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#e8c880] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a] sm:right-6 sm:top-6 sm:h-12 sm:w-12"
           >
             <CrossIcon />
           </button>
-          <div className="max-w-[760px] pr-16">
+          <div className="max-w-[760px] pr-12 sm:pr-16">
             <SectionKicker>{header.kicker}</SectionKicker>
-            <h2 className="mt-2 text-3xl font-extrabold leading-[1.1] lg:text-[40px]">
+            <h2 className="mt-2 text-[24px] font-extrabold leading-[1.12] sm:text-3xl lg:text-[40px]">
               {header.title}
             </h2>
             <GoldRule />
           </div>
           {isCheckout ? (
-            <div className="mt-5 flex items-center justify-center gap-4">
+            <div className="mt-4 flex items-center justify-center gap-2 sm:mt-5 sm:gap-4">
               <button
                 type="button"
                 title="Back to step 1"
                 onClick={() => { if (checkoutStep === 2) setCheckoutStep(1); }}
                 disabled={checkoutStep === 1}
-                className={`flex h-10 w-10 shrink-0 rotate-180 items-center justify-center rounded-full transition ${
+                className={`flex h-9 w-9 shrink-0 rotate-180 items-center justify-center rounded-full transition sm:h-10 sm:w-10 ${
                   checkoutStep === 2
                     ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
                     : "cursor-default bg-[#d7d7d7] text-[#9a9b9c]"
@@ -1087,7 +1087,7 @@ function HomeModal({
                   type="button"
                   title="Order for personal use"
                   onClick={() => handleCheckoutTabChange("personal")}
-                  className={`py-3 text-sm font-extrabold transition ${
+                  className={`px-2 py-3 text-xs font-extrabold transition sm:text-sm ${
                     checkoutState.tab === "personal"
                       ? "rounded-full bg-[#e8c880] text-[#0f172a]"
                       : "text-[#9a9b9c] hover:text-[#0f172a]"
@@ -1099,7 +1099,7 @@ function HomeModal({
                   type="button"
                   title="Order for company"
                   onClick={() => handleCheckoutTabChange("company")}
-                  className={`py-3 text-sm font-extrabold transition ${
+                  className={`px-2 py-3 text-xs font-extrabold transition sm:text-sm ${
                     checkoutState.tab === "company"
                       ? "rounded-full bg-[#e8c880] text-[#0f172a]"
                       : "text-[#9a9b9c] hover:text-[#0f172a]"
@@ -1111,7 +1111,7 @@ function HomeModal({
             </div>
           ) : null}
         </div>
-        <div className="modal-scroll min-h-0 flex-1 overflow-y-auto px-6 pb-4 pt-8 lg:px-12 lg:pb-4">
+        <div className="modal-scroll min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-5 sm:px-6 sm:pt-8 lg:px-12 lg:pb-4">
           {type === "delivery" ? <DeliveryModal /> : null}
           {type === "partners" ? <PartnersModal /> : null}
           {type === "contacts" ? <ContactsModal /> : null}
@@ -1138,7 +1138,7 @@ function PartnersModal() {
         Предлагаем выгодные условия для региональных дистрибьюторов, розничных магазинов и
         селлеров. Расширьте свой ассортимент продуктом, который продает сам себя.
       </p>
-      <p className="mt-8 max-w-[620px] text-xl font-bold leading-[1.8]">
+      <p className="mt-6 max-w-[620px] text-lg font-bold leading-[1.6] sm:mt-8 sm:text-xl sm:leading-[1.8]">
         Оставьте заявку и мы свяжемся с вами, чтобы обсудить все детали
       </p>
       <GoldRule />
@@ -1333,7 +1333,7 @@ function CheckoutModal({
 
   return (
     <div>
-      <div className="grid gap-10 lg:grid-cols-2">
+      <div className="grid gap-7 lg:grid-cols-2 lg:gap-10">
         <div>
           {step === 1 ? (
             <CheckoutStep1Form
@@ -1389,9 +1389,9 @@ function CheckoutStep1Form({
 
   return (
     <div>
-      <h3 className="text-2xl font-extrabold">Контактная информация</h3>
-      <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
-      <div className="mt-6 grid gap-3">
+      <h3 className="text-[21px] font-extrabold sm:text-2xl">Контактная информация</h3>
+      <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
+      <div className="mt-5 grid gap-3 sm:mt-6">
         {hasStepErrors ? (
           <FormErrorSummary message="Проверьте контактные данные и детали заказа." />
         ) : null}
@@ -1456,7 +1456,7 @@ function CheckoutStep1Form({
           </>
         ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded border border-transparent bg-[#f8f8f8] px-4 py-3">
+          <div className="rounded border border-transparent bg-[#f8f8f8] px-3.5 py-3 sm:px-4">
             <p className="text-base font-bold text-[#0f172a]">Как с вами удобнее связаться?</p>
             <select
               title="Contact method"
@@ -1499,7 +1499,7 @@ function CheckoutStep1Form({
           type="button"
           title="Continue to step 2"
           onClick={onContinue}
-          className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf]"
+          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
         >
           Продолжить оформление
           <ArrowIcon size={22} />
@@ -1547,13 +1547,13 @@ function CheckoutStep2Form({
 
   return (
     <div>
-      <h3 className="text-2xl font-extrabold">Пожелания в подарок</h3>
-      <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
-      <div className="mt-6 grid gap-3">
+      <h3 className="text-[21px] font-extrabold sm:text-2xl">Пожелания в подарок</h3>
+      <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
+      <div className="mt-5 grid gap-3 sm:mt-6">
         {hasErrors(errors) ? (
           <FormErrorSummary message="В заказе остались ошибки. Вернитесь к выделенным полям." />
         ) : null}
-        <div className={`relative rounded border bg-[#f8f8f8] p-4 ${logoFileError ? "border-red-500" : "border-transparent"}`}>
+        <div className={`relative rounded border bg-[#f8f8f8] p-3.5 pr-12 sm:p-4 ${logoFileError ? "border-red-500" : "border-transparent"}`}>
           <p className="text-base font-bold text-[#0f172a]">Логотип</p>
           <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">
             {logoFile ? `Выбран файл: ${logoFile.name}` : "Файлы формата .jpg .png не больше 3мб"}
@@ -1575,7 +1575,7 @@ function CheckoutStep2Form({
           </label>
         </div>
 
-        <div className="rounded bg-[#f8f8f8] p-4">
+        <div className="rounded bg-[#f8f8f8] p-3.5 sm:p-4">
           <p className="text-base font-bold text-[#0f172a]">Выбор художника</p>
           <select
             title="Choose artist"
@@ -1589,10 +1589,10 @@ function CheckoutStep2Form({
           </select>
         </div>
 
-        <div className="rounded bg-[#f8f8f8] p-4">
+        <div className="rounded bg-[#f8f8f8] p-3.5 sm:p-4">
           <p className="text-base font-bold text-[#0f172a]">Цвет сургутной печати</p>
           <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">Фото не является эталонным продуктом*</p>
-          <div className="mt-3 flex gap-4">
+          <div className="mt-3 grid grid-cols-4 gap-3 sm:flex sm:gap-4">
             {sealColors.map((sc) => (
               <button
                 key={sc.id}
@@ -1602,7 +1602,7 @@ function CheckoutStep2Form({
                 className="flex flex-col items-center gap-2"
               >
                 <div
-                  className={`h-[80px] w-[80px] rounded transition ${
+                  className={`h-14 w-14 rounded transition sm:h-[80px] sm:w-[80px] ${
                     activeSeal === sc.id
                       ? "outline outline-[3px] outline-offset-2 outline-[#e8c880]"
                       : "opacity-60 hover:opacity-90"
@@ -1625,7 +1625,7 @@ function CheckoutStep2Form({
         />
 
         <label
-          className={`mt-2 flex gap-3 rounded-2xl border p-4 text-sm leading-[1.4] ${
+          className={`mt-2 flex gap-3 rounded-2xl border p-3.5 text-sm leading-[1.4] sm:p-4 ${
             errors.consent ? "border-red-500 bg-red-50" : "border-transparent"
           }`}
         >
@@ -1672,7 +1672,7 @@ function CheckoutStep2Form({
           title="Submit order"
           onClick={onSubmit}
           disabled={isSubmitting}
-          className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf] disabled:cursor-not-allowed disabled:opacity-70"
+          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] disabled:cursor-not-allowed disabled:opacity-70 sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
         >
           {isSubmitting ? "Отправляем..." : tab === "personal" ? "Оплатить" : "Оставить заявку"}
           <ArrowIcon size={22} />
@@ -1701,15 +1701,15 @@ function CheckoutOrderPanel({
 }>) {
   return (
     <div>
-      <h3 className="text-2xl font-extrabold">Детали заказа</h3>
-      <div className="mt-4 h-[3px] rounded-full bg-[#c5c5c5]" />
-      <div className="mt-6 flex items-center justify-between gap-6 rounded-2xl bg-[#f8f8f8] p-4">
+      <h3 className="text-[21px] font-extrabold sm:text-2xl">Детали заказа</h3>
+      <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
+      <div className="mt-5 flex flex-col gap-4 rounded-2xl bg-[#f8f8f8] p-3.5 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-4">
         <ZoomImage
           image={assets.bombs2}
           label="Бомбочка для ванны"
-          className="h-[108px] w-[108px] shrink-0 rounded-[10px]"
+          className="h-24 w-24 shrink-0 rounded-[10px] sm:h-[108px] sm:w-[108px]"
         />
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="font-bold">Бомбочка для ванны</p>
           <div className="mt-4 flex items-center gap-3">
             <CounterButton
@@ -1734,10 +1734,10 @@ function CheckoutOrderPanel({
           </div>
           {error ? <FieldErrorMessage message={error} /> : null}
         </div>
-        <p className="shrink-0 font-bold">{productPrice} ₽</p>
+        <p className="shrink-0 font-bold sm:self-start">{productPrice} ₽</p>
       </div>
-      <div className="mt-6 h-[3px] rounded-full bg-[#c5c5c5]" />
-      <div className="mt-6 space-y-4 text-xl">
+      <div className="mt-5 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-6" />
+      <div className="mt-5 space-y-2 text-base sm:mt-6 sm:space-y-4 sm:text-xl">
         <p className="font-light">Количество: {quantity} шт.</p>
         <p className="font-light">Цена за 1 шт.: {productPrice} руб.</p>
         <p className="font-extrabold">Итоговая сумма: {total} руб.</p>
@@ -1760,7 +1760,7 @@ function FormFieldTextarea({
   onChange: (value: string) => void;
 }>) {
   return (
-    <div className={`rounded border bg-[#f8f8f8] px-4 py-3 ${error ? "border-red-500" : "border-transparent"}`}>
+    <div className={`rounded border bg-[#f8f8f8] px-3.5 py-3 sm:px-4 ${error ? "border-red-500" : "border-transparent"}`}>
       <p className="text-base font-bold text-[#0f172a]">{label}</p>
       <textarea
         placeholder={placeholder}
@@ -1813,7 +1813,7 @@ function LeadForm({
 
   return (
     <form
-      className="mt-6 grid gap-3"
+      className="mt-5 grid gap-3 sm:mt-6"
       onSubmit={(event) => {
         event.preventDefault();
         setDebugMessage(
@@ -1862,7 +1862,7 @@ function LeadForm({
       ) : (
         <label className="mt-2 flex gap-3 text-base leading-[1.4]">
           <input type="checkbox" className="mt-1 h-4 w-4 rounded border-[#0f172a]" />
-          <span>
+            <span className="min-w-0">
             Нажимая на кнопку, вы соглашаетесь с обработкой <u>персональных данных</u>.
             Ознакомлены с <u>политикой конфиденциальности</u>
           </span>
@@ -1870,7 +1870,7 @@ function LeadForm({
       )}
       <button
         type="submit"
-        className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-2xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf]"
+        className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-2xl"
       >
         {submitLabel}
         <ArrowIcon />
@@ -1908,7 +1908,7 @@ function FormField({
   onChange: (value: string) => void;
 }>) {
   return (
-    <label className={`grid min-h-16 gap-1 rounded border bg-[#f8f8f8] px-4 py-3 ${error ? "border-red-500" : "border-transparent"}`}>
+    <label className={`grid min-h-[60px] gap-1 rounded border bg-[#f8f8f8] px-3.5 py-3 sm:min-h-16 sm:px-4 ${error ? "border-red-500" : "border-transparent"}`}>
       <span className="font-bold">
         {label}
         {required ? <span className="ml-1 text-red-600" aria-label="обязательное поле">*</span> : null}
@@ -1923,7 +1923,7 @@ function FormField({
         list={list}
         aria-invalid={Boolean(error)}
         aria-required={required}
-        className="bg-transparent text-xs text-[#0f172a] outline-none placeholder:text-[#656565]/50"
+        className="bg-transparent text-sm text-[#0f172a] outline-none placeholder:text-[#656565]/50 sm:text-xs"
       />
       {error ? <FieldErrorMessage message={error} /> : null}
     </label>
@@ -1961,7 +1961,7 @@ function CitySelectField({
 
   return (
     <div className="relative">
-      <label className={`grid min-h-16 gap-1 rounded border bg-[#f8f8f8] px-4 py-3 ${error ? "border-red-500" : "border-transparent"}`}>
+      <label className={`grid min-h-[60px] gap-1 rounded border bg-[#f8f8f8] px-3.5 py-3 sm:min-h-16 sm:px-4 ${error ? "border-red-500" : "border-transparent"}`}>
         <span className="font-bold">
           {label}
           {required ? <span className="ml-1 text-red-600" aria-label="обязательное поле">*</span> : null}
@@ -1979,7 +1979,7 @@ function CitySelectField({
           aria-autocomplete="list"
           aria-invalid={Boolean(error)}
           aria-required={required}
-          className="bg-transparent text-xs text-[#0f172a] outline-none placeholder:text-[#656565]/50"
+          className="bg-transparent text-sm text-[#0f172a] outline-none placeholder:text-[#656565]/50 sm:text-xs"
         />
         {error ? <FieldErrorMessage message={error} /> : null}
       </label>
@@ -2028,7 +2028,7 @@ function FieldErrorMessage({ message }: Readonly<{ message: string }>) {
 
 function InfoBlock({ title, children }: Readonly<{ title: string; children: React.ReactNode }>) {
   return (
-    <section className="rounded-2xl bg-[#f8f8f8] p-5">
+    <section className="rounded-2xl bg-[#f8f8f8] p-4 sm:p-5">
       <h3 className="font-bold">{title}</h3>
       <p className="mt-2">{children}</p>
     </section>
@@ -2042,7 +2042,7 @@ function ContactItem({
   compact = false,
 }: Readonly<{ label: string; value: string; href?: string; compact?: boolean }>) {
   return (
-    <div className={`bg-[#f8f8f8] px-4 py-3 ${compact ? "" : "min-h-16"}`}>
+    <div className={`break-words bg-[#f8f8f8] px-3.5 py-3 sm:px-4 ${compact ? "" : "min-h-[60px] sm:min-h-16"}`}>
       <dt className="font-bold text-[#0f172a]">{label}</dt>
       <dd className="mt-2 text-xs font-bold text-black [font-family:var(--font-inter)]">
         {href ? (
@@ -2072,7 +2072,7 @@ function SectionHeading({
     <div className={`${centered ? "mx-auto text-center" : ""} max-w-[780px]`}>
       {kicker ? <SectionKicker>{kicker}</SectionKicker> : null}
       <h2
-        className={`text-3xl font-extrabold leading-[1.1] sm:text-4xl lg:text-5xl ${
+        className={`text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl ${
           light ? "text-white" : "text-[#0f172a]"
         }`}
       >
@@ -2085,7 +2085,7 @@ function SectionHeading({
 
 function SectionKicker({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <p className="text-sm font-bold uppercase tracking-[3px] text-[#e8c880] sm:text-base lg:text-lg xl:text-xl">
+    <p className="text-xs font-bold uppercase tracking-[2px] text-[#e8c880] sm:text-base sm:tracking-[3px] lg:text-lg xl:text-xl">
       {children}
     </p>
   );
@@ -2095,7 +2095,7 @@ function GoldRule({ centered = false }: Readonly<{ centered?: boolean }>) {
   return (
     <div
       aria-hidden="true"
-      className={`mt-6 flex w-full max-w-[700px] items-center ${
+      className={`mt-4 flex w-full max-w-[700px] items-center sm:mt-6 ${
         centered ? "mx-auto" : ""
       }`}
     >
@@ -2112,10 +2112,10 @@ function FeatureCard({
   icon,
 }: Readonly<{ title: string; description: string; icon: string }>) {
   return (
-    <article className="group rounded-[10px] px-4 py-3 text-center transition duration-300 hover:-translate-y-2 hover:bg-[#f8f8f8] hover:shadow-[0_4px_9px_rgba(0,0,0,0.15)]">
+    <article className="group rounded-[18px] px-3 py-3 text-center transition duration-300 hover:-translate-y-2 hover:bg-[#f8f8f8] hover:shadow-[0_4px_9px_rgba(0,0,0,0.15)] sm:rounded-[10px] sm:px-4 sm:py-3">
       <IconImage src={icon} />
-      <h3 className="mt-4 text-2xl font-bold leading-[1.1]">{title}</h3>
-      <p className="mt-4 text-base leading-8 [font-family:var(--font-inter)] lg:text-xl lg:leading-[1.8]">{description}</p>
+      <h3 className="mt-3 text-xl font-bold leading-[1.1] sm:mt-4 sm:text-2xl">{title}</h3>
+      <p className="mt-2 text-[15px] leading-7 [font-family:var(--font-inter)] sm:mt-4 sm:text-base sm:leading-8 lg:text-xl lg:leading-[1.8]">{description}</p>
     </article>
   );
 }
@@ -2124,7 +2124,7 @@ function IconImage({ src, light = false }: Readonly<{ src: string; light?: boole
   return (
     <div
       aria-hidden="true"
-      className={`mx-auto h-16 w-16 bg-contain bg-center bg-no-repeat ${light ? "brightness-0 invert" : ""}`}
+      className={`mx-auto h-14 w-14 bg-contain bg-center bg-no-repeat sm:h-16 sm:w-16 ${light ? "brightness-0 invert" : ""}`}
       style={{ backgroundImage: `url(${src})` }}
     />
   );
@@ -2172,7 +2172,7 @@ function DesignButton({
           ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
           : "text-[#e8c880] hover:bg-[#e8c880] hover:text-[#0f172a]"
       } ${
-        size === "xl" ? "px-7 py-4 text-2xl lg:text-[26.7px]" : "px-6 py-3 text-base lg:text-xl xl:text-2xl"
+        size === "xl" ? "px-5 py-3.5 text-lg sm:px-7 sm:py-4 sm:text-2xl lg:text-[26.7px]" : "px-5 py-3 text-base sm:px-6 lg:text-xl xl:text-2xl"
       }`}
     >
       {children}
@@ -2190,7 +2190,7 @@ function ArrowButton({
       type="button"
       onClick={onClick}
       aria-label={direction === "left" ? "Предыдущий слайд" : "Следующий слайд"}
-      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#e8c880] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a]"
+      className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#e8c880] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a] sm:h-12 sm:w-12"
     >
       <span className={direction === "left" ? "rotate-180" : ""}>
         <ArrowIcon />
@@ -2205,12 +2205,12 @@ function ScrollTopButton({ visible }: Readonly<{ visible: boolean }>) {
       type="button"
       aria-label="Наверх"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className={`fixed bottom-6 right-6 z-40 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#e8c880] text-[#0f172a] shadow-lg transition ${
+      className={`fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#e8c880] text-[#0f172a] shadow-lg transition sm:bottom-6 sm:right-6 sm:h-[60px] sm:w-[60px] ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
       }`}
     >
       <span className="-rotate-90">
-        <ArrowIcon size={36} />
+        <ArrowIcon size={30} />
       </span>
     </button>
   );
