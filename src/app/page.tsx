@@ -29,6 +29,10 @@ type CheckoutState = {
   formValues: CheckoutFormValues;
 };
 
+type AmoCRMCheckoutPayload = CheckoutState & {
+  total: number;
+};
+
 const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
 const checkoutStorageKey = "posleslovie:checkout-state";
 const productPrice = 999;
@@ -50,6 +54,13 @@ const initialCheckoutState: CheckoutState = {
     artist: "",
   },
 };
+
+const amoCRMConfig = {
+  baseUrl: "https://kailgurika.amocrm.ru",
+  // Temporary client-side test token for GitHub Pages. Revoke it after integration testing.
+  accessToken:
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImNlYmRkZTExYjM2NTUwODM2ODNkNTc2MDBiZTZlOGYyYjEyNGVmZjQwYWJkOTI4MzM4ZDQ5NGZjNmEyOTFlYTZmZDBlYTYyM2NlMjlhZTAzIn0.eyJhdWQiOiI5YTZjYTA5My1jZjIyLTRlN2ItOTUxMC01NWJmZTZlN2E2YjciLCJqdGkiOiJjZWJkZGUxMWIzNjU1MDgzNjgzZDU3NjAwYmU2ZThmMmIxMjRlZmY0MGFiZDkyODMzOGQ0OTRmYzZhMjkxZWE2ZmQwZWE2MjNjZTI5YWUwMyIsImlhdCI6MTc3OTE3NzU4NCwibmJmIjoxNzc5MTc3NTg0LCJleHAiOjE3Nzk0MDgwMDAsInN1YiI6IjEzODE3ODgyIiwiZ3JhbnRfdHlwZSI6IiIsImFjY291bnRfaWQiOjMzMDUyMzMwLCJiYXNlX2RvbWFpbiI6ImFtb2NybS5ydSIsInZlcnNpb24iOjIsInNjb3BlcyI6WyJwdXNoX25vdGlmaWNhdGlvbnMiLCJmaWxlcyIsImNybSIsImZpbGVzX2RlbGV0ZSIsIm5vdGlmaWNhdGlvbnMiXSwiaGFzaF91dWlkIjoiMGFkNGZjNzEtYmUyYy00NjI3LTgxOWYtMDRkYzhkNGMyNGM3IiwiYXBpX2RvbWFpbiI6ImFwaS1iLmFtb2NybS5ydSJ9.hDwHtyvt0s58NVylXtvCAi81pAtZyffWoHtz7VH5EBBfRvZO4mFgRXvWutWR_ZtnlhtHnoieqjvMNqen_njAFSyY_yTj3izaQMz1idBlrFUNuxpR0bsrobaWr_wxrD8uv1x-IGRbWmwx4dSdUpb91OA2-CSEUpYJbG-l0hF_2XRPh17GpFgAT33xpF327JpDaegFeeJ8Y1vz4GOtCyGz9ehswNlDTblUtGiXug8dwp4pJtdoigDKcXEWjw828AvdHRDJI7K6D13YBB3wDOIvHFBo_qxGOXjZeZLeEYybzWUHWFTo8Qv000eU-IVjSmriNxaRRQKel_-LYZ875cuscg",
+} as const;
 
 const assets = {
   hero: assetPath("/images/desktop-29/hero.jpg"),
@@ -311,13 +322,121 @@ function parseCheckoutState(value: string | null): CheckoutState {
   }
 }
 
+function getContactMethodLabel(method: string) {
+  const methods: Record<string, string> = {
+    tg: "Telegram",
+    max: "MAX",
+  };
+
+  return methods[method] ?? method;
+}
+
+function buildAmoCRMOrderNote({ tab, quantity, total, formValues }: AmoCRMCheckoutPayload) {
+  return [
+    "Заказ с сайта Posleslovie",
+    `Тип клиента: ${tab === "company" ? "Компания" : "Для себя"}`,
+    `Товар: Бомбочка для ванны`,
+    `Количество: ${quantity} шт.`,
+    `Цена за 1 шт.: ${productPrice} руб.`,
+    `Сумма: ${total} руб.`,
+    "",
+    `Имя: ${formValues.name || "не указано"}`,
+    `Телефон: ${formValues.phone || "не указан"}`,
+    `Email: ${formValues.email || "не указан"}`,
+    `Компания: ${formValues.company || "не указана"}`,
+    `ИНН: ${formValues.inn || "не указан"}`,
+    `ОГРН: ${formValues.ogrn || "не указан"}`,
+    `Предпочтительный способ связи: ${
+      formValues.contactMethod ? getContactMethodLabel(formValues.contactMethod) : "не указан"
+    }`,
+    `Ник или номер: ${formValues.contactHandle || "не указан"}`,
+    `Город доставки: ${formValues.city || "не указан"}`,
+    `Цвет сургучной печати: ${formValues.sealColor || "не указан"}`,
+    `Художник: ${formValues.artist || "не указан"}`,
+    `Комментарий: ${formValues.comment || "не указан"}`,
+  ].join("\n");
+}
+
+async function submitCheckoutToAmoCRM(payload: AmoCRMCheckoutPayload) {
+  const { tab, quantity, total, formValues } = payload;
+  const contactFields = [
+    formValues.phone
+      ? {
+          field_code: "PHONE",
+          values: [{ value: formValues.phone, enum_code: "WORK" }],
+        }
+      : null,
+    formValues.email
+      ? {
+          field_code: "EMAIL",
+          values: [{ value: formValues.email, enum_code: "WORK" }],
+        }
+      : null,
+  ].filter(Boolean);
+
+  const leadResponse = await fetch(`${amoCRMConfig.baseUrl}/api/v4/leads/complex`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${amoCRMConfig.accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify([
+      {
+        name: `Заказ с сайта: Бомбочка для ванны x${quantity}`,
+        price: total,
+        _embedded: {
+          contacts: [
+            {
+              first_name: formValues.name || "Клиент с сайта",
+              custom_fields_values: contactFields,
+            },
+          ],
+        },
+      },
+    ]),
+  });
+
+  if (!leadResponse.ok) {
+    throw new Error(`AmoCRM rejected lead request: ${leadResponse.status}`);
+  }
+
+  const createdLeads = (await leadResponse.json()) as Array<{ id?: number }>;
+  const leadId = createdLeads[0]?.id;
+
+  if (!leadId) {
+    return;
+  }
+
+  const noteResponse = await fetch(`${amoCRMConfig.baseUrl}/api/v4/leads/${leadId}/notes`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${amoCRMConfig.accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify([
+      {
+        note_type: "common",
+        params: {
+          text: buildAmoCRMOrderNote({ tab, quantity, total, formValues }),
+        },
+      },
+    ]),
+  });
+
+  if (!noteResponse.ok) {
+    throw new Error(`AmoCRM rejected note request: ${noteResponse.status}`);
+  }
+}
+
 function useCheckoutState() {
   const [checkoutState, setCheckoutState] = useState<CheckoutState>(initialCheckoutState);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    setCheckoutState(parseCheckoutState(window.localStorage.getItem(checkoutStorageKey)));
-    setIsReady(true);
+    queueMicrotask(() => {
+      setCheckoutState(parseCheckoutState(window.localStorage.getItem(checkoutStorageKey)));
+      setIsReady(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -789,7 +908,7 @@ function HomeModal({
 
   useEffect(() => {
     if (type !== "checkout") {
-      setCheckoutStep(1);
+      queueMicrotask(() => setCheckoutStep(1));
     }
   }, [type]);
 
@@ -983,8 +1102,26 @@ function CheckoutModal({
   onQuantityChange: (quantity: number) => void;
 }>) {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { tab, quantity, formValues } = checkoutState;
   const total = quantity * productPrice;
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmitMessage("Отправляем заявку в AmoCRM...");
+
+    try {
+      await submitCheckoutToAmoCRM({ tab, quantity, formValues, total });
+      setSubmitMessage("Ваша заявка отправлена в AmoCRM. Мы свяжемся с вами в ближайшее время.");
+    } catch (error) {
+      console.error(error);
+      setSubmitMessage(
+        "Не удалось отправить заявку в AmoCRM. Проверьте токен, CORS и доступы интеграции.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div>
@@ -1003,11 +1140,8 @@ function CheckoutModal({
               values={formValues}
               onFieldChange={onFieldChange}
               submitMessage={submitMessage}
-              onSubmit={() =>
-                setSubmitMessage(
-                  "Ваша заявка принята! Мы свяжемся с вами в ближайшее время.",
-                )
-              }
+              isSubmitting={isSubmitting}
+              onSubmit={handleSubmit}
             />
           )}
         </div>
@@ -1137,12 +1271,14 @@ function CheckoutStep2Form({
   values,
   onFieldChange,
   submitMessage,
+  isSubmitting,
   onSubmit,
 }: Readonly<{
   tab: "personal" | "company";
   values: CheckoutFormValues;
   onFieldChange: (field: CheckoutField, value: string) => void;
   submitMessage: string | null;
+  isSubmitting: boolean;
   onSubmit: () => void;
 }>) {
   const sealColors = [
@@ -1251,9 +1387,10 @@ function CheckoutStep2Form({
           type="button"
           title="Submit order"
           onClick={onSubmit}
-          className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf]"
+          disabled={isSubmitting}
+          className="mt-4 flex w-full items-center justify-center gap-5 rounded-full bg-[#e8c880] px-6 py-4 text-xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf] disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {tab === "personal" ? "Оплатить" : "Оставить заявку"}
+          {isSubmitting ? "Отправляем..." : tab === "personal" ? "Оплатить" : "Оставить заявку"}
           <ArrowIcon size={22} />
         </button>
 
