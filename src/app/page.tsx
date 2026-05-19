@@ -10,6 +10,12 @@ type ModalType = "delivery" | "partners" | "contacts" | "checkout" | LegalDocume
 type CheckoutField = keyof CheckoutFormValues;
 type CheckoutErrorField = CheckoutField | "quantity" | "consent";
 type CheckoutErrors = Partial<Record<CheckoutErrorField, string>>;
+type CheckoutLogoFile = {
+  name: string;
+  type: string;
+  size: number;
+  base64: string;
+};
 
 type CheckoutFormValues = {
   name: string;
@@ -34,11 +40,13 @@ type CheckoutState = {
 
 type AmoCRMCheckoutPayload = CheckoutState & {
   total: number;
+  logoFile?: CheckoutLogoFile | null;
 };
 
 const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
 const checkoutStorageKey = "posleslovie:checkout-state";
 const productPrice = 999;
+const maxLogoFileSize = 3 * 1024 * 1024;
 const normalizedRussianCities = new Map(
   russianCities.map((city) => [normalizeCitySearchValue(city), city]),
 );
@@ -391,6 +399,26 @@ function getRussianCityName(value: string) {
   return normalizedRussianCities.get(normalizeCitySearchValue(value)) ?? null;
 }
 
+function readFileAsCheckoutLogo(file: File) {
+  return new Promise<CheckoutLogoFile>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : "";
+      const base64 = result.includes(",") ? result.split(",")[1] : result;
+
+      resolve({
+        name: file.name,
+        type: file.type || "application/octet-stream",
+        size: file.size,
+        base64,
+      });
+    };
+    reader.onerror = () => reject(reader.error ?? new Error("Не удалось прочитать файл."));
+    reader.readAsDataURL(file);
+  });
+}
+
 function validateCheckout(values: CheckoutFormValues, tab: "personal" | "company", quantity: number) {
   const errors: CheckoutErrors = {};
 
@@ -421,7 +449,7 @@ function validateCheckout(values: CheckoutFormValues, tab: "personal" | "company
   if (values.contactMethod === "tg" && !values.contactHandle.trim()) {
     errors.contactHandle = "Укажите ник в Telegram.";
   } else if (values.contactMethod === "tg" && !isValidTelegramHandle(values.contactHandle)) {
-    errors.contactHandle = "Введите ник в формате @username.";
+    errors.contactHandle = "Введите @ и 5-32 символа: латиница, цифры или _.";
   }
 
   if (tab === "personal" && !values.city.trim()) {
@@ -457,7 +485,13 @@ function hasErrors(errors: CheckoutErrors) {
   return Object.keys(errors).length > 0;
 }
 
-function prepareCheckoutPayload({ tab, quantity, formValues, total }: AmoCRMCheckoutPayload): AmoCRMCheckoutPayload {
+function prepareCheckoutPayload({
+  tab,
+  quantity,
+  formValues,
+  total,
+  logoFile = null,
+}: AmoCRMCheckoutPayload): AmoCRMCheckoutPayload {
   const trimmedValues = Object.fromEntries(
     Object.entries(formValues).map(([key, value]) => [key, value.trim()]),
   ) as CheckoutFormValues;
@@ -466,6 +500,7 @@ function prepareCheckoutPayload({ tab, quantity, formValues, total }: AmoCRMChec
     tab,
     quantity,
     total,
+    logoFile,
     formValues: {
       ...trimmedValues,
       company: tab === "company" ? trimmedValues.company : "",
@@ -1168,6 +1203,8 @@ function CheckoutModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<CheckoutErrors>({});
   const [isConsentAccepted, setIsConsentAccepted] = useState(false);
+  const [logoFile, setLogoFile] = useState<CheckoutLogoFile | null>(null);
+  const [logoFileError, setLogoFileError] = useState<string | null>(null);
   const { tab, quantity, formValues } = checkoutState;
   const total = quantity * productPrice;
 
@@ -1207,6 +1244,31 @@ function CheckoutModal({
     });
   };
 
+  const handleLogoFileChange = async (file: File | null) => {
+    setLogoFile(null);
+    setLogoFileError(null);
+
+    if (!file) {
+      return;
+    }
+
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      setLogoFileError("Загрузите файл в формате JPG или PNG.");
+      return;
+    }
+
+    if (file.size > maxLogoFileSize) {
+      setLogoFileError("Файл должен быть не больше 3 МБ.");
+      return;
+    }
+
+    try {
+      setLogoFile(await readFileAsCheckoutLogo(file));
+    } catch {
+      setLogoFileError("Не удалось прочитать файл. Попробуйте выбрать его ещё раз.");
+    }
+  };
+
   const handleQuantityChange = (nextQuantity: number) => {
     onQuantityChange(nextQuantity);
     setErrors((current) => {
@@ -1237,6 +1299,11 @@ function CheckoutModal({
       nextErrors.consent = "Подтвердите согласие с условиями, чтобы оформить заказ.";
     }
 
+    if (logoFileError) {
+      setSubmitMessage(logoFileError);
+      return;
+    }
+
     if (hasErrors(nextErrors)) {
       setErrors(nextErrors);
       setSubmitMessage("Проверьте выделенные поля и исправьте ошибки.");
@@ -1252,7 +1319,7 @@ function CheckoutModal({
     setSubmitMessage("Отправляем заявку в AmoCRM...");
 
     try {
-      await submitCheckoutToAmoCRM(prepareCheckoutPayload({ tab, quantity, formValues, total }));
+      await submitCheckoutToAmoCRM(prepareCheckoutPayload({ tab, quantity, formValues, total, logoFile }));
       setSubmitMessage("Ваша заявка отправлена в AmoCRM. Мы свяжемся с вами в ближайшее время.");
     } catch (error) {
       console.error(error);
@@ -1282,6 +1349,9 @@ function CheckoutModal({
               values={formValues}
               errors={errors}
               onFieldChange={handleFieldChange}
+              logoFile={logoFile}
+              logoFileError={logoFileError}
+              onLogoFileChange={handleLogoFileChange}
               isConsentAccepted={isConsentAccepted}
               onConsentChange={handleConsentChange}
               submitMessage={submitMessage}
@@ -1444,6 +1514,9 @@ function CheckoutStep2Form({
   values,
   errors,
   onFieldChange,
+  logoFile,
+  logoFileError,
+  onLogoFileChange,
   isConsentAccepted,
   onConsentChange,
   submitMessage,
@@ -1454,6 +1527,9 @@ function CheckoutStep2Form({
   values: CheckoutFormValues;
   errors: CheckoutErrors;
   onFieldChange: (field: CheckoutField, value: string) => void;
+  logoFile: CheckoutLogoFile | null;
+  logoFileError: string | null;
+  onLogoFileChange: (file: File | null) => void;
   isConsentAccepted: boolean;
   onConsentChange: (isAccepted: boolean) => void;
   submitMessage: string | null;
@@ -1477,9 +1553,12 @@ function CheckoutStep2Form({
         {hasErrors(errors) ? (
           <FormErrorSummary message="В заказе остались ошибки. Вернитесь к выделенным полям." />
         ) : null}
-        <div className="relative rounded bg-[#f8f8f8] p-4">
+        <div className={`relative rounded border bg-[#f8f8f8] p-4 ${logoFileError ? "border-red-500" : "border-transparent"}`}>
           <p className="text-base font-bold text-[#0f172a]">Логотип</p>
-          <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">Файлы формата .jpg .png не больше 3мб</p>
+          <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">
+            {logoFile ? `Выбран файл: ${logoFile.name}` : "Файлы формата .jpg .png не больше 3мб"}
+          </p>
+          {logoFileError ? <FieldErrorMessage message={logoFileError} /> : null}
           <label
             title="Upload logo file"
             className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
@@ -1487,7 +1566,12 @@ function CheckoutStep2Form({
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <input type="file" accept=".jpg,.png" className="hidden" />
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+              className="hidden"
+              onChange={(event) => onLogoFileChange(event.target.files?.[0] ?? null)}
+            />
           </label>
         </div>
 

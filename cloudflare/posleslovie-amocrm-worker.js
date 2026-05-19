@@ -1,6 +1,7 @@
 const AMO_CRM_BASE_URL = "https://kailgurika.amocrm.ru";
 const ALLOWED_ORIGIN = "https://kaliguri.github.io";
 const PRODUCT_PRICE = 999;
+const MAX_LOGO_FILE_SIZE = 3 * 1024 * 1024;
 
 function corsHeaders(origin) {
   return {
@@ -80,14 +81,15 @@ function buildOrderNote({ tab, quantity, total, formValues }) {
   return lines.join("\n");
 }
 
-async function amoRequest(path, token, body) {
-  const response = await fetch(`${AMO_CRM_BASE_URL}${path}`, {
-    method: "POST",
+async function amoRequest(path, token, body, options = {}) {
+  const response = await fetch(`${options.baseUrl ?? AMO_CRM_BASE_URL}${path}`, {
+    method: options.method ?? "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers ?? {}),
     },
-    body: JSON.stringify(body),
+    body: body ? JSON.stringify(body) : undefined,
   });
 
   const text = await response.text();
@@ -100,6 +102,98 @@ async function amoRequest(path, token, body) {
   return data;
 }
 
+async function getAmoCRMDriveUrl(token) {
+  const account = await amoRequest("/api/v4/account?with=drive_url", token, null, { method: "GET" });
+  const driveUrl = account?.drive_url ?? account?._links?.drive_url?.href;
+
+  if (!driveUrl) {
+    throw new Error("AmoCRM drive_url was not found. Check Files Access scope for the integration.");
+  }
+
+  return driveUrl.replace(/\/$/, "");
+}
+
+function decodeBase64File(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes;
+}
+
+function validateLogoFile(logoFile) {
+  if (!logoFile) {
+    return;
+  }
+
+  if (!["image/jpeg", "image/png"].includes(logoFile.type)) {
+    throw new Error("Logo file must be JPG or PNG.");
+  }
+
+  if (!logoFile.size || logoFile.size > MAX_LOGO_FILE_SIZE) {
+    throw new Error("Logo file must be no larger than 3 MB.");
+  }
+
+  if (!logoFile.base64) {
+    throw new Error("Logo file content is empty.");
+  }
+}
+
+async function uploadLogoFileToAmoCRM(logoFile, token) {
+  validateLogoFile(logoFile);
+
+  const driveUrl = await getAmoCRMDriveUrl(token);
+  const session = await amoRequest(
+    "/v1.0/sessions",
+    token,
+    {
+      file_name: logoFile.name,
+      file_size: logoFile.size,
+      content_type: logoFile.type,
+      with_preview: true,
+    },
+    { baseUrl: driveUrl },
+  );
+
+  const bytes = decodeBase64File(logoFile.base64);
+  const maxPartSize = session.max_part_size || bytes.length;
+  let uploadUrl = session.upload_url;
+  let uploadedFile = null;
+
+  for (let offset = 0; offset < bytes.length; offset += maxPartSize) {
+    const chunk = bytes.slice(offset, Math.min(offset + maxPartSize, bytes.length));
+    const response = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": logoFile.type,
+      },
+      body: chunk,
+    });
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : null;
+
+    if (!response.ok) {
+      throw new Error(`AmoCRM file upload failed with ${response.status}: ${text}`);
+    }
+
+    if (data?.uuid) {
+      uploadedFile = data;
+    } else if (data?.next_url) {
+      uploadUrl = data.next_url;
+    }
+  }
+
+  if (!uploadedFile?.uuid) {
+    throw new Error("AmoCRM file upload did not return file uuid.");
+  }
+
+  return uploadedFile;
+}
+
 function getLeadId(createdLeadResponse) {
   if (Array.isArray(createdLeadResponse)) {
     return createdLeadResponse[0]?.id;
@@ -109,7 +203,7 @@ function getLeadId(createdLeadResponse) {
 }
 
 async function createAmoCRMCheckout(payload, token) {
-  const { tab, quantity, total, formValues } = payload;
+  const { tab, quantity, total, formValues, logoFile } = payload;
   const isCompanyOrder = tab === "company";
   const contactFields = [
     formValues.phone
@@ -157,6 +251,20 @@ async function createAmoCRMCheckout(payload, token) {
       },
     },
   ]);
+
+  if (logoFile) {
+    const uploadedFile = await uploadLogoFileToAmoCRM(logoFile, token);
+    await amoRequest(`/api/v4/leads/${leadId}/notes`, token, [
+      {
+        note_type: "attachment",
+        params: {
+          file_uuid: uploadedFile.uuid,
+          version_uuid: uploadedFile.version_uuid,
+          file_name: logoFile.name,
+        },
+      },
+    ]);
+  }
 
   return { leadId };
 }
