@@ -1,5 +1,9 @@
 import { defaultHomeHeroContent } from "./home-hero-content";
 import { defaultHomePageContent } from "./home-page-content";
+import {
+  defaultLegalDocumentsContent,
+  defaultSiteSettingsContent,
+} from "./contact-legal-content";
 
 export type CmsContentSchema = {
   slug: string;
@@ -111,6 +115,20 @@ export const cmsContentSchemas: CmsContentSchema[] = [
     title: "Галереи секций",
     description: "Изображения и alt-тексты для bombs/lavender/packs.",
     defaultValue: defaultHomePageContent.galleries as unknown as Record<string, unknown>,
+  },
+  {
+    slug: "site-settings",
+    title: "Контакты и соцсети",
+    description: "Телефон, email и ссылки на социальные сети.",
+    defaultValue: defaultSiteSettingsContent as unknown as Record<string, unknown>,
+  },
+  {
+    slug: "legal-documents",
+    title: "Документы (договоры и согласия)",
+    description: "PDF пути, заголовки и текст документов.",
+    defaultValue: {
+      documents: defaultLegalDocumentsContent,
+    } as unknown as Record<string, unknown>,
   },
 ];
 

@@ -4,7 +4,22 @@ import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { UpdateContentDto } from "./dto/update-content.dto";
 
-type ContentPageView = { slug: string; title: string; data: Record<string, unknown> };
+type ContentPageView = {
+  slug: string;
+  title: string;
+  data: Record<string, unknown>;
+  updatedAt: string;
+};
+
+type ContentRevisionView = {
+  id: number;
+  slug: string;
+  title: string;
+  data: Record<string, unknown>;
+  actor: string;
+  reason: string;
+  createdAt: string;
+};
 
 @Injectable()
 export class ContentService {
@@ -17,6 +32,12 @@ export class ContentService {
     this.db.pragma("journal_mode = WAL");
     this.db.exec(
       "CREATE TABLE IF NOT EXISTS content_pages (slug TEXT PRIMARY KEY, title TEXT NOT NULL, data TEXT NOT NULL, updated_at TEXT NOT NULL)",
+    );
+    this.db.exec(
+      "CREATE TABLE IF NOT EXISTS content_revisions (id INTEGER PRIMARY KEY AUTOINCREMENT, slug TEXT NOT NULL, title TEXT NOT NULL, data TEXT NOT NULL, actor TEXT NOT NULL, reason TEXT NOT NULL, created_at TEXT NOT NULL)",
+    );
+    this.db.exec(
+      "CREATE INDEX IF NOT EXISTS idx_content_revisions_slug_created_at ON content_revisions(slug, created_at DESC)",
     );
     this.seedDefaults();
   }
@@ -191,6 +212,72 @@ export class ContentService {
           ],
         },
       },
+      {
+        slug: "site-settings",
+        title: "Контакты и соцсети",
+        data: {
+          phone: "+8 (978) 673-47-01",
+          email: "Posle.Slovie@yandex.ru",
+          socials: [
+            { label: "Telegram", href: "https://t.me/posleslovie" },
+            { label: "VK", href: "https://vk.com/posleslovie" },
+          ],
+        },
+      },
+      {
+        slug: "legal-documents",
+        title: "Документы",
+        data: {
+          documents: [
+            {
+              slug: "privacy",
+              pdfPath: "/docs/privacy.pdf",
+              title: "Политика в отношении обработки персональных данных",
+              shortTitle: "Политика конфиденциальности",
+              content: [
+                "1. Общие положения",
+                "1.1. Настоящая Политика обработки персональных данных...",
+              ],
+            },
+            {
+              slug: "offer",
+              pdfPath: "/docs/offer.pdf",
+              title: "Договор публичной оферты",
+              shortTitle: "Договор оферты",
+              content: [
+                "Индивидуальный предприниматель ... публикует настоящий Договор...",
+              ],
+            },
+            {
+              slug: "personal-data-consent",
+              pdfPath: "/docs/personal-data-consent.pdf",
+              title: "Согласие на обработку персональных данных",
+              shortTitle: "Согласие на обработку данных",
+              content: [
+                "Я, оставляя свои персональные данные ... даю свое согласие...",
+              ],
+            },
+            {
+              slug: "personal-data-distribution",
+              pdfPath: "/docs/personal-data-distribution.pdf",
+              title: "Согласие на распространение персональных данных",
+              shortTitle: "Согласие на распространение данных",
+              content: [
+                "Настоящим, заполняя форму обратной связи/отзыва на Сайте...",
+              ],
+            },
+            {
+              slug: "marketing-consent",
+              pdfPath: "/docs/marketing-consent.pdf",
+              title: "Согласие на получение рекламных и информационных материалов",
+              shortTitle: "Согласие на рассылку",
+              content: [
+                "Я, заполняя форму на Сайте ... даю согласие на получение материалов...",
+              ],
+            },
+          ],
+        },
+      },
     ];
 
     for (const item of defaults) {
@@ -209,24 +296,20 @@ export class ContentService {
 
   async getPublicPage(slug: string): Promise<ContentPageView> {
     const row = this.db
-      .prepare("SELECT slug, title, data FROM content_pages WHERE slug = ?")
-      .get(slug) as { slug: string; title: string; data: string } | undefined;
+      .prepare("SELECT slug, title, data, updated_at FROM content_pages WHERE slug = ?")
+      .get(slug) as { slug: string; title: string; data: string; updated_at: string } | undefined;
 
     if (!row) {
       throw new NotFoundException(`Content page '${slug}' was not found`);
     }
 
-    return {
-      slug: row.slug,
-      title: row.title,
-      data: JSON.parse(row.data) as Record<string, unknown>,
-    };
+    return this.mapRowToPage(row);
   }
 
   async upsertPage(
     slug: string,
     payload: UpdateContentDto,
-    _actor: string,
+    actor: string,
   ): Promise<ContentPageView> {
     const title = payload.title ?? slug;
     const dataJson = JSON.stringify(payload.data);
@@ -237,10 +320,110 @@ export class ContentService {
       )
       .run({ slug, title, data: dataJson, updatedAt: now });
 
+    const savedRow = this.db
+      .prepare("SELECT slug, title, data, updated_at FROM content_pages WHERE slug = ?")
+      .get(slug) as { slug: string; title: string; data: string; updated_at: string } | undefined;
+
+    if (!savedRow) {
+      throw new NotFoundException(`Content page '${slug}' was not found after save`);
+    }
+
+    this.insertRevision(savedRow.slug, savedRow.title, savedRow.data, actor, "save");
+
+    return this.mapRowToPage(savedRow);
+  }
+
+  async getAdminPage(slug: string): Promise<ContentPageView> {
+    return this.getPublicPage(slug);
+  }
+
+  async listRevisions(slug: string, limit = 20): Promise<ContentRevisionView[]> {
+    const safeLimit = Math.min(Math.max(limit, 1), 100);
+    const rows = this.db
+      .prepare(
+        "SELECT id, slug, title, data, actor, reason, created_at FROM content_revisions WHERE slug = ? ORDER BY id DESC LIMIT ?",
+      )
+      .all(slug, safeLimit) as Array<{
+      id: number;
+      slug: string;
+      title: string;
+      data: string;
+      actor: string;
+      reason: string;
+      created_at: string;
+    }>;
+
+    return rows.map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      data: JSON.parse(row.data) as Record<string, unknown>,
+      actor: row.actor,
+      reason: row.reason,
+      createdAt: row.created_at,
+    }));
+  }
+
+  async restoreRevision(slug: string, revisionId: number, actor: string): Promise<ContentPageView> {
+    const revision = this.db
+      .prepare("SELECT id, slug, title, data FROM content_revisions WHERE id = ? AND slug = ?")
+      .get(revisionId, slug) as { id: number; slug: string; title: string; data: string } | undefined;
+
+    if (!revision) {
+      throw new NotFoundException(`Revision '${revisionId}' for '${slug}' not found`);
+    }
+
+    const now = new Date().toISOString();
+    this.db
+      .prepare(
+        "INSERT INTO content_pages (slug, title, data, updated_at) VALUES (@slug, @title, @data, @updatedAt) ON CONFLICT(slug) DO UPDATE SET title = excluded.title, data = excluded.data, updated_at = excluded.updated_at",
+      )
+      .run({
+        slug,
+        title: revision.title,
+        data: revision.data,
+        updatedAt: now,
+      });
+
+    const restoredRow = this.db
+      .prepare("SELECT slug, title, data, updated_at FROM content_pages WHERE slug = ?")
+      .get(slug) as { slug: string; title: string; data: string; updated_at: string } | undefined;
+
+    if (!restoredRow) {
+      throw new NotFoundException(`Content page '${slug}' was not found after restore`);
+    }
+
+    this.insertRevision(restoredRow.slug, restoredRow.title, restoredRow.data, actor, `restore:${revisionId}`);
+
+    return this.mapRowToPage(restoredRow);
+  }
+
+  private mapRowToPage(row: {
+    slug: string;
+    title: string;
+    data: string;
+    updated_at: string;
+  }): ContentPageView {
     return {
-      slug,
-      title,
-      data: payload.data,
+      slug: row.slug,
+      title: row.title,
+      data: JSON.parse(row.data) as Record<string, unknown>,
+      updatedAt: row.updated_at,
     };
+  }
+
+  private insertRevision(slug: string, title: string, data: string, actor: string, reason: string): void {
+    this.db
+      .prepare(
+        "INSERT INTO content_revisions (slug, title, data, actor, reason, created_at) VALUES (@slug, @title, @data, @actor, @reason, @createdAt)",
+      )
+      .run({
+        slug,
+        title,
+        data,
+        actor,
+        reason,
+        createdAt: new Date().toISOString(),
+      });
   }
 }

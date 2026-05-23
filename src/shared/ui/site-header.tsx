@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { defaultSiteSettingsContent, type SiteSettingsContent } from "@/shared/config/contact-legal-content";
 import { siteConfig } from "@/shared/config/site";
 
 const navigationItems = [
@@ -16,6 +17,7 @@ const navigationItems = [
 
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [siteSettings, setSiteSettings] = useState<SiteSettingsContent>(defaultSiteSettingsContent);
 
   useEffect(() => {
     if (!isMobileMenuOpen) {
@@ -44,6 +46,46 @@ export function SiteHeader() {
       window.removeEventListener("resize", onResize);
     };
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (!apiBaseUrl) {
+      return;
+    }
+
+    const controller = new AbortController();
+    async function loadSettings() {
+      try {
+        const response = await fetch(`${apiBaseUrl}/public/content/site-settings`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          return;
+        }
+        const payload = (await response.json()) as { data?: Partial<SiteSettingsContent> };
+        if (!payload.data) {
+          return;
+        }
+        const socials = Array.isArray(payload.data.socials)
+          ? payload.data.socials.filter(
+              (item): item is { label: string; href: string } =>
+                typeof item?.label === "string" && typeof item?.href === "string",
+            )
+          : defaultSiteSettingsContent.socials;
+        setSiteSettings({
+          phone: typeof payload.data.phone === "string" ? payload.data.phone : defaultSiteSettingsContent.phone,
+          email: typeof payload.data.email === "string" ? payload.data.email : defaultSiteSettingsContent.email,
+          socials,
+        });
+      } catch {
+        // Keep defaults
+      }
+    }
+
+    void loadSettings();
+    return () => controller.abort();
+  }, []);
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -95,17 +137,17 @@ export function SiteHeader() {
             </Link>
 
             <a
-              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-              aria-label={`Позвонить ${siteConfig.phone}`}
+              href={`tel:${siteSettings.phone.replace(/\D/g, "")}`}
+              aria-label={`Позвонить ${siteSettings.phone}`}
               className="ml-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/70 text-sm font-bold transition hover:border-[#e8c880] hover:text-[#e8c880] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
             >
               <PhoneIcon />
             </a>
             <a
-              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
+              href={`tel:${siteSettings.phone.replace(/\D/g, "")}`}
               className="ml-auto hidden text-base font-medium leading-[1.1] [font-family:var(--font-inter)] lg:block"
             >
-              {siteConfig.phone}
+              {siteSettings.phone}
             </a>
           </div>
 
@@ -148,10 +190,10 @@ export function SiteHeader() {
               Оформить заказ
             </button>
             <a
-              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
+              href={`tel:${siteSettings.phone.replace(/\D/g, "")}`}
               className="mt-3 text-center text-base font-medium text-white/80 underline-offset-4 hover:text-[#e8c880] hover:underline"
             >
-              {siteConfig.phone}
+              {siteSettings.phone}
             </a>
           </nav>
         </div>

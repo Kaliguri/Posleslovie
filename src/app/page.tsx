@@ -6,9 +6,14 @@ import {
   defaultHomeHeroContent,
   type HomeHeroContent,
 } from "@/shared/config/home-hero-content";
-import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
+import {
+  defaultLegalDocumentsContent,
+  defaultSiteSettingsContent,
+  type LegalDocumentContent,
+  type SiteSettingsContent,
+} from "@/shared/config/contact-legal-content";
+import { type LegalDocumentSlug } from "@/shared/config/legal-documents";
 import { russianCities } from "@/shared/config/russian-cities";
-import { siteConfig } from "@/shared/config/site";
 
 type ModalType = "delivery" | "partners" | "contacts" | "checkout" | LegalDocumentSlug | null;
 type CheckoutField = keyof CheckoutFormValues;
@@ -344,6 +349,74 @@ function parseGalleryPayload(data: unknown): Record<GalleryKind, GallerySlide[]>
   return parsed;
 }
 
+function parseSiteSettingsPayload(data: unknown): SiteSettingsContent | null {
+  const source = data as {
+    phone?: unknown;
+    email?: unknown;
+    socials?: unknown;
+  };
+  if (typeof source.phone !== "string" || typeof source.email !== "string") {
+    return null;
+  }
+  if (!Array.isArray(source.socials)) {
+    return null;
+  }
+  const socials = source.socials
+    .map((item) => {
+      const label = (item as { label?: unknown }).label;
+      const href = (item as { href?: unknown }).href;
+      if (typeof label !== "string" || typeof href !== "string") {
+        return null;
+      }
+      return { label, href };
+    })
+    .filter((item): item is { label: string; href: string } => item !== null);
+
+  return {
+    phone: source.phone,
+    email: source.email,
+    socials,
+  };
+}
+
+function parseLegalDocumentsPayload(data: unknown): LegalDocumentContent[] | null {
+  const source = data as { documents?: unknown };
+  if (!Array.isArray(source.documents)) {
+    return null;
+  }
+
+  const defaultBySlug = new Map(defaultLegalDocumentsContent.map((doc) => [doc.slug, doc]));
+  const parsed = source.documents
+    .map((item) => {
+      const slug = (item as { slug?: unknown }).slug;
+      if (typeof slug !== "string") {
+        return null;
+      }
+      const fallback = defaultBySlug.get(slug as LegalDocumentSlug);
+      if (!fallback) {
+        return null;
+      }
+      const title = (item as { title?: unknown }).title;
+      const shortTitle = (item as { shortTitle?: unknown }).shortTitle;
+      const pdfPath = (item as { pdfPath?: unknown }).pdfPath;
+      const content = (item as { content?: unknown }).content;
+
+      return {
+        slug: fallback.slug,
+        title: typeof title === "string" ? title : fallback.title,
+        shortTitle: typeof shortTitle === "string" ? shortTitle : fallback.shortTitle,
+        pdfPath: typeof pdfPath === "string" ? pdfPath : fallback.pdfPath,
+        content:
+          Array.isArray(content) && content.every((line) => typeof line === "string")
+            ? (content as string[])
+            : fallback.content,
+      };
+    })
+    .filter((doc): doc is LegalDocumentContent => doc !== null);
+
+  return parsed.length > 0 ? parsed : null;
+}
+
 type ReasonContent = {
   title: string;
   description: string;
@@ -418,6 +491,12 @@ const defaultCtaContent = {
   buttonLabel: "Оформить заказ",
   backgroundImage: assets.cta,
 };
+
+const defaultSiteSettings = {
+  ...defaultSiteSettingsContent,
+};
+
+const defaultLegalDocumentsState = [...defaultLegalDocumentsContent];
 
 const CAROUSEL_DURATION_MS = 500;
 const CAROUSEL_FAST_DURATION_MS = 250;
@@ -794,6 +873,9 @@ export default function Home() {
   const [reviewsSectionTitle, setReviewsSectionTitle] = useState("Нам доверяют");
   const [reviews, setReviews] = useState<ReviewContent[]>(defaultReviews);
   const [ctaContent, setCtaContent] = useState(defaultCtaContent);
+  const [siteSettings, setSiteSettings] = useState<SiteSettingsContent>(defaultSiteSettings);
+  const [legalDocumentsState, setLegalDocumentsState] =
+    useState<LegalDocumentContent[]>(defaultLegalDocumentsState);
   const [gallerySlidesState, setGallerySlidesState] = useState<Record<GalleryKind, GallerySlide[]>>({
     bombs: [...gallerySlides.bombs],
     lavender: [...gallerySlides.lavender],
@@ -863,6 +945,8 @@ export default function Home() {
           reviewsData,
           ctaData,
           galleriesData,
+          siteSettingsData,
+          legalDocumentsData,
         ] = await Promise.all([
           loadContent("home-hero"),
           loadContent("home-feature-cards"),
@@ -872,6 +956,8 @@ export default function Home() {
           loadContent("home-reviews"),
           loadContent("home-cta"),
           loadContent("home-galleries"),
+          loadContent("site-settings"),
+          loadContent("legal-documents"),
         ]);
 
         if (heroData) {
@@ -958,6 +1044,16 @@ export default function Home() {
         if (parsedGalleries) {
           setGallerySlidesState(parsedGalleries);
         }
+
+        const parsedSiteSettings = parseSiteSettingsPayload(siteSettingsData);
+        if (parsedSiteSettings) {
+          setSiteSettings(parsedSiteSettings);
+        }
+
+        const parsedLegalDocuments = parseLegalDocumentsPayload(legalDocumentsData);
+        if (parsedLegalDocuments) {
+          setLegalDocumentsState(parsedLegalDocuments);
+        }
       } catch {
         // Keep current defaults when backend is unavailable.
       }
@@ -1002,6 +1098,8 @@ export default function Home() {
       <ScrollTopButton visible={showScrollTop} />
       <HomeModal
         type={modal}
+        siteSettings={siteSettings}
+        legalDocuments={legalDocumentsState}
         checkoutState={checkoutState}
         onCheckoutFieldChange={updateField}
         onCheckoutQuantityChange={updateQuantity}
@@ -1343,13 +1441,19 @@ function DecorativeObject({
   );
 }
 
-function isLegalDocumentSlug(type: ModalType): type is LegalDocumentSlug {
-  return Boolean(type && legalDocuments.some((document) => document.slug === type));
+function isLegalDocumentSlug(
+  type: ModalType,
+  documents: readonly Pick<LegalDocumentContent, "slug">[],
+): type is LegalDocumentSlug {
+  return Boolean(type && documents.some((document) => document.slug === type));
 }
 
-function getModalHeader(type: Exclude<ModalType, null>) {
-  if (isLegalDocumentSlug(type)) {
-    const document = legalDocuments.find((item) => item.slug === type);
+function getModalHeader(
+  type: Exclude<ModalType, null>,
+  documents: readonly LegalDocumentContent[],
+) {
+  if (isLegalDocumentSlug(type, documents)) {
+    const document = documents.find((item) => item.slug === type);
     return {
       kicker: "Документы",
       title: document?.title ?? "Документ",
@@ -1380,6 +1484,8 @@ function getModalHeader(type: Exclude<ModalType, null>) {
 
 function HomeModal({
   type,
+  siteSettings,
+  legalDocuments,
   checkoutState,
   onCheckoutFieldChange,
   onCheckoutQuantityChange,
@@ -1387,6 +1493,8 @@ function HomeModal({
   onClose,
 }: Readonly<{
   type: ModalType;
+  siteSettings: SiteSettingsContent;
+  legalDocuments: LegalDocumentContent[];
   checkoutState: CheckoutState;
   onCheckoutFieldChange: (field: CheckoutField, value: string) => void;
   onCheckoutQuantityChange: (quantity: number) => void;
@@ -1420,7 +1528,7 @@ function HomeModal({
     return null;
   }
 
-  const header = getModalHeader(type);
+  const header = getModalHeader(type, legalDocuments);
   const isCheckout = type === "checkout";
 
   const handleCheckoutTabChange = (newTab: "personal" | "company") => {
@@ -1505,7 +1613,7 @@ function HomeModal({
         <div className="modal-scroll min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-5 sm:px-6 sm:pt-8 lg:px-12 lg:pb-4">
           {type === "delivery" ? <DeliveryModal /> : null}
           {type === "partners" ? <PartnersModal /> : null}
-          {type === "contacts" ? <ContactsModal /> : null}
+          {type === "contacts" ? <ContactsModal siteSettings={siteSettings} /> : null}
           {isCheckout ? (
             <CheckoutModal
               checkoutState={checkoutState}
@@ -1515,7 +1623,9 @@ function HomeModal({
               onQuantityChange={onCheckoutQuantityChange}
             />
           ) : null}
-          {isLegalDocumentSlug(type) ? <LegalDocumentModal slug={type} /> : null}
+          {isLegalDocumentSlug(type, legalDocuments) ? (
+            <LegalDocumentModal slug={type} legalDocuments={legalDocuments} />
+          ) : null}
         </div>
       </div>
     </div>
@@ -1560,12 +1670,16 @@ function DeliveryModal() {
   );
 }
 
-function ContactsModal() {
+function ContactsModal({ siteSettings }: Readonly<{ siteSettings: SiteSettingsContent }>) {
   return (
     <div className="max-w-[552px]">
       <dl className="grid gap-3 text-base">
-        <ContactItem label="Телефон" value={siteConfig.phone} href={`tel:${siteConfig.phone.replace(/\D/g, "")}`} />
-        <ContactItem label="Почта" value={siteConfig.email} href={`mailto:${siteConfig.email}`} />
+        <ContactItem
+          label="Телефон"
+          value={siteSettings.phone}
+          href={`tel:${siteSettings.phone.replace(/\D/g, "")}`}
+        />
+        <ContactItem label="Почта" value={siteSettings.email} href={`mailto:${siteSettings.email}`} />
         <ContactItem label="Адрес" value="г. Севастополь, ул. Бориса Михайлова 3А, кв. 44" />
         <div className="grid gap-3 sm:grid-cols-[234px_1fr]">
           <ContactItem label="ИНН" value="Будет указан после открытия ИП" compact />
@@ -2167,7 +2281,10 @@ function FormFieldTextarea({
   );
 }
 
-function LegalDocumentModal({ slug }: Readonly<{ slug: LegalDocumentSlug }>) {
+function LegalDocumentModal({
+  slug,
+  legalDocuments,
+}: Readonly<{ slug: LegalDocumentSlug; legalDocuments: LegalDocumentContent[] }>) {
   const document = legalDocuments.find((item) => item.slug === slug);
 
   if (!document) {
