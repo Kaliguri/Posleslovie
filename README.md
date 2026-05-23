@@ -1,6 +1,6 @@
 # Posleslovie Site
 
-Сайт-визитка для продажи бомбочек.
+Сайт-визитка для продажи бомбочек с локальным CMS-бэкендом и админкой контента.
 
 Сайт на GitHub Pages: https://kaliguri.github.io/Posleslovie/
 
@@ -34,30 +34,33 @@ npm run lint
 npm run build
 ```
 
-Сборка настроена как static export Next.js. После `npm run build` готовые файлы появляются в папке `out/`.
+Сборка поддерживает static export для legacy GitHub Pages. После `npm run build` (в режиме static export) готовые файлы появляются в папке `out/`.
 
 ## Локальный fullstack-режим
 
-Для разработки нового backend можно запускать полный стек:
+Быстрый запуск фронта + API:
 
 ```bash
-docker compose up --build
+# 1) backend
+npm --prefix backend run dev
+
+# 2) frontend
+npm run dev
 ```
 
-Сервисы:
+Адреса:
 
 - Frontend: `http://localhost:3000`
 - Backend API: `http://localhost:4000/api`
 - Healthcheck: `http://localhost:4000/api/health`
-- PostgreSQL: `localhost:5432`
-- Redis: `localhost:6379`
-- MinIO: `http://localhost:9001`
 
-Детали по переходу и CMS scope: [docs/backend-transition.md](docs/backend-transition.md).
+Текущий CMS-контент хранится локально в SQLite: `backend/data/content.db`.
+
+Опционально можно поднимать инфраструктуру через `docker compose up --build` (PostgreSQL/Redis/MinIO) для следующих этапов миграции.
 
 ## Админка контента
 
-Временный веб-интерфейс админки доступен по адресу:
+Веб-интерфейс админки доступен по адресу:
 
 - `/admin/content` (например `http://localhost:3000/admin/content`)
 
@@ -65,9 +68,17 @@ docker compose up --build
 
 - запущенный backend API;
 - `NEXT_PUBLIC_API_BASE_URL` во фронте;
-- действующий `x-api-key` (`API_KEY_ADMIN` из backend env).
+- действующий `x-api-key` (`API_KEY_ADMIN` из backend env; по умолчанию в локальной разработке: `local-admin-key-please-change`).
 
-Сейчас через админку можно редактировать записи CMS в backend (данные пишутся в локальную SQLite БД `backend/data/content.db`), и на витрину подключены:
+Сейчас через админку можно:
+
+- редактировать контент по секциям с inline preview;
+- обновлять live-preview сайта после сохранения;
+- управлять массивами (добавить/удалить/дублировать/переставить);
+- смотреть историю версий и восстанавливать ревизии;
+- работать с изображениями: preview, выбор файла, загрузка в `public/images/uploads`, выбор из библиотеки проекта.
+
+На витрину уже подключены CMS-блоки:
 
 - `home-hero`
 - `home-feature-cards`
@@ -77,6 +88,28 @@ docker compose up --build
 - `home-reviews`
 - `home-cta`
 - `home-galleries`
+- `site-settings` (телефон, email, соцсети)
+- `legal-documents` (заголовки, PDF-пути, тексты документов)
+
+### Редактирование контактов и договоров
+
+Для изменения контактов и соцсетей:
+
+- откройте в админке блок `site-settings`;
+- обновите `phone` и элементы массива `socials` (например Telegram/VK);
+- сохраните.
+
+Для изменения договорных/юридических документов:
+
+- откройте блок `legal-documents`;
+- отредактируйте `documents` (например `shortTitle`, `pdfPath`, `content`);
+- сохраните.
+
+После сохранения изменения применяются в:
+
+- шапке/футере сайта;
+- модалке контактов;
+- модалках документов и ссылках на PDF в футере.
 
 ## GitHub Pages (legacy)
 
