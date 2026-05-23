@@ -12,3 +12,4 @@ coverage
 dist
 .turbo
 .cache
+backend/data

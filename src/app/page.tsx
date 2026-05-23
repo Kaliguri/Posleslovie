@@ -122,7 +122,22 @@ const gallerySlides = {
 type GalleryKind = keyof typeof gallerySlides;
 type GallerySlide = (typeof gallerySlides)[GalleryKind][number];
 
-const featureCards = [
+type FeatureCardContent = {
+  title: string;
+  description: string;
+  icon: string;
+};
+
+type ProcessSectionContent = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  reverse: boolean;
+  gallery: GalleryKind;
+  button?: string;
+};
+
+const defaultFeatureCards: FeatureCardContent[] = [
   {
     title: "Природа в чистом виде",
     description:
@@ -143,7 +158,7 @@ const featureCards = [
   },
 ] as const;
 
-const processSections = [
+const defaultProcessSections: ProcessSectionContent[] = [
   {
     eyebrow: "Продукция",
     title: "Как мы делаем бомбочки для ванн?",
@@ -171,7 +186,171 @@ const processSections = [
   },
 ] as const;
 
-const reasons = [
+function isGalleryKind(value: unknown): value is GalleryKind {
+  return typeof value === "string" && value in gallerySlides;
+}
+
+function resolveAssetPath(rawPath: string): string {
+  if (rawPath.startsWith("http://") || rawPath.startsWith("https://") || rawPath.startsWith("data:")) {
+    return rawPath;
+  }
+  if (!rawPath.startsWith("/")) {
+    return rawPath;
+  }
+  return assetPath(rawPath);
+}
+
+function parseFeatureCardsPayload(data: unknown): FeatureCardContent[] | null {
+  const cards = (data as { cards?: unknown })?.cards;
+  if (!Array.isArray(cards)) {
+    return null;
+  }
+
+  const parsed = cards
+    .map((card) => {
+      const title = (card as { title?: unknown }).title;
+      const description = (card as { description?: unknown }).description;
+      const icon = (card as { icon?: unknown }).icon;
+      if (typeof title !== "string" || typeof description !== "string" || typeof icon !== "string") {
+        return null;
+      }
+      return {
+        title,
+        description,
+        icon: resolveAssetPath(icon),
+      };
+    })
+    .filter((card): card is FeatureCardContent => card !== null);
+
+  return parsed.length > 0 ? parsed : null;
+}
+
+function parseProcessSectionsPayload(data: unknown): ProcessSectionContent[] | null {
+  const sections = (data as { sections?: unknown })?.sections;
+  if (!Array.isArray(sections)) {
+    return null;
+  }
+
+  const parsed = sections
+    .map((section) => {
+      const eyebrow = (section as { eyebrow?: unknown }).eyebrow;
+      const title = (section as { title?: unknown }).title;
+      const description = (section as { description?: unknown }).description;
+      const reverse = (section as { reverse?: unknown }).reverse;
+      const gallery = (section as { gallery?: unknown }).gallery;
+      const button = (section as { button?: unknown }).button;
+      if (
+        typeof eyebrow !== "string" ||
+        typeof title !== "string" ||
+        typeof description !== "string" ||
+        typeof reverse !== "boolean" ||
+        !isGalleryKind(gallery)
+      ) {
+        return null;
+      }
+      return {
+        eyebrow,
+        title,
+        description,
+        reverse,
+        gallery,
+        button: typeof button === "string" ? button : undefined,
+      };
+    })
+    .filter((section): section is ProcessSectionContent => section !== null);
+
+  return parsed.length > 0 ? parsed : null;
+}
+
+function parseReasonsPayload(data: unknown): ReasonContent[] | null {
+  const reasons = (data as { reasons?: unknown })?.reasons;
+  if (!Array.isArray(reasons)) {
+    return null;
+  }
+
+  const parsed = reasons
+    .map((reason) => {
+      const title = (reason as { title?: unknown }).title;
+      const description = (reason as { description?: unknown }).description;
+      const icon = (reason as { icon?: unknown }).icon;
+      if (typeof title !== "string" || typeof description !== "string" || typeof icon !== "string") {
+        return null;
+      }
+      return { title, description, icon: resolveAssetPath(icon) };
+    })
+    .filter((reason): reason is ReasonContent => reason !== null);
+
+  return parsed.length > 0 ? parsed : null;
+}
+
+function parseReviewsPayload(data: unknown): { title?: string; items: ReviewContent[] } | null {
+  const items = (data as { items?: unknown })?.items;
+  if (!Array.isArray(items)) {
+    return null;
+  }
+
+  const parsed = items
+    .map((item) => {
+      const name = (item as { name?: unknown }).name;
+      const text = (item as { text?: unknown }).text;
+      const image = (item as { image?: unknown }).image;
+      if (typeof name !== "string" || typeof text !== "string" || typeof image !== "string") {
+        return null;
+      }
+      return { name, text, image: resolveAssetPath(image) };
+    })
+    .filter((item): item is ReviewContent => item !== null);
+
+  if (parsed.length === 0) {
+    return null;
+  }
+
+  return {
+    title: typeof (data as { title?: unknown }).title === "string" ? (data as { title: string }).title : undefined,
+    items: parsed,
+  };
+}
+
+function parseGalleryPayload(data: unknown): Record<GalleryKind, GallerySlide[]> | null {
+  const source = data as Record<string, unknown>;
+  const kinds: GalleryKind[] = ["bombs", "lavender", "packs"];
+  const parsed = {} as Record<GalleryKind, GallerySlide[]>;
+
+  for (const kind of kinds) {
+    const items = source[kind];
+    if (!Array.isArray(items)) {
+      return null;
+    }
+    const slides = items
+      .map((item) => {
+        const image = (item as { image?: unknown }).image;
+        const alt = (item as { alt?: unknown }).alt;
+        if (typeof image !== "string" || typeof alt !== "string") {
+          return null;
+        }
+        return {
+          image: resolveAssetPath(image),
+          alt,
+        };
+      })
+      .filter((slide): slide is GallerySlide => slide !== null);
+
+    if (slides.length === 0) {
+      return null;
+    }
+    parsed[kind] = slides;
+  }
+
+  return parsed;
+}
+
+type ReasonContent = {
+  title: string;
+  description: string;
+  icon: string;
+};
+
+const defaultReasons: ReasonContent[] = [
   {
     title: "Чистый состав",
     description: "Только органические масла и настоящие сухоцветы",
@@ -189,7 +368,13 @@ const reasons = [
   },
 ] as const;
 
-const reviews = [
+type ReviewContent = {
+  name: string;
+  image: string;
+  text: string;
+};
+
+const defaultReviews: ReviewContent[] = [
   {
     name: "Алиса Ч.",
     image: assets.review1,
@@ -211,6 +396,28 @@ const reviews = [
     text: "«Брала набор себе, чтобы отдохнуть от суеты. Очень эстетичный вид, чувствуется ручная работа и внимание к деталям. После тяжелого дня — идеальный способ расслабиться.»",
   },
 ] as const;
+
+const defaultAboutContent = {
+  kicker: "О нас",
+  title: "Кто мы такие?",
+  paragraphs: [
+    "Послесловие — это команда амбициозных, творческих и талантливых людей, бесконечно целеустремленных и искренне увлеченных процессом создания подарков.",
+    "Мы прилагаем максимум усилий, чтобы создать продукцию на уровень выше конкурентов. Именно поэтому с нами сотрудничают лидеры рынка в своих нишах.",
+  ],
+  image: assets.bombs1,
+};
+
+const defaultWhyUsContent = {
+  title: "Почему выбирают нас?",
+  backgroundImage: assets.whyUs,
+};
+
+const defaultCtaContent = {
+  heading: "Наши наборы - ваш идеальный комплимент!",
+  text: "Подарите минуты душевного равновесия и культурный опыт тем, кто вам важен",
+  buttonLabel: "Оформить заказ",
+  backgroundImage: assets.cta,
+};
 
 const CAROUSEL_DURATION_MS = 500;
 const CAROUSEL_FAST_DURATION_MS = 250;
@@ -578,6 +785,20 @@ export default function Home() {
   const [modal, setModal] = useState<ModalType>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [heroContent, setHeroContent] = useState<HomeHeroContent>(defaultHomeHeroContent);
+  const [featureCards, setFeatureCards] = useState<FeatureCardContent[]>(defaultFeatureCards);
+  const [processSections, setProcessSections] =
+    useState<ProcessSectionContent[]>(defaultProcessSections);
+  const [whyUsContent, setWhyUsContent] = useState(defaultWhyUsContent);
+  const [reasons, setReasons] = useState<ReasonContent[]>(defaultReasons);
+  const [aboutContent, setAboutContent] = useState(defaultAboutContent);
+  const [reviewsSectionTitle, setReviewsSectionTitle] = useState("Нам доверяют");
+  const [reviews, setReviews] = useState<ReviewContent[]>(defaultReviews);
+  const [ctaContent, setCtaContent] = useState(defaultCtaContent);
+  const [gallerySlidesState, setGallerySlidesState] = useState<Record<GalleryKind, GallerySlide[]>>({
+    bombs: [...gallerySlides.bombs],
+    lavender: [...gallerySlides.lavender],
+    packs: [...gallerySlides.packs],
+  });
   const { checkoutState, updateQuantity, updateField, updateTab } = useCheckoutState();
 
   useEffect(() => {
@@ -617,35 +838,132 @@ export default function Home() {
 
     const controller = new AbortController();
 
-    async function loadHeroContent() {
+    async function loadContent(slug: string): Promise<unknown | null> {
+      const response = await fetch(`${contentApiBaseUrl}/public/content/${slug}`, {
+        signal: controller.signal,
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const payload = (await response.json()) as { data?: unknown };
+      return payload.data ?? null;
+    }
+
+    async function loadHomeContent() {
       try {
-        const response = await fetch(`${contentApiBaseUrl}/public/content/home-hero`, {
-          signal: controller.signal,
-          cache: "no-store",
-        });
+        const [
+          heroData,
+          featureCardsData,
+          processSectionsData,
+          whyUsData,
+          aboutData,
+          reviewsData,
+          ctaData,
+          galleriesData,
+        ] = await Promise.all([
+          loadContent("home-hero"),
+          loadContent("home-feature-cards"),
+          loadContent("home-process-sections"),
+          loadContent("home-why-us"),
+          loadContent("home-about"),
+          loadContent("home-reviews"),
+          loadContent("home-cta"),
+          loadContent("home-galleries"),
+        ]);
 
-        if (!response.ok) {
-          return;
+        if (heroData) {
+          setHeroContent((current) => ({
+            ...current,
+            ...(heroData as Partial<HomeHeroContent>),
+          }));
         }
 
-        const payload = (await response.json()) as {
-          data?: Partial<HomeHeroContent>;
+        const parsedFeatureCards = parseFeatureCardsPayload(featureCardsData);
+        if (parsedFeatureCards) {
+          setFeatureCards(parsedFeatureCards);
+        }
+
+        const parsedProcessSections = parseProcessSectionsPayload(processSectionsData);
+        if (parsedProcessSections) {
+          setProcessSections(parsedProcessSections);
+        }
+
+        const parsedReasons = parseReasonsPayload(whyUsData);
+        const whyUsTitle =
+          typeof (whyUsData as { title?: unknown })?.title === "string"
+            ? ((whyUsData as { title: string }).title as string)
+            : undefined;
+        const whyUsBackground =
+          typeof (whyUsData as { backgroundImage?: unknown })?.backgroundImage === "string"
+            ? resolveAssetPath((whyUsData as { backgroundImage: string }).backgroundImage)
+            : undefined;
+        if (parsedReasons || whyUsTitle || whyUsBackground) {
+          setWhyUsContent((current) => ({
+            title: whyUsTitle ?? current.title,
+            backgroundImage: whyUsBackground ?? current.backgroundImage,
+          }));
+          if (parsedReasons) {
+            setReasons(parsedReasons);
+          }
+        }
+
+        const about = aboutData as {
+          kicker?: unknown;
+          title?: unknown;
+          paragraphs?: unknown;
+          image?: unknown;
         };
-
-        if (!payload.data) {
-          return;
+        if (aboutData) {
+          setAboutContent((current) => ({
+            kicker: typeof about.kicker === "string" ? about.kicker : current.kicker,
+            title: typeof about.title === "string" ? about.title : current.title,
+            paragraphs:
+              Array.isArray(about.paragraphs) && about.paragraphs.every((item) => typeof item === "string")
+                ? (about.paragraphs as string[])
+                : current.paragraphs,
+            image: typeof about.image === "string" ? resolveAssetPath(about.image) : current.image,
+          }));
         }
 
-        setHeroContent((current) => ({
-          ...current,
-          ...payload.data,
-        }));
+        const parsedReviews = parseReviewsPayload(reviewsData);
+        if (parsedReviews) {
+          setReviews(parsedReviews.items);
+          if (parsedReviews.title) {
+            setReviewsSectionTitle(parsedReviews.title);
+          }
+        }
+
+        if (ctaData) {
+          const cta = ctaData as {
+            heading?: unknown;
+            text?: unknown;
+            buttonLabel?: unknown;
+            backgroundImage?: unknown;
+          };
+          setCtaContent((current) => ({
+            heading: typeof cta.heading === "string" ? cta.heading : current.heading,
+            text: typeof cta.text === "string" ? cta.text : current.text,
+            buttonLabel: typeof cta.buttonLabel === "string" ? cta.buttonLabel : current.buttonLabel,
+            backgroundImage:
+              typeof cta.backgroundImage === "string"
+                ? resolveAssetPath(cta.backgroundImage)
+                : current.backgroundImage,
+          }));
+        }
+
+        const parsedGalleries = parseGalleryPayload(galleriesData);
+        if (parsedGalleries) {
+          setGallerySlidesState(parsedGalleries);
+        }
       } catch {
         // Keep current defaults when backend is unavailable.
       }
     }
 
-    void loadHeroContent();
+    void loadHomeContent();
     return () => controller.abort();
   }, []);
 
@@ -669,16 +987,17 @@ export default function Home() {
           <ProcessSection
             key={section.title}
             {...section}
+            slides={gallerySlidesState[section.gallery]}
             index={index}
             onOrder={() => setModal("checkout")}
           />
         ))}
       </div>
 
-      <WhyUsSection />
-      <AboutSection />
-      <ReviewsSection />
-      <CtaSection onOrder={() => setModal("checkout")} />
+      <WhyUsSection title={whyUsContent.title} backgroundImage={whyUsContent.backgroundImage} reasons={reasons} />
+      <AboutSection content={aboutContent} />
+      <ReviewsSection title={reviewsSectionTitle} reviews={reviews} />
+      <CtaSection content={ctaContent} onOrder={() => setModal("checkout")} />
 
       <ScrollTopButton visible={showScrollTop} />
       <HomeModal
@@ -731,7 +1050,7 @@ function ProcessSection({
   title,
   description,
   reverse,
-  gallery,
+  slides,
   button,
   onOrder,
   index,
@@ -740,7 +1059,7 @@ function ProcessSection({
   title: string;
   description: string;
   reverse: boolean;
-  gallery: GalleryKind;
+  slides: readonly GallerySlide[];
   button?: string;
   onOrder: () => void;
   index: number;
@@ -772,7 +1091,7 @@ function ProcessSection({
         <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:min-h-[665px] lg:grid-cols-[525px_552px] lg:items-start lg:gap-16 lg:p-12">
           <ProductGallery
             reverse={reverse}
-            slides={gallerySlides[gallery]}
+            slides={slides}
           />
 
           <div className={reverse ? "lg:order-1" : ""}>
@@ -861,15 +1180,19 @@ function TapeImageCarousel({
   );
 }
 
-function WhyUsSection() {
+function WhyUsSection({
+  title,
+  backgroundImage,
+  reasons,
+}: Readonly<{ title: string; backgroundImage: string; reasons: readonly ReasonContent[] }>) {
   return (
     <section
       className="relative overflow-hidden bg-cover bg-center px-4 py-12 text-white sm:px-5 sm:py-16 lg:px-[235px] lg:py-20"
-      style={{ backgroundImage: `url(${assets.whyUs})` }}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="absolute inset-0 bg-black/35 sm:bg-white/10" />
       <div className="relative mx-auto max-w-[1456px]">
-        <SectionHeading kicker="Преимущества" title="Почему выбирают нас?" centered light />
+        <SectionHeading kicker="Преимущества" title={title} centered light />
         <div className="mt-8 grid gap-7 sm:mt-12 lg:grid-cols-3 lg:gap-24">
           {reasons.map((reason) => (
             <article key={reason.title} className="text-center">
@@ -884,7 +1207,16 @@ function WhyUsSection() {
   );
 }
 
-function AboutSection() {
+function AboutSection({
+  content,
+}: Readonly<{
+  content: {
+    kicker: string;
+    title: string;
+    paragraphs: string[];
+    image: string;
+  };
+}>) {
   return (
     <section id="about" className="bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
       <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white sm:rounded-[42px] lg:rounded-[70px]">
@@ -894,24 +1226,19 @@ function AboutSection() {
         </div>
         <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
           <div className="max-w-[552px]">
-            <SectionKicker>О нас</SectionKicker>
+            <SectionKicker>{content.kicker}</SectionKicker>
             <h2 className="mt-2 text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
-              Кто мы такие?
+              {content.title}
             </h2>
             <GoldRule />
             <div className="mt-4 space-y-3 text-[15px] leading-7 [font-family:var(--font-inter)] sm:mt-5 sm:space-y-6 sm:text-base sm:leading-8 lg:text-xl lg:leading-[1.8]">
-              <p>
-                Послесловие — это команда амбициозных, творческих и талантливых людей,
-                бесконечно целеустремленных и искренне увлеченных процессом создания подарков.
-              </p>
-              <p>
-                Мы прилагаем максимум усилий, чтобы создать продукцию на уровень выше конкурентов.
-                Именно поэтому с нами сотрудничают лидеры рынка в своих нишах.
-              </p>
+              {content.paragraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
             </div>
           </div>
           <ZoomImage
-            image={assets.bombs1}
+            image={content.image}
             label="Бомбочки Послесловие"
             className="mx-auto aspect-square w-full max-w-[525px] rounded-[24px] sm:rounded-[32px] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]"
           />
@@ -921,14 +1248,17 @@ function AboutSection() {
   );
 }
 
-function ReviewsSection() {
+function ReviewsSection({
+  title,
+  reviews,
+}: Readonly<{ title: string; reviews: readonly ReviewContent[] }>) {
   const { orderedItems, offset, isTransitioning, transitionDuration, move } =
     useInfiniteCarousel(reviews);
 
   return (
     <section id="reviews" className="overflow-hidden bg-[#f8f8f8] px-3 py-12 sm:px-5 sm:py-16 lg:px-[100px] lg:py-20">
       <div className="mx-auto max-w-[1280px]">
-        <SectionHeading kicker="Отзывы" title="Нам доверяют" centered />
+        <SectionHeading kicker="Отзывы" title={title} centered />
         <div className="mt-8 overflow-hidden [--carousel-gap:1rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] sm:mt-14 sm:[--carousel-gap:2rem] lg:[--carousel-gap:3rem] lg:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
           <div
             className={`flex gap-[var(--carousel-gap)] ${isTransitioning ? "transition-transform ease-out" : ""}`}
@@ -965,21 +1295,34 @@ function ReviewsSection() {
   );
 }
 
-function CtaSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
+function CtaSection({
+  content,
+  onOrder,
+}: Readonly<{
+  content: {
+    heading: string;
+    text: string;
+    buttonLabel: string;
+    backgroundImage: string;
+  };
+  onOrder: () => void;
+}>) {
   return (
     <section
       className="relative overflow-hidden bg-[#c1aeff] bg-cover bg-center px-4 py-14 text-center text-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] sm:px-5 sm:py-20 lg:px-[100px] lg:py-20"
-      style={{ backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${assets.cta})` }}
+      style={{
+        backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${content.backgroundImage})`,
+      }}
     >
       <div className="relative mx-auto flex max-w-[1200px] flex-col items-center">
         <h2 className="max-w-[760px] text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
-          Наши наборы - ваш идеальный комплимент!
+          {content.heading}
         </h2>
         <p className="mt-4 max-w-[540px] text-base font-light leading-[1.55] sm:text-2xl">
-          Подарите минуты душевного равновесия и культурный опыт тем, кто вам важен
+          {content.text}
         </p>
         <div className="mt-8">
-          <DesignButton size="xl" onClick={onOrder}>Оформить заказ</DesignButton>
+          <DesignButton size="xl" onClick={onOrder}>{content.buttonLabel}</DesignButton>
         </div>
       </div>
     </section>

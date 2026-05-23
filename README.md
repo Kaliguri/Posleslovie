@@ -55,6 +55,29 @@ docker compose up --build
 
 Детали по переходу и CMS scope: [docs/backend-transition.md](docs/backend-transition.md).
 
+## Админка контента
+
+Временный веб-интерфейс админки доступен по адресу:
+
+- `/admin/content` (например `http://localhost:3000/admin/content`)
+
+Что нужно для сохранения:
+
+- запущенный backend API;
+- `NEXT_PUBLIC_API_BASE_URL` во фронте;
+- действующий `x-api-key` (`API_KEY_ADMIN` из backend env).
+
+Сейчас через админку можно редактировать записи CMS в backend (данные пишутся в локальную SQLite БД `backend/data/content.db`), и на витрину подключены:
+
+- `home-hero`
+- `home-feature-cards`
+- `home-process-sections`
+- `home-why-us`
+- `home-about`
+- `home-reviews`
+- `home-cta`
+- `home-galleries`
+
 ## GitHub Pages (legacy)
 
 Проект подготовлен для публикации через GitHub Pages.
