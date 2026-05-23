@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState, type InputHTMLAttributes } from "react";
 
+import {
+  defaultHomeHeroContent,
+  type HomeHeroContent,
+} from "@/shared/config/home-hero-content";
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
 import { russianCities } from "@/shared/config/russian-cities";
 import { siteConfig } from "@/shared/config/site";
@@ -70,6 +74,7 @@ const initialCheckoutState: CheckoutState = {
 };
 
 const amoCRMWorkerUrl = "https://posleslovie-amocrm.kailgurika.workers.dev/";
+const contentApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const assets = {
   hero: assetPath("/images/desktop-29/hero.jpg"),
@@ -572,6 +577,7 @@ function useCheckoutState() {
 export default function Home() {
   const [modal, setModal] = useState<ModalType>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [heroContent, setHeroContent] = useState<HomeHeroContent>(defaultHomeHeroContent);
   const { checkoutState, updateQuantity, updateField, updateTab } = useCheckoutState();
 
   useEffect(() => {
@@ -604,9 +610,48 @@ export default function Home() {
     };
   }, [modal]);
 
+  useEffect(() => {
+    if (!contentApiBaseUrl) {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    async function loadHeroContent() {
+      try {
+        const response = await fetch(`${contentApiBaseUrl}/public/content/home-hero`, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = (await response.json()) as {
+          data?: Partial<HomeHeroContent>;
+        };
+
+        if (!payload.data) {
+          return;
+        }
+
+        setHeroContent((current) => ({
+          ...current,
+          ...payload.data,
+        }));
+      } catch {
+        // Keep current defaults when backend is unavailable.
+      }
+    }
+
+    void loadHeroContent();
+    return () => controller.abort();
+  }, []);
+
   return (
     <div className="overflow-x-hidden bg-[#f8f8f8] text-[#0f172a]">
-      <HeroSection onOrder={() => setModal("checkout")} />
+      <HeroSection content={heroContent} onOrder={() => setModal("checkout")} />
 
       <section id="bombs" className="px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]">
         <div className="mx-auto max-w-[1280px] rounded-[28px] bg-white px-4 py-10 sm:rounded-[48px] sm:px-6 sm:py-14 lg:min-h-[750px] lg:rounded-[100px] lg:px-20 lg:py-20">
@@ -648,7 +693,10 @@ export default function Home() {
   );
 }
 
-function HeroSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
+function HeroSection({
+  content,
+  onOrder,
+}: Readonly<{ content: HomeHeroContent; onOrder: () => void }>) {
   return (
     <section className="relative min-h-[600px] overflow-hidden bg-[#102038] sm:min-h-[720px] lg:min-h-[1080px]">
       <div
@@ -660,16 +708,16 @@ function HeroSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
       <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-32 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">
         <div className="max-w-[1234px]">
           <h1 className="text-[44px] font-normal leading-[0.95] text-white [font-family:var(--font-educational)] min-[390px]:text-[48px] sm:text-7xl lg:text-[126px]">
-            Послесловие к вашему дню
+            {content.heading}
           </h1>
           <p className="mx-auto mt-5 max-w-[340px] text-[15px] font-medium leading-[1.55] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] sm:text-xl lg:max-w-none lg:text-[25px]">
-            <span className="block sm:inline">Энергия природы в каждой бомбочке для ванны</span>
+            <span className="block sm:inline">{content.leadLine1}</span>
             <br className="hidden sm:block" />
-            <span className="block sm:inline">Внимание и забота к каждой минуте наедине с собой</span>
+            <span className="block sm:inline">{content.leadLine2}</span>
           </p>
           <div className="mt-9 sm:mt-16">
             <DesignButton size="xl" variant="filled" onClick={onOrder}>
-              Оформить заказ
+              {content.ctaLabel}
             </DesignButton>
           </div>
         </div>

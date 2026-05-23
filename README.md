@@ -16,7 +16,7 @@
 - Tailwind CSS
 - Figma MCP для работы с макетами
 
-## Разработка
+## Разработка фронтенда
 
 ```bash
 npm run dev
@@ -36,7 +36,26 @@ npm run build
 
 Сборка настроена как static export Next.js. После `npm run build` готовые файлы появляются в папке `out/`.
 
-## GitHub Pages
+## Локальный fullstack-режим
+
+Для разработки нового backend можно запускать полный стек:
+
+```bash
+docker compose up --build
+```
+
+Сервисы:
+
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:4000/api`
+- Healthcheck: `http://localhost:4000/api/health`
+- PostgreSQL: `localhost:5432`
+- Redis: `localhost:6379`
+- MinIO: `http://localhost:9001`
+
+Детали по переходу и CMS scope: [docs/backend-transition.md](docs/backend-transition.md).
+
+## GitHub Pages (legacy)
 
 Проект подготовлен для публикации через GitHub Pages.
 
@@ -56,7 +75,15 @@ npm run lint
 npm run build
 ```
 
-Важно: GitHub Pages обслуживает только статические файлы. Серверные маршруты Next.js, например `/api/*`, и backend-интеграции оплаты не выполняются на Pages. Для полноценного checkout позже нужен внешний backend, serverless-функции или отдельный хостинг с Node.js.
+Важно: GitHub Pages обслуживает только статические файлы. Серверные маршруты Next.js, например `/api/*`, и backend-интеграции оплаты не выполняются на Pages.
+
+Текущий план миграции:
+
+- frontend: Vercel;
+- backend API: Render (Node/Nest);
+- БД: managed PostgreSQL;
+- файлы: S3-compatible storage;
+- кеш/rate-limit: Redis.
 
 ## Рабочий процесс
 

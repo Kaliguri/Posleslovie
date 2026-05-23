@@ -2,17 +2,18 @@ import type { NextConfig } from "next";
 
 const repositoryName = process.env.GITHUB_REPOSITORY?.split("/")[1] ?? "";
 const isGithubPagesBuild = process.env.GITHUB_ACTIONS === "true";
+const useStaticExport = process.env.NEXT_PUBLIC_USE_STATIC_EXPORT === "true";
 const isUserOrOrgPagesSite = repositoryName.endsWith(".github.io");
 const githubPagesBasePath =
-  isGithubPagesBuild && repositoryName && !isUserOrOrgPagesSite
+  useStaticExport && isGithubPagesBuild && repositoryName && !isUserOrOrgPagesSite
     ? `/${repositoryName}`
     : "";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  ...(useStaticExport ? { output: "export" as const } : {}),
   reactStrictMode: true,
   images: {
-    unoptimized: true,
+    unoptimized: useStaticExport,
   },
   basePath: githubPagesBasePath,
   assetPrefix: githubPagesBasePath,
