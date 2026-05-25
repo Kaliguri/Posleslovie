@@ -1,66 +1,66 @@
-# WordPress Go-Live Checklist (Budget Flow)
+# Чеклист запуска WordPress (бюджетный сценарий)
 
-Target environment: `ce621296-wordpress-te82f.tw1.ru` (test domain).
+Целевое окружение: `ce621296-wordpress-te82f.tw1.ru` (тестовый домен).
 
-This checklist is ordered and optimized for minimal manual steps.
+Чеклист упорядочен так, чтобы делать минимум ручных действий.
 
-## A) Timeweb and WordPress base setup
+## A) Базовая настройка Timeweb и WordPress
 
-- [ ] WordPress installed and accessible at `/wp-login.php`.
-- [ ] Admin password rotated from initial generated password.
-- [ ] Theme Astra activated.
-- [ ] Permalinks set to `Post name` (`Настройки -> Постоянные ссылки`).
-- [ ] Search indexing disabled for test phase (`Настройки -> Чтение`).
+- [ ] WordPress установлен и доступен по `/wp-login.php`.
+- [ ] Пароль администратора изменен с исходного автосгенерированного.
+- [ ] Активирована тема Astra.
+- [ ] Постоянные ссылки выставлены в `Название записи` (`Настройки -> Постоянные ссылки`).
+- [ ] Индексация отключена на время тестов (`Настройки -> Чтение`).
 
-## B) Required plugins only
+## B) Только необходимые плагины
 
-- [ ] ACF installed and activated.
-- [ ] Fluent Forms (or Contact Form 7) installed and activated.
-- [ ] Safe SVG installed (if SVG uploads are needed).
-- [ ] One cache plugin installed (`LiteSpeed Cache` or `WP Super Cache`).
-- [ ] Backup plugin installed (`UpdraftPlus`).
+- [ ] Установлен и активирован ACF.
+- [ ] Установлен и активирован Fluent Forms (или Contact Form 7).
+- [ ] Установлен Safe SVG (если будут загружаться SVG).
+- [ ] Установлен один плагин кэша (`LiteSpeed Cache` или `WP Super Cache`).
+- [ ] Установлен плагин бэкапов (`UpdraftPlus`).
 
-## C) Content and field setup
+## C) Контент и поля
 
-- [ ] Create static page `Главная` and set as homepage.
-- [ ] Build ACF groups according to `docs/wp-acf-spec.md`.
-- [ ] Fill homepage content from `docs/wp-content-map.md`.
-- [ ] Upload and bind all mandatory files from `docs/wp-assets-manifest.md`.
-- [ ] Create/update header menu with anchors: `#bombs`, `#about`, `#reviews`.
-- [ ] Fill global contacts/social/legal options.
+- [ ] Создана статическая страница `Главная` и назначена главной.
+- [ ] Созданы группы полей ACF по `docs/wp-acf-spec.md`.
+- [ ] Контент главной заполнен по `docs/wp-content-map.md`.
+- [ ] Загружены и привязаны обязательные файлы из `docs/wp-assets-manifest.md`.
+- [ ] Создано/обновлено меню с якорями: `#bombs`, `#about`, `#reviews`.
+- [ ] Заполнены глобальные контакты, соцсети и юридические документы.
 
-## D) Lead form setup
+## D) Настройка формы заявки
 
-- [ ] Create form according to `docs/wp-form-spec.md`.
-- [ ] Configure required fields and conditional logic.
-- [ ] Enable email notifications to business mailbox.
-- [ ] Confirm consent text links to uploaded PDF files.
+- [ ] Форма создана по `docs/wp-form-spec.md`.
+- [ ] Настроены обязательные поля и условная логика.
+- [ ] Включены email-уведомления на рабочую почту.
+- [ ] Проверены ссылки в тексте согласия на загруженные PDF.
 
-## E) QA acceptance (must pass before publish)
+## E) Приемка качества (обязательно перед публикацией)
 
-- [ ] Hero, cards, process, why-us, about, reviews, CTA match expected order and texts.
-- [ ] Anchor navigation scroll works for `#bombs`, `#about`, `#reviews`.
-- [ ] Footer contains phone, email, socials, and 5 legal PDF links.
-- [ ] Form submits successfully and notification email is received.
-- [ ] Mobile view checked for header, section spacing, and form usability.
-- [ ] No broken images, no 404 links, and no placeholder demo content remains.
+- [ ] Hero, карточки, процесс, why-us, about, reviews, CTA совпадают по порядку и текстам.
+- [ ] Якорная навигация работает для `#bombs`, `#about`, `#reviews`.
+- [ ] В footer есть телефон, email, соцсети и 5 юридических PDF-ссылок.
+- [ ] Форма успешно отправляется, письмо приходит на почту.
+- [ ] Проверена мобильная версия: header, отступы секций, удобство формы.
+- [ ] Нет битых изображений, 404-ссылок и демо-контента.
 
-## F) Cutover and decommission readiness
+## F) Готовность к отключению старой CMS
 
-- [ ] Confirm WP test site is accepted as new source of truth for content.
-- [ ] Archive old CMS content DB (`backend/data/content.db`) before removal.
-- [ ] Plan removal of custom CMS stack from codebase:
+- [ ] Подтверждено, что тестовый WordPress-сайт принят как новый источник контента.
+- [ ] Заархивирована старая база CMS (`backend/data/content.db`) перед удалением.
+- [ ] Запланировано удаление кастомной CMS-части в коде:
   - `src/app/admin/content/page.tsx`
   - `src/shared/config/cms-content-schemas.ts`
   - `backend/src/content/*`
-  - CMS-related media API parts in `backend/src/media/*`
-- [ ] Update project README after final switch to WordPress.
+  - CMS-зависимые части media API в `backend/src/media/*`
+- [ ] Обновлен README после финального перехода на WordPress.
 
-## Quick rollback plan
+## Быстрый rollback-план
 
-If a release issue appears on WP test domain:
+Если на тестовом домене возникнет критичная проблема после изменений:
 
-1. Keep old project code untouched (no destructive deletions yet).
-2. Restore last WordPress backup via backup plugin.
-3. Re-run section/form QA only on changed blocks.
+1. Не удалять старый код сразу (без деструктивных действий).
+2. Восстановить последний бэкап WordPress через плагин резервного копирования.
+3. Повторно прогнать QA только по измененным блокам/формам.
 

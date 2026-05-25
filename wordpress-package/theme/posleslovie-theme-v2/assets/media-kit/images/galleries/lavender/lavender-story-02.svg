@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 525 525" role="img" aria-label="Lavender oil and handmade bath bombs">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ece8ff"/>
+      <stop offset="1" stop-color="#f7efe6"/>
+    </linearGradient>
+  </defs>
+  <rect width="525" height="525" rx="50" fill="url(#bg)"/>
+  <ellipse cx="285" cy="330" rx="168" ry="106" fill="#d8c1ad"/>
+  <circle cx="220" cy="240" r="94" fill="#f5efe8"/>
+  <circle cx="328" cy="230" r="82" fill="#e4dff8"/>
+  <rect x="88" y="90" width="82" height="210" rx="28" fill="#e8c880" opacity="0.85"/>
+  <rect x="104" y="68" width="50" height="36" rx="10" fill="#0f172a" opacity="0.7"/>
+  <g fill="none" stroke="#776b9a" stroke-linecap="round">
+    <path d="M375 430c-8-142 22-242 80-325" stroke-width="7"/>
+    <path d="M410 430c-18-110 8-196 66-270" stroke-width="5"/>
+  </g>
+</svg>

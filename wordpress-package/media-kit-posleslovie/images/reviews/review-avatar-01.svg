@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 394 220" role="img" aria-label="Review product photo">
+  <rect width="394" height="220" rx="20" fill="#efe7dc"/>
+  <circle cx="132" cy="112" r="72" fill="#f8f1e8"/>
+  <circle cx="214" cy="122" r="62" fill="#e6e0f4"/>
+  <path d="M42 190c86-84 158-132 292-164" fill="none" stroke="#746c9a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M58 174c88-20 164-16 254 12" fill="none" stroke="#e8c880" stroke-width="7" stroke-linecap="round"/>
+</svg>

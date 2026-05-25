@@ -5,10 +5,8 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 import { AuthModule } from "./auth/auth.module";
 import { RequestLogMiddleware } from "./common/middleware/request-log.middleware";
-import { ContentModule } from "./content/content.module";
 import { HealthModule } from "./health/health.module";
 import { IntegrationsModule } from "./integrations/integrations.module";
-import { MediaModule } from "./media/media.module";
 import { OrdersModule } from "./orders/orders.module";
 import { PaymentsModule } from "./payments/payments.module";
 import { validateEnv } from "./config";
@@ -26,8 +24,6 @@ import { validateEnv } from "./config";
       },
     ]),
     AuthModule,
-    ContentModule,
-    MediaModule,
     OrdersModule,
     PaymentsModule,
     IntegrationsModule,

@@ -1,10 +1,10 @@
-# WordPress Content Mapping (Phase 1 Prep)
+# Карта контента для WordPress (Фаза 1)
 
-This file maps the current project content model to the target WordPress model for a full WP migration.
+Этот документ сопоставляет текущую модель контента проекта с целевой моделью WordPress при полном переходе на WP.
 
-## Source of truth before migration
+## Источник данных до миграции
 
-Use the current frontend defaults as the baseline snapshot:
+Базовый снимок контента берем из текущих frontend-конфигов:
 
 - `src/shared/config/home-page-content.ts`
 - `src/shared/config/home-hero-content.ts`
@@ -13,48 +13,48 @@ Use the current frontend defaults as the baseline snapshot:
 - `src/shared/ui/site-header.tsx`
 - `src/shared/ui/site-footer.tsx`
 
-Do not use `backend/prisma/schema.prisma` as content source for migration. Current runtime CMS content is in SQLite (`backend/data/content.db`) via `backend/src/content/content.service.ts`.
+`backend/prisma/schema.prisma` не использовать как источник контента для миграции. Рабочий CMS-контент сейчас хранится в SQLite (`backend/data/content.db`) через `backend/src/content/content.service.ts`.
 
-## Homepage section mapping
+## Сопоставление секций главной страницы
 
-| Current slug/block | Current fields | WordPress target |
+| Текущий slug/блок | Текущие поля | Цель в WordPress |
 | --- | --- | --- |
-| `home-hero` | `heading`, `leadLine1`, `leadLine2`, `ctaLabel`, hero bg image | Home page fields: Hero title, subtitle line 1, subtitle line 2, CTA label, Hero background image |
-| `home-feature-cards` | `cards[]` with `title`, `description`, `icon` | Repeater `feature_cards` on Home page |
-| `home-process-sections` | `sections[]` with `eyebrow`, `title`, `description`, `reverse`, `gallery`, `button` | Repeater `process_sections`; keep `reverse` as true/false toggle; keep gallery key for block rendering |
-| `home-galleries` | `bombs[]`, `lavender[]`, `packs[]` with `image`, `alt` | Three repeaters: `gallery_bombs`, `gallery_lavender`, `gallery_packs` |
-| `home-why-us` | `title`, `backgroundImage`, `reasons[]` | Group `why_us` + repeater `why_items` |
-| `home-about` | `kicker`, `title`, `paragraphs[]`, `image` | Group `about` with WYSIWYG/textarea + image |
-| `home-reviews` | `title`, `items[]` (`name`, `text`, `image`) | Group `reviews` + repeater `review_items` |
-| `home-cta` | `heading`, `text`, `buttonLabel`, `backgroundImage` | Group `final_cta` |
-| Header links | section anchors + modal triggers (`delivery`, `partners`, `contacts`) | WP menu with same anchor links; modal content moved to page blocks/partials |
-| Footer contacts/social/legal | phone, email, socials, docs list | Global Options fields (`site_settings`, `legal_documents`) |
+| `home-hero` | `heading`, `leadLine1`, `leadLine2`, `ctaLabel`, фон hero | Поля главной: заголовок hero, 2 строки подзаголовка, текст CTA, фоновое изображение |
+| `home-feature-cards` | `cards[]` с `title`, `description`, `icon` | Repeater `feature_cards` на главной |
+| `home-process-sections` | `sections[]` с `eyebrow`, `title`, `description`, `reverse`, `gallery`, `button` | Repeater `process_sections`; `reverse` оставить как переключатель true/false; `gallery` оставить как ключ блока |
+| `home-galleries` | `bombs[]`, `lavender[]`, `packs[]` с `image`, `alt` | Три repeater-поля: `gallery_bombs`, `gallery_lavender`, `gallery_packs` |
+| `home-why-us` | `title`, `backgroundImage`, `reasons[]` | Группа `why_us` + repeater `why_items` |
+| `home-about` | `kicker`, `title`, `paragraphs[]`, `image` | Группа `about` (WYSIWYG/textarea + изображение) |
+| `home-reviews` | `title`, `items[]` (`name`, `text`, `image`) | Группа `reviews` + repeater `review_items` |
+| `home-cta` | `heading`, `text`, `buttonLabel`, `backgroundImage` | Группа `final_cta` |
+| Ссылки в header | якоря секций + модалки (`delivery`, `partners`, `contacts`) | Меню WP с теми же якорями; контент модалок выносится в блоки/части страницы |
+| Контакты/соцсети/документы в footer | телефон, email, соцсети, список документов | Глобальные поля Options: `site_settings`, `legal_documents` |
 
-## Global settings mapping
+## Сопоставление глобальных настроек
 
-| Current block | Current fields | WordPress target |
+| Текущий блок | Текущие поля | Цель в WordPress |
 | --- | --- | --- |
-| `site-settings` | `phone`, `email`, `socials[]` | ACF Options page: Contacts and Socials |
-| `legal-documents` | `documents[]` with `slug`, `pdfPath`, `title`, `shortTitle`, `content[]` | ACF Options page: legal docs repeater with PDF attachment and public label |
+| `site-settings` | `phone`, `email`, `socials[]` | ACF Options: контакты и соцсети |
+| `legal-documents` | `documents[]` с `slug`, `pdfPath`, `title`, `shortTitle`, `content[]` | ACF Options: repeater юридических документов с PDF-вложением и публичным названием |
 
-## Functional content blocks to keep
+## Какие блоки обязательно сохраняем
 
-- Keep one-page structure and anchor IDs: `#bombs`, `#about`, `#reviews`.
-- Keep delivery, partners, contacts information as editable content blocks.
-- Keep legal PDF links in footer (current behavior is PDF-first).
-- Keep contact phone/email/social links globally editable.
+- Одностраничную структуру и якоря `#bombs`, `#about`, `#reviews`.
+- Контент по доставке, партнерам и контактам как редактируемые блоки.
+- PDF-ссылки на документы в footer (текущий основной сценарий).
+- Глобально редактируемые телефон/email/соцсети.
 
-## Behavior changes accepted in this migration
+## Какие изменения принимаем при миграции
 
-- Replace custom `/admin/content` editor with WP admin + ACF.
-- Replace custom content API fetch (`NEXT_PUBLIC_API_BASE_URL`) with native WP rendering.
-- Replace in-app legal modal body text with WP pages or PDF links (PDF links are mandatory).
+- Заменяем кастомный редактор `/admin/content` на WP-админку + ACF.
+- Убираем контентную загрузку через API (`NEXT_PUBLIC_API_BASE_URL`) и рендерим нативно в WordPress.
+- Текст юридических модалок в приложении заменяем на страницы WordPress или PDF-ссылки (PDF обязательны).
 
-## What becomes unnecessary after WP go-live
+## Что станет лишним после запуска WordPress
 
 - `src/app/admin/content/page.tsx`
 - `src/shared/config/cms-content-schemas.ts`
 - `backend/src/content/*`
-- `backend/src/media/*` (for CMS media usage)
-- `backend/data/content.db` (archive before deletion)
+- `backend/src/media/*` (в части CMS-медиа)
+- `backend/data/content.db` (после архивирования)
 

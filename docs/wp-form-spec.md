@@ -1,108 +1,108 @@
-# WordPress Form Spec (`wp_form_email_crm`)
+# Спецификация формы WordPress (`wp_form_email_crm`)
 
-This spec replaces the custom checkout submission from `src/app/page.tsx` with a WordPress-managed form flow (email-first, CRM optional).
+Этот документ заменяет кастомную отправку checkout из `src/app/page.tsx` на поток заявок через WordPress (сначала email, CRM опционально).
 
-## Scope decision
+## Границы решения
 
-- Keep lead capture flow in WordPress.
-- Do not keep the old AmoCRM Cloudflare worker as a hard dependency for launch.
-- Keep two user intents in one form: `Для себя` and `Для компании`.
+- Сохраняем сбор заявок внутри WordPress.
+- Убираем зависимость от старого Cloudflare Worker для AmoCRM на этапе запуска.
+- Оставляем два сценария в одной форме: `Для себя` и `Для компании`.
 
-## Tooling
+## Инструменты
 
-Recommended plugin: Fluent Forms (or Contact Form 7 if preferred).
+Рекомендуемый плагин: Fluent Forms (или Contact Form 7, если удобнее).
 
-For MVP, configure:
+Для MVP настраиваем:
 
-- Admin email notification (mandatory)
-- Optional webhook action for CRM (can be enabled after MVP)
+- обязательное email-уведомление админу;
+- опциональный webhook в CRM (после стабилизации MVP).
 
-## Form fields (MVP)
+## Поля формы (MVP)
 
-| Field | Type | Required | Validation/Rule |
+| Поле | Тип | Обязательное | Валидация/правило |
 | --- | --- | --- | --- |
-| `request_type` | Radio (`personal`, `company`) | yes | default `personal` |
-| `name` | Text | yes | min 2 chars |
-| `phone` | Tel | yes | RU format, accept `+7` only |
-| `email` | Email | yes | standard email validator |
-| `contact_method` | Select (`telegram`, `max`, `phone`, `email`) | yes | default `telegram` |
-| `contact_handle` | Text | conditional | required when method = `telegram`; format `^@[a-zA-Z0-9_]{5,32}$` |
-| `city` | Text | conditional | required when `request_type=personal` |
-| `company` | Text | conditional | required when `request_type=company` |
-| `inn` | Text | no | numeric only when filled |
-| `ogrn` | Text | no | numeric only when filled |
-| `comment` | Textarea | no | free text |
-| `logo_file` | File upload | no | JPG/PNG, max 3 MB |
-| `seal_color` | Select (`red`, `green`, `white`, `blue`) | no | default `red` |
-| `artist` | Select/Text | no | keep placeholder choices |
-| `quantity` | Number | yes | min 1, default 3 |
-| `product_name` | Hidden/Text | yes | default `Бомбочка для ванны` |
-| `unit_price` | Hidden/Number | yes | default `999` |
-| `total` | Calculated/Number | yes | `quantity * unit_price` |
-| `consent_personal_data` | Checkbox | yes | must be checked |
+| `request_type` | Radio (`personal`, `company`) | да | по умолчанию `personal` |
+| `name` | Text | да | минимум 2 символа |
+| `phone` | Tel | да | формат РФ, принимать только `+7` |
+| `email` | Email | да | стандартная проверка email |
+| `contact_method` | Select (`telegram`, `max`, `phone`, `email`) | да | по умолчанию `telegram` |
+| `contact_handle` | Text | условно | обязательно при `telegram`; формат `^@[a-zA-Z0-9_]{5,32}$` |
+| `city` | Text | условно | обязательно при `request_type=personal` |
+| `company` | Text | условно | обязательно при `request_type=company` |
+| `inn` | Text | нет | только цифры, если заполнено |
+| `ogrn` | Text | нет | только цифры, если заполнено |
+| `comment` | Textarea | нет | произвольный текст |
+| `logo_file` | File upload | нет | JPG/PNG, максимум 3 МБ |
+| `seal_color` | Select (`red`, `green`, `white`, `blue`) | нет | по умолчанию `red` |
+| `artist` | Select/Text | нет | можно оставить текущие placeholder-значения |
+| `quantity` | Number | да | минимум 1, по умолчанию 3 |
+| `product_name` | Hidden/Text | да | по умолчанию `Бомбочка для ванны` |
+| `unit_price` | Hidden/Number | да | по умолчанию `999` |
+| `total` | Calculated/Number | да | `quantity * unit_price` |
+| `consent_personal_data` | Checkbox | да | обязательно отметить |
 
-## Consent text (required near submit)
+## Текст согласия (обязателен перед отправкой)
 
-Use this exact logic from current UI:
+Сохраняем текущую логику:
 
-- User agrees to personal data processing.
-- User confirms privacy policy reading.
-- Provide links to uploaded PDFs in WP:
+- пользователь дает согласие на обработку персональных данных;
+- пользователь подтверждает ознакомление с политикой конфиденциальности;
+- в тексте должны быть ссылки на загруженные PDF:
   - `personal-data-consent.pdf`
   - `privacy.pdf`
 
-## Conditional logic
+## Условная логика
 
-- If `request_type=personal`: show `city`; hide `company`, `inn`, `ogrn`.
-- If `request_type=company`: show `company`, `inn`, `ogrn`; city optional/hidden.
-- If `contact_method=telegram`: `contact_handle` required and validated.
-- For other methods: `contact_handle` optional.
+- Если `request_type=personal`: показываем `city`, скрываем `company`, `inn`, `ogrn`.
+- Если `request_type=company`: показываем `company`, `inn`, `ogrn`; `city` можно скрыть/сделать необязательным.
+- Если `contact_method=telegram`: `contact_handle` обязателен и валидируется.
+- Для остальных способов связи `contact_handle` опционален.
 
-## Notification routing
+## Маршрутизация уведомлений
 
-## 1) Mandatory email notification
+## 1) Обязательное email-уведомление
 
-Send to site owner mailbox with:
+Отправлять на рабочую почту владельца сайта с данными:
 
-- all form fields
-- uploaded logo file link
-- timestamp
-- source URL
+- все поля формы;
+- ссылка на загруженный файл логотипа;
+- дата/время отправки;
+- URL страницы-источника.
 
-Email subject pattern:
+Шаблон темы письма:
 
 `[Posleslovie] Новая заявка ({request_type}) #{submission_id}`
 
-## 2) Optional CRM webhook (phase 2)
+## 2) Опциональный CRM webhook (фаза 2)
 
-Enable only after email flow is stable.
+Включать только после стабилизации email-потока.
 
-Payload should include:
+В payload передавать:
 
-- lead type (`personal`/`company`)
-- contact data
-- order details (`quantity`, `unit_price`, `total`)
-- file URL (not base64)
+- тип лида (`personal`/`company`);
+- контактные данные;
+- детали заказа (`quantity`, `unit_price`, `total`);
+- URL файла (не base64).
 
-## Anti-spam and reliability
+## Антиспам и надежность
 
-- Enable honeypot.
-- Enable basic rate-limiting (plugin-level).
-- Log all submissions in WP DB.
-- Show success message on submit:
+- Включить honeypot.
+- Включить базовое ограничение частоты отправок (на уровне плагина).
+- Хранить все отправки в базе WordPress.
+- Показывать сообщение об успехе:
   - `Спасибо! Заявка отправлена. Мы свяжемся с вами в ближайшее время.`
 
-## UX parity notes (from current app)
+## Примечания по UX-паритету
 
-Current custom flow has two steps, city suggestions, and strict validation in `validateCheckout(...)`.
-For MVP WP migration:
+Текущая кастомная форма имеет 2 шага, подсказки по городам и строгую валидацию из `validateCheckout(...)`.
+Для MVP в WordPress:
 
-- keep required fields and consent parity;
-- allow single-step form UI;
-- city autocomplete is optional (can be added later).
+- сохраняем обязательные поля и согласие;
+- допускаем одношаговый интерфейс формы;
+- автодополнение города можно добавить позже.
 
-## Data retention
+## Хранение данных
 
-- Keep form entries in WP for operator review.
-- Export entries weekly during test phase.
+- Заявки храним в WordPress для ручной обработки.
+- В тестовый период выгружать заявки минимум 1 раз в неделю.
 

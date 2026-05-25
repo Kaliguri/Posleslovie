@@ -1,0 +1,429 @@
+[
+  {
+    "id": 0,
+    "title": "Заявка Posleslovie",
+    "status": "published",
+    "appearance_settings": null,
+    "form_fields": {
+      "fields": [
+        {
+          "index": 1,
+          "element": "container",
+          "attributes": [],
+          "settings": {
+            "container_class": "",
+            "conditional_logics": [],
+            "is_width_auto_calc": true
+          },
+          "columns": [
+            {
+              "width": "",
+              "fields": [
+                {
+                  "index": 2,
+                  "element": "radio",
+                  "attributes": {
+                    "name": "request_type",
+                    "value": "personal"
+                  },
+                  "settings": {
+                    "label": "Тип заявки",
+                    "help_message": "",
+                    "admin_field_label": "",
+                    "required": {
+                      "value": true,
+                      "message": "Выберите тип заявки"
+                    },
+                    "advanced_options": [
+                      {
+                        "label": "Для себя",
+                        "value": "personal",
+                        "id": "personal"
+                      },
+                      {
+                        "label": "Для компании",
+                        "value": "company",
+                        "id": "company"
+                      }
+                    ],
+                    "conditional_logics": []
+                  },
+                  "editor_options": {
+                    "title": "Тип заявки"
+                  }
+                },
+                {
+                  "index": 3,
+                  "element": "input_name",
+                  "attributes": {
+                    "name": "name",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Имя",
+                    "required": {
+                      "value": true,
+                      "message": "Укажите имя"
+                    },
+                    "validation_rules": {
+                      "required": {
+                        "value": true,
+                        "message": "Укажите имя"
+                      }
+                    }
+                  },
+                  "editor_options": {
+                    "title": "Имя"
+                  }
+                },
+                {
+                  "index": 4,
+                  "element": "input_text",
+                  "attributes": {
+                    "name": "phone",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Телефон",
+                    "required": {
+                      "value": true,
+                      "message": "Укажите телефон"
+                    },
+                    "placeholder": "+7 (___) ___-__-__"
+                  },
+                  "editor_options": {
+                    "title": "Телефон"
+                  }
+                },
+                {
+                  "index": 5,
+                  "element": "input_email",
+                  "attributes": {
+                    "name": "email",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Email",
+                    "required": {
+                      "value": true,
+                      "message": "Укажите email"
+                    }
+                  },
+                  "editor_options": {
+                    "title": "Email"
+                  }
+                },
+                {
+                  "index": 6,
+                  "element": "select",
+                  "attributes": {
+                    "name": "contact_method",
+                    "value": "telegram"
+                  },
+                  "settings": {
+                    "label": "Способ связи",
+                    "required": {
+                      "value": true,
+                      "message": "Выберите способ связи"
+                    },
+                    "advanced_options": [
+                      {
+                        "label": "Telegram",
+                        "value": "telegram"
+                      },
+                      {
+                        "label": "MAX",
+                        "value": "max"
+                      },
+                      {
+                        "label": "Телефон",
+                        "value": "phone"
+                      },
+                      {
+                        "label": "Email",
+                        "value": "email"
+                      }
+                    ]
+                  },
+                  "editor_options": {
+                    "title": "Способ связи"
+                  }
+                },
+                {
+                  "index": 7,
+                  "element": "input_text",
+                  "attributes": {
+                    "name": "contact_handle",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Ник (Telegram)",
+                    "placeholder": "@username",
+                    "conditional_logics": {
+                      "status": true,
+                      "type": "all",
+                      "conditions": [
+                        {
+                          "field": "contact_method",
+                          "operator": "=",
+                          "value": "telegram"
+                        }
+                      ]
+                    }
+                  },
+                  "editor_options": {
+                    "title": "Ник Telegram"
+                  }
+                },
+                {
+                  "index": 8,
+                  "element": "input_text",
+                  "attributes": {
+                    "name": "city",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Город доставки",
+                    "conditional_logics": {
+                      "status": true,
+                      "type": "all",
+                      "conditions": [
+                        {
+                          "field": "request_type",
+                          "operator": "=",
+                          "value": "personal"
+                        }
+                      ]
+                    }
+                  },
+                  "editor_options": {
+                    "title": "Город"
+                  }
+                },
+                {
+                  "index": 9,
+                  "element": "input_text",
+                  "attributes": {
+                    "name": "company",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Компания",
+                    "conditional_logics": {
+                      "status": true,
+                      "type": "all",
+                      "conditions": [
+                        {
+                          "field": "request_type",
+                          "operator": "=",
+                          "value": "company"
+                        }
+                      ]
+                    }
+                  },
+                  "editor_options": {
+                    "title": "Компания"
+                  }
+                },
+                {
+                  "index": 10,
+                  "element": "input_text",
+                  "attributes": {
+                    "name": "inn",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "ИНН",
+                    "conditional_logics": {
+                      "status": true,
+                      "type": "all",
+                      "conditions": [
+                        {
+                          "field": "request_type",
+                          "operator": "=",
+                          "value": "company"
+                        }
+                      ]
+                    }
+                  },
+                  "editor_options": {
+                    "title": "ИНН"
+                  }
+                },
+                {
+                  "index": 11,
+                  "element": "input_text",
+                  "attributes": {
+                    "name": "ogrn",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "ОГРН",
+                    "conditional_logics": {
+                      "status": true,
+                      "type": "all",
+                      "conditions": [
+                        {
+                          "field": "request_type",
+                          "operator": "=",
+                          "value": "company"
+                        }
+                      ]
+                    }
+                  },
+                  "editor_options": {
+                    "title": "ОГРН"
+                  }
+                },
+                {
+                  "index": 12,
+                  "element": "textarea",
+                  "attributes": {
+                    "name": "comment",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Комментарий",
+                    "placeholder": "Дополнительные детали по заказу"
+                  },
+                  "editor_options": {
+                    "title": "Комментарий"
+                  }
+                },
+                {
+                  "index": 13,
+                  "element": "file-upload",
+                  "attributes": {
+                    "name": "logo_file",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Логотип",
+                    "allowed_file_types": "jpg,jpeg,png",
+                    "max_file_size": "3",
+                    "max_file_count": "1"
+                  },
+                  "editor_options": {
+                    "title": "Логотип"
+                  }
+                },
+                {
+                  "index": 14,
+                  "element": "input_number",
+                  "attributes": {
+                    "name": "quantity",
+                    "value": "3"
+                  },
+                  "settings": {
+                    "label": "Количество",
+                    "required": {
+                      "value": true,
+                      "message": "Укажите количество"
+                    },
+                    "numeric_step": "1",
+                    "numeric_min": "1"
+                  },
+                  "editor_options": {
+                    "title": "Количество"
+                  }
+                },
+                {
+                  "index": 15,
+                  "element": "input_hidden",
+                  "attributes": {
+                    "name": "product_name",
+                    "value": "Бомбочка для ванны"
+                  },
+                  "settings": {
+                    "label": "Товар"
+                  },
+                  "editor_options": {
+                    "title": "Товар"
+                  }
+                },
+                {
+                  "index": 16,
+                  "element": "input_hidden",
+                  "attributes": {
+                    "name": "unit_price",
+                    "value": "999"
+                  },
+                  "settings": {
+                    "label": "Цена за единицу"
+                  },
+                  "editor_options": {
+                    "title": "Цена за единицу"
+                  }
+                },
+                {
+                  "index": 17,
+                  "element": "input_hidden",
+                  "attributes": {
+                    "name": "total",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Итого"
+                  },
+                  "editor_options": {
+                    "title": "Итого"
+                  }
+                },
+                {
+                  "index": 18,
+                  "element": "terms_and_condition",
+                  "attributes": {
+                    "name": "consent_personal_data",
+                    "value": ""
+                  },
+                  "settings": {
+                    "label": "Согласие",
+                    "required": {
+                      "value": true,
+                      "message": "Необходимо согласие с условиями"
+                    },
+                    "tnc_html": "Нажимая кнопку, вы соглашаетесь с обработкой персональных данных и политикой конфиденциальности."
+                  },
+                  "editor_options": {
+                    "title": "Согласие"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "submitButton": {
+        "class": "",
+        "id": "",
+        "text": "Отправить заявку"
+      }
+    },
+    "type": "form",
+    "has_payment": "0",
+    "conditions": null,
+    "meta": [
+      {
+        "id": 0,
+        "form_id": "0",
+        "meta_key": "formSettings",
+        "value": "{\"confirmation\":{\"redirectTo\":\"samePage\",\"messageToShow\":\"Спасибо! Заявка отправлена. Мы свяжемся с вами в ближайшее время.\",\"customPage\":null,\"samePageFormBehavior\":\"hide_form\",\"customUrl\":null},\"restrictions\":{\"limitNumberOfEntries\":{\"enabled\":false,\"numberOfEntries\":null,\"period\":\"total\",\"limitReachedMsg\":\"Maximum number of entries exceeded.\"},\"scheduleForm\":{\"enabled\":false,\"start\":null,\"end\":null,\"selectedDays\":null,\"pendingMsg\":\"Form submission is not started yet.\",\"expiredMsg\":\"Form submission is now closed.\"},\"requireLogin\":{\"enabled\":false,\"requireLoginMsg\":\"You must be logged in to submit the form.\"},\"denyEmptySubmission\":{\"enabled\":false,\"message\":\"Sorry, you cannot submit an empty form.\"}},\"layout\":{\"labelPlacement\":\"top\",\"helpMessagePlacement\":\"with_label\",\"errorMessagePlacement\":\"inline\"}}"
+      },
+      {
+        "id": 0,
+        "form_id": "0",
+        "meta_key": "notifications",
+        "value": "{\"name\":\"Admin Notification Email\",\"sendTo\":{\"type\":\"email\",\"email\":\"{wp.admin_email}\",\"field\":\"email\",\"routing\":[{\"email\":null,\"field\":null,\"operator\":\"=\",\"value\":null}]},\"fromName\":\"\",\"fromEmail\":\"\",\"replyTo\":\"\",\"bcc\":\"\",\"subject\":\"[Posleslovie] Новая заявка ({inputs.request_type})\",\"message\":\"{all_data}<\\/p>\\nИсточник: {embed_post.permalink}<\\/p>\",\"conditionals\":{\"status\":false,\"type\":\"all\",\"conditions\":[{\"field\":null,\"operator\":\"=\",\"value\":null}]},\"enabled\":true,\"email_template\":\"\"}"
+      }
+    ],
+    "metas": [
+      {
+        "id": 0,
+        "form_id": "0",
+        "meta_key": "template_name",
+        "value": "blank_form"
+      }
+    ]
+  }
+]
+

@@ -1,21 +1,21 @@
-# WordPress Assets Manifest
+# Манифест ассетов для WordPress
 
-Use this file to upload assets into WordPress Media Library and bind them to ACF fields.
+Используй этот файл, чтобы загрузить ассеты в Media Library WordPress и привязать их к ACF-полям.
 
-## Upload sources
+## Источники загрузки
 
-- Images: `public/images/desktop-29/*`
-- Legal PDFs: `public/docs/*`
+- Изображения: `public/images/desktop-29/*`
+- Юридические PDF: `public/docs/*`
 
-## Mandatory assets (homepage + footer)
+## Обязательные ассеты (главная + footer)
 
-| Source file | Target usage in WP |
+| Исходный файл | Использование в WP |
 | --- | --- |
 | `/images/desktop-29/hero.jpg` | `hero_background_image` |
 | `/images/desktop-29/icon-nature.png` | `feature_cards[0].icon`, `why_items[0].icon` |
 | `/images/desktop-29/icon-gift.png` | `feature_cards[1].icon`, `why_items[2].icon` |
 | `/images/desktop-29/icon-success.png` | `feature_cards[2].icon`, `why_items[1].icon` |
-| `/images/desktop-29/bombs-1.jpg` | `gallery_bombs[0].image`, `about_image` default |
+| `/images/desktop-29/bombs-1.jpg` | `gallery_bombs[0].image`, базовый `about_image` |
 | `/images/desktop-29/bombs-2.jpg` | `gallery_bombs[1].image` |
 | `/images/desktop-29/bombs-3.jpg` | `gallery_bombs[2].image` |
 | `/images/desktop-29/product-2.svg` | `gallery_lavender[0].image` |
@@ -36,17 +36,17 @@ Use this file to upload assets into WordPress Media Library and bind them to ACF
 | `/docs/personal-data-distribution.pdf` | `legal_documents[personal-data-distribution].pdf_file` |
 | `/docs/marketing-consent.pdf` | `legal_documents[marketing-consent].pdf_file` |
 
-## Decorative assets (optional but recommended)
+## Декоративные ассеты (опционально, но желательно)
 
-| Source file | Current usage |
+| Исходный файл | Текущее использование |
 | --- | --- |
-| `/images/desktop-29/stars.svg` | decorative stars in process section |
-| `/images/desktop-29/crystal.png` | decorative image near process section |
-| `/images/desktop-29/pero.png` | decorative image near process section |
+| `/images/desktop-29/stars.svg` | декоративные звезды в секции процесса |
+| `/images/desktop-29/crystal.png` | декоративное изображение рядом с секцией процесса |
+| `/images/desktop-29/pero.png` | декоративное изображение рядом с секцией процесса |
 
-## Duplicate/legacy variants (not required for MVP)
+## Дубли/legacy-варианты (для MVP не нужны)
 
-These files exist but are not needed if you use the default JPG/PNG/SVG set above:
+Эти файлы есть в проекте, но не обязательны, если используешь основной набор JPG/PNG/SVG выше:
 
 - `/images/desktop-29/hero.png`
 - `/images/desktop-29/hero.svg`
@@ -64,16 +64,16 @@ These files exist but are not needed if you use the default JPG/PNG/SVG set abov
 - `/images/desktop-29/icon-gift.svg`
 - `/images/desktop-29/icon-success.svg`
 
-## Recommended upload order
+## Рекомендуемый порядок загрузки
 
-1. Upload all mandatory images first.
-2. Upload all PDFs second.
-3. Upload decorative assets if used in template.
-4. Assign each uploaded file to matching ACF fields from `docs/wp-acf-spec.md`.
+1. Сначала загрузи все обязательные изображения.
+2. Затем загрузи все PDF.
+3. Потом загрузи декоративные ассеты (если используешь их в шаблоне).
+4. Привяжи каждый загруженный файл к соответствующим ACF-полям из `docs/wp-acf-spec.md`.
 
-## URL strategy in WordPress
+## Стратегия URL в WordPress
 
-- Use Media Library generated URLs for all images and PDFs.
-- Do not keep hardcoded `/images/...` and `/docs/...` paths in WP templates.
-- For legal docs, link to attached PDF file URL from the `legal_documents` repeater.
+- Для изображений и PDF использовать URL из Media Library.
+- Не оставлять хардкодные пути вида `/images/...` и `/docs/...` в WP-шаблонах.
+- Для юридических документов в footer брать URL файла из repeater `legal_documents`.
 

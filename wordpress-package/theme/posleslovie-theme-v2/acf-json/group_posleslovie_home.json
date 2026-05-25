@@ -1,0 +1,231 @@
+{
+  "key": "group_posleslovie_home",
+  "title": "Posleslovie: Главная страница",
+  "fields": [
+    {
+      "key": "field_ps_hero_title",
+      "label": "Hero: Заголовок",
+      "name": "hero_title",
+      "type": "text",
+      "required": 1
+    },
+    {
+      "key": "field_ps_hero_lead_1",
+      "label": "Hero: Подзаголовок строка 1",
+      "name": "hero_lead_line_1",
+      "type": "text",
+      "required": 1
+    },
+    {
+      "key": "field_ps_hero_lead_2",
+      "label": "Hero: Подзаголовок строка 2",
+      "name": "hero_lead_line_2",
+      "type": "text",
+      "required": 1
+    },
+    {
+      "key": "field_ps_hero_button",
+      "label": "Hero: Текст кнопки",
+      "name": "hero_cta_label",
+      "type": "text",
+      "required": 1
+    },
+    {
+      "key": "field_ps_hero_bg",
+      "label": "Hero: Фоновое изображение",
+      "name": "hero_background_image",
+      "type": "image",
+      "return_format": "array",
+      "preview_size": "large",
+      "library": "all"
+    },
+    {
+      "key": "field_ps_feature_cards_json",
+      "label": "Карточки преимуществ (JSON массив)",
+      "name": "feature_cards_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: title, description, icon",
+      "rows": 8
+    },
+    {
+      "key": "field_ps_process_sections_json",
+      "label": "Секции процесса (JSON массив)",
+      "name": "process_sections_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: eyebrow, title, description, reverse, gallery_key, button_label",
+      "rows": 8
+    },
+    {
+      "key": "field_ps_gallery_bombs_json",
+      "label": "Галерея bombs (JSON массив)",
+      "name": "gallery_bombs_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: image, alt",
+      "rows": 6
+    },
+    {
+      "key": "field_ps_gallery_lavender_json",
+      "label": "Галерея lavender (JSON массив)",
+      "name": "gallery_lavender_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: image, alt",
+      "rows": 6
+    },
+    {
+      "key": "field_ps_gallery_packs_json",
+      "label": "Галерея packs (JSON массив)",
+      "name": "gallery_packs_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: image, alt",
+      "rows": 6
+    },
+    {
+      "key": "field_ps_why_title",
+      "label": "Почему мы: Заголовок",
+      "name": "why_title",
+      "type": "text"
+    },
+    {
+      "key": "field_ps_why_bg",
+      "label": "Почему мы: Фон",
+      "name": "why_background_image",
+      "type": "image",
+      "return_format": "array",
+      "preview_size": "large",
+      "library": "all"
+    },
+    {
+      "key": "field_ps_why_items_json",
+      "label": "Почему мы: элементы (JSON массив)",
+      "name": "why_items_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: title, description, icon",
+      "rows": 7
+    },
+    {
+      "key": "field_ps_about_kicker",
+      "label": "О нас: Kicker",
+      "name": "about_kicker",
+      "type": "text"
+    },
+    {
+      "key": "field_ps_about_title",
+      "label": "О нас: Заголовок",
+      "name": "about_title",
+      "type": "text"
+    },
+    {
+      "key": "field_ps_about_p1",
+      "label": "О нас: Абзац 1",
+      "name": "about_paragraph_1",
+      "type": "textarea",
+      "rows": 4
+    },
+    {
+      "key": "field_ps_about_p2",
+      "label": "О нас: Абзац 2",
+      "name": "about_paragraph_2",
+      "type": "textarea",
+      "rows": 4
+    },
+    {
+      "key": "field_ps_about_image",
+      "label": "О нас: Изображение",
+      "name": "about_image",
+      "type": "image",
+      "return_format": "array",
+      "preview_size": "large",
+      "library": "all"
+    },
+    {
+      "key": "field_ps_reviews_title",
+      "label": "Отзывы: Заголовок",
+      "name": "reviews_title",
+      "type": "text"
+    },
+    {
+      "key": "field_ps_reviews_items_json",
+      "label": "Отзывы: элементы (JSON массив)",
+      "name": "reviews_items_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: name, text, image",
+      "rows": 8
+    },
+    {
+      "key": "field_ps_cta_heading",
+      "label": "CTA: Заголовок",
+      "name": "cta_heading",
+      "type": "text"
+    },
+    {
+      "key": "field_ps_cta_text",
+      "label": "CTA: Текст",
+      "name": "cta_text",
+      "type": "textarea",
+      "rows": 3
+    },
+    {
+      "key": "field_ps_cta_button",
+      "label": "CTA: Кнопка",
+      "name": "cta_button_label",
+      "type": "text"
+    },
+    {
+      "key": "field_ps_cta_bg",
+      "label": "CTA: Фоновое изображение",
+      "name": "cta_background_image",
+      "type": "image",
+      "return_format": "array",
+      "preview_size": "large",
+      "library": "all"
+    },
+    {
+      "key": "field_ps_site_phone",
+      "label": "Контакты: Телефон",
+      "name": "site_phone",
+      "type": "text"
+    },
+    {
+      "key": "field_ps_site_email",
+      "label": "Контакты: Email",
+      "name": "site_email",
+      "type": "email"
+    },
+    {
+      "key": "field_ps_site_socials_json",
+      "label": "Соцсети (JSON массив)",
+      "name": "site_socials_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: label, url",
+      "rows": 5
+    },
+    {
+      "key": "field_ps_legal_documents_json",
+      "label": "Юридические документы (JSON массив)",
+      "name": "legal_documents_json",
+      "type": "textarea",
+      "instructions": "Массив объектов: slug, short_title, file. Можно добавить pdf_file URL.",
+      "rows": 8
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "page_type",
+        "operator": "==",
+        "value": "front_page"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": "Поля контента и настроек главной страницы Posleslovie.",
+  "show_in_rest": 0,
+  "modified": 1730000000
+}
+
