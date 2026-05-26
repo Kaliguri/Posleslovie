@@ -3,8 +3,9 @@ import type { NextConfig } from "next";
 const repositoryName = process.env.GITHUB_REPOSITORY?.split("/")[1] ?? "";
 const isGithubPagesBuild = process.env.GITHUB_ACTIONS === "true";
 const isUserOrOrgPagesSite = repositoryName.endsWith(".github.io");
+const hasCustomDomain = !!process.env.CUSTOM_DOMAIN;
 const githubPagesBasePath =
-  isGithubPagesBuild && repositoryName && !isUserOrOrgPagesSite
+  isGithubPagesBuild && repositoryName && !isUserOrOrgPagesSite && !hasCustomDomain
     ? `/${repositoryName}`
     : "";
 

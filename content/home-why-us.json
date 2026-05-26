@@ -1,0 +1,22 @@
+{
+  "kicker": "Преимущества",
+  "title": "Почему выбирают нас?",
+  "backgroundImage": "/images/desktop-29/why-us.jpg",
+  "reasons": [
+    {
+      "title": "Чистый состав",
+      "description": "Только органические масла и настоящие сухоцветы",
+      "icon": "/images/desktop-29/icon-nature.png"
+    },
+    {
+      "title": "Гарантия качества",
+      "description": "Ручная сборка и контроль каждой партии",
+      "icon": "/images/desktop-29/icon-success.png"
+    },
+    {
+      "title": "Креативный подарок",
+      "description": "Приятный сюрприз и культурный опыт в каждом наборе",
+      "icon": "/images/desktop-29/icon-gift.png"
+    }
+  ]
+}

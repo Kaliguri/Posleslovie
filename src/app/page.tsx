@@ -5,6 +5,14 @@ import { useCallback, useEffect, useRef, useState, type InputHTMLAttributes } fr
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
 import { russianCities } from "@/shared/config/russian-cities";
 import { siteConfig } from "@/shared/config/site";
+import homeHeroJson from "../../content/home-hero.json";
+import homeFeatureCardsJson from "../../content/home-feature-cards.json";
+import homeProcessSectionsJson from "../../content/home-process-sections.json";
+import homeGalleriesJson from "../../content/home-galleries.json";
+import homeWhyUsJson from "../../content/home-why-us.json";
+import homeAboutJson from "../../content/home-about.json";
+import homeReviewsJson from "../../content/home-reviews.json";
+import homeCtaJson from "../../content/home-cta.json";
 
 type ModalType = "delivery" | "partners" | "contacts" | "checkout" | LegalDocumentSlug | null;
 type CheckoutField = keyof CheckoutFormValues;
@@ -72,140 +80,40 @@ const initialCheckoutState: CheckoutState = {
 const amoCRMWorkerUrl = "https://posleslovie-amocrm.kailgurika.workers.dev/";
 
 const assets = {
-  hero: assetPath("/images/desktop-29/hero.jpg"),
-  bombs1: assetPath("/images/desktop-29/bombs-1.jpg"),
-  bombs2: assetPath("/images/desktop-29/bombs-2.jpg"),
-  bombs3: assetPath("/images/desktop-29/bombs-3.jpg"),
-  lavender1: assetPath("/images/desktop-29/product-2.svg"),
-  lavender2: assetPath("/images/desktop-29/product-1.svg"),
-  lavender3: assetPath("/images/desktop-29/product-3.svg"),
-  packs1: assetPath("/images/desktop-29/packs-1.jpg"),
-  packs2: assetPath("/images/desktop-29/packs-2.jpg"),
-  packs3: assetPath("/images/desktop-29/packs-3.jpg"),
-  review1: assetPath("/images/desktop-29/review-1.svg"),
-  review2: assetPath("/images/desktop-29/review-2.svg"),
-  review3: assetPath("/images/desktop-29/review-3.svg"),
-  review4: assetPath("/images/desktop-29/review-4.svg"),
-  cta: assetPath("/images/desktop-29/cta.jpg"),
-  whyUs: assetPath("/images/desktop-29/why-us.jpg"),
-  natureIcon: assetPath("/images/desktop-29/icon-nature.png"),
-  giftIcon: assetPath("/images/desktop-29/icon-gift.png"),
-  successIcon: assetPath("/images/desktop-29/icon-success.png"),
   starRow: assetPath("/images/desktop-29/stars.svg"),
   crystal: assetPath("/images/desktop-29/crystal.png"),
   pero: assetPath("/images/desktop-29/pero.png"),
+  bombs2: assetPath("/images/desktop-29/bombs-2.jpg"),
 };
 
 const gallerySlides = {
-  bombs: [
-    { image: assets.bombs1, alt: "Мраморные бомбочки для ванны" },
-    { image: assets.bombs2, alt: "Голубые бомбочки с лавандой" },
-    { image: assets.bombs3, alt: "Бомбочка крупным планом" },
-  ],
-  lavender: [
-    { image: assets.lavender1, alt: "Лавандовая бомбочка для ванны" },
-    { image: assets.lavender2, alt: "Натуральные масла и сухоцветы" },
-    { image: assets.lavender3, alt: "Временное изображение лавандового блока" },
-  ],
-  packs: [
-    { image: assets.packs1, alt: "Подарочная упаковка Послесловие" },
-    { image: assets.packs2, alt: "Брендированный набор бомбочек" },
-    { image: assets.packs3, alt: "Упакованные наборы для подарков" },
-  ],
-} as const;
+  bombs: homeGalleriesJson.bombs.map((s) => ({ ...s, image: assetPath(s.image) })),
+  lavender: homeGalleriesJson.lavender.map((s) => ({ ...s, image: assetPath(s.image) })),
+  packs: homeGalleriesJson.packs.map((s) => ({ ...s, image: assetPath(s.image) })),
+};
 
 type GalleryKind = keyof typeof gallerySlides;
 type GallerySlide = (typeof gallerySlides)[GalleryKind][number];
 
-const featureCards = [
-  {
-    title: "Природа в чистом виде",
-    description:
-      "Никакой агрессивной химии. Ручная сборка, натуральные масла и компоненты, которые мы тщательно отбираем сами.",
-    icon: assets.natureIcon,
-  },
-  {
-    title: "Сюрприз в каждом заказе",
-    description:
-      "Наши художники и писатели запечатали внутри культурный опыт и волшебство момента",
-    icon: assets.giftIcon,
-  },
-  {
-    title: "Дизайн по вашим правилам",
-    description:
-      "От цвета упаковки до теплых пожеланий на вкладыше. Мы полностью адаптируем внешний вид упаковки под эстетику вашего бренда",
-    icon: assets.successIcon,
-  },
-] as const;
+const featureCards = homeFeatureCardsJson.cards.map((card) => ({
+  ...card,
+  icon: assetPath(card.icon),
+}));
 
-const processSections = [
-  {
-    eyebrow: "Продукция",
-    title: "Как мы делаем бомбочки для ванн?",
-    description:
-      "Каждая бомбочка сделана в ручную. В составе исключительно натуральные ингредиенты, прошедшие сертификацию в лаборатории. Мы не экономим на вас, главное принести реальную пользу",
-    reverse: false,
-    gallery: "bombs",
-  },
-  {
-    eyebrow: "Натуральные масла",
-    title: "Собираем лаванду вручную",
-    description:
-      "Наши партнеры собирают лаванду и изготавливают масло в ручную. Букет из 50 сортов лаванды в каждой бомбочке.",
-    reverse: true,
-    gallery: "lavender",
-  },
-  {
-    eyebrow: "Продукция",
-    title: "Упаковываем с любовью",
-    description:
-      "Мы нанесем ваш логотип на упаковку, вы выберите цвет сургучной печати. Мы возьмем на себя все технические моменты, чтобы вы получили готовый брендированный бокс, соответствующий эстетике и духу вашей компании",
-    reverse: false,
-    gallery: "packs",
-    button: "Сделать заказ",
-  },
-] as const;
+const processSections = homeProcessSectionsJson.sections.map((section) => ({
+  ...section,
+  gallery: section.gallery as GalleryKind,
+}));
 
-const reasons = [
-  {
-    title: "Чистый состав",
-    description: "Только органические масла и настоящие сухоцветы",
-    icon: assets.natureIcon,
-  },
-  {
-    title: "Гарантия качества",
-    description: "Ручная сборка и контроль каждой партии",
-    icon: assets.successIcon,
-  },
-  {
-    title: "Креативный подарок",
-    description: "Приятный сюрприз и культурный опыт в каждом наборе",
-    icon: assets.giftIcon,
-  },
-] as const;
+const reasons = homeWhyUsJson.reasons.map((r) => ({
+  ...r,
+  icon: assetPath(r.icon),
+}));
 
-const reviews = [
-  {
-    name: "Алиса Ч.",
-    image: assets.review1,
-    text: "«Потрясающая бомбочка! Я очень привередлива к запахам и не люблю химозные отдушки, но тут аромат настоящей лаванды, как будто стоишь в поле. Растворяется мягко, кожу не сушит, сухоцветы смотрятся невероятно красиво. И самое главное — ванну после нее отмывать не нужно!»",
-  },
-  {
-    name: "Мария П.",
-    image: assets.review2,
-    text: "«Покупала набор в подарок. Все выглядит аккуратно и очень премиально: упаковка, аромат, сама идея маленького ритуала после долгого дня. Получательница была в восторге.»",
-  },
-  {
-    name: "Владимир К.",
-    image: assets.review3,
-    text: "«Искали эстетичные комплименты для подарочных боксов, заказали партию с нашим логотипом на упаковке. Качество превзошло ожидания, продукт делает распаковку особенной.»",
-  },
-  {
-    name: "Анна С.",
-    image: assets.review4,
-    text: "«Брала набор себе, чтобы отдохнуть от суеты. Очень эстетичный вид, чувствуется ручная работа и внимание к деталям. После тяжелого дня — идеальный способ расслабиться.»",
-  },
-] as const;
+const reviews = homeReviewsJson.items.map((r) => ({
+  ...r,
+  image: assetPath(r.image),
+}));
 
 const CAROUSEL_DURATION_MS = 500;
 const CAROUSEL_FAST_DURATION_MS = 250;
@@ -606,11 +514,18 @@ export default function Home() {
 
   return (
     <div className="overflow-x-hidden bg-[#f8f8f8] text-[#0f172a]">
-      <HeroSection onOrder={() => setModal("checkout")} />
+      <HeroSection
+        onOrder={() => setModal("checkout")}
+        heading={homeHeroJson.heading}
+        leadLine1={homeHeroJson.leadLine1}
+        leadLine2={homeHeroJson.leadLine2}
+        ctaLabel={homeHeroJson.ctaLabel}
+        backgroundImage={assetPath(homeHeroJson.backgroundImage)}
+      />
 
       <section id="bombs" className="px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]">
         <div className="mx-auto max-w-[1280px] rounded-[28px] bg-white px-4 py-10 sm:rounded-[48px] sm:px-6 sm:py-14 lg:min-h-[750px] lg:rounded-[100px] lg:px-20 lg:py-20">
-          <SectionHeading title="Дарите настроение и заботу тем, кто вам важен и дорог" centered />
+          <SectionHeading title={homeFeatureCardsJson.sectionTitle} centered />
           <div className="mt-8 grid gap-6 sm:mt-14 lg:grid-cols-3 lg:gap-16">
             {featureCards.map((card) => (
               <FeatureCard key={card.title} {...card} />
@@ -630,10 +545,30 @@ export default function Home() {
         ))}
       </div>
 
-      <WhyUsSection />
-      <AboutSection />
-      <ReviewsSection />
-      <CtaSection onOrder={() => setModal("checkout")} />
+      <WhyUsSection
+        kicker={homeWhyUsJson.kicker}
+        title={homeWhyUsJson.title}
+        backgroundImage={assetPath(homeWhyUsJson.backgroundImage)}
+        reasons={reasons}
+      />
+      <AboutSection
+        kicker={homeAboutJson.kicker}
+        title={homeAboutJson.title}
+        paragraphs={homeAboutJson.paragraphs}
+        image={assetPath(homeAboutJson.image)}
+      />
+      <ReviewsSection
+        kicker={homeReviewsJson.kicker}
+        title={homeReviewsJson.title}
+        reviews={reviews}
+      />
+      <CtaSection
+        onOrder={() => setModal("checkout")}
+        heading={homeCtaJson.heading}
+        text={homeCtaJson.text}
+        buttonLabel={homeCtaJson.buttonLabel}
+        backgroundImage={assetPath(homeCtaJson.backgroundImage)}
+      />
 
       <ScrollTopButton visible={showScrollTop} />
       <HomeModal
@@ -648,28 +583,42 @@ export default function Home() {
   );
 }
 
-function HeroSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
+function HeroSection({
+  onOrder,
+  heading,
+  leadLine1,
+  leadLine2,
+  ctaLabel,
+  backgroundImage,
+}: Readonly<{
+  onOrder: () => void;
+  heading: string;
+  leadLine1: string;
+  leadLine2: string;
+  ctaLabel: string;
+  backgroundImage: string;
+}>) {
   return (
     <section className="relative min-h-[600px] overflow-hidden bg-[#102038] sm:min-h-[720px] lg:min-h-[1080px]">
       <div
         className="absolute inset-x-[-16vw] top-0 h-full scale-[1.01] bg-cover bg-center sm:inset-x-[-5vw] lg:inset-x-[-103px]"
-        style={{ backgroundImage: `url(${assets.hero})` }}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
       />
       <div className="absolute inset-0 bg-black/45 sm:bg-black/25" />
       <div className="absolute left-1/2 top-[265px] hidden h-[572px] w-[64.3vw] max-w-[1234px] -translate-x-1/2 rounded-[385px] bg-black/[0.01] backdrop-blur-[5px] lg:block" />
       <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-32 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">
         <div className="max-w-[1234px]">
           <h1 className="text-[44px] font-normal leading-[0.95] text-white [font-family:var(--font-educational)] min-[390px]:text-[48px] sm:text-7xl lg:text-[126px]">
-            Послесловие к вашему дню
+            {heading}
           </h1>
           <p className="mx-auto mt-5 max-w-[340px] text-[15px] font-medium leading-[1.55] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] sm:text-xl lg:max-w-none lg:text-[25px]">
-            <span className="block sm:inline">Энергия природы в каждой бомбочке для ванны</span>
+            <span className="block sm:inline">{leadLine1}</span>
             <br className="hidden sm:block" />
-            <span className="block sm:inline">Внимание и забота к каждой минуте наедине с собой</span>
+            <span className="block sm:inline">{leadLine2}</span>
           </p>
           <div className="mt-9 sm:mt-16">
             <DesignButton size="xl" variant="filled" onClick={onOrder}>
-              Оформить заказ
+              {ctaLabel}
             </DesignButton>
           </div>
         </div>
@@ -813,15 +762,25 @@ function TapeImageCarousel({
   );
 }
 
-function WhyUsSection() {
+function WhyUsSection({
+  kicker,
+  title,
+  backgroundImage,
+  reasons,
+}: Readonly<{
+  kicker: string;
+  title: string;
+  backgroundImage: string;
+  reasons: { title: string; description: string; icon: string }[];
+}>) {
   return (
     <section
       className="relative overflow-hidden bg-cover bg-center px-4 py-12 text-white sm:px-5 sm:py-16 lg:px-[235px] lg:py-20"
-      style={{ backgroundImage: `url(${assets.whyUs})` }}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="absolute inset-0 bg-black/35 sm:bg-white/10" />
       <div className="relative mx-auto max-w-[1456px]">
-        <SectionHeading kicker="Преимущества" title="Почему выбирают нас?" centered light />
+        <SectionHeading kicker={kicker} title={title} centered light />
         <div className="mt-8 grid gap-7 sm:mt-12 lg:grid-cols-3 lg:gap-24">
           {reasons.map((reason) => (
             <article key={reason.title} className="text-center">
@@ -836,7 +795,17 @@ function WhyUsSection() {
   );
 }
 
-function AboutSection() {
+function AboutSection({
+  kicker,
+  title,
+  paragraphs,
+  image,
+}: Readonly<{
+  kicker: string;
+  title: string;
+  paragraphs: string[];
+  image: string;
+}>) {
   return (
     <section id="about" className="bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
       <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white sm:rounded-[42px] lg:rounded-[70px]">
@@ -846,24 +815,19 @@ function AboutSection() {
         </div>
         <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
           <div className="max-w-[552px]">
-            <SectionKicker>О нас</SectionKicker>
+            <SectionKicker>{kicker}</SectionKicker>
             <h2 className="mt-2 text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
-              Кто мы такие?
+              {title}
             </h2>
             <GoldRule />
             <div className="mt-4 space-y-3 text-[15px] leading-7 [font-family:var(--font-inter)] sm:mt-5 sm:space-y-6 sm:text-base sm:leading-8 lg:text-xl lg:leading-[1.8]">
-              <p>
-                Послесловие — это команда амбициозных, творческих и талантливых людей,
-                бесконечно целеустремленных и искренне увлеченных процессом создания подарков.
-              </p>
-              <p>
-                Мы прилагаем максимум усилий, чтобы создать продукцию на уровень выше конкурентов.
-                Именно поэтому с нами сотрудничают лидеры рынка в своих нишах.
-              </p>
+              {paragraphs.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
             </div>
           </div>
           <ZoomImage
-            image={assets.bombs1}
+            image={image}
             label="Бомбочки Послесловие"
             className="mx-auto aspect-square w-full max-w-[525px] rounded-[24px] sm:rounded-[32px] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]"
           />
@@ -873,14 +837,22 @@ function AboutSection() {
   );
 }
 
-function ReviewsSection() {
+function ReviewsSection({
+  kicker,
+  title,
+  reviews,
+}: Readonly<{
+  kicker: string;
+  title: string;
+  reviews: { name: string; image: string; text: string }[];
+}>) {
   const { orderedItems, offset, isTransitioning, transitionDuration, move } =
     useInfiniteCarousel(reviews);
 
   return (
     <section id="reviews" className="overflow-hidden bg-[#f8f8f8] px-3 py-12 sm:px-5 sm:py-16 lg:px-[100px] lg:py-20">
       <div className="mx-auto max-w-[1280px]">
-        <SectionHeading kicker="Отзывы" title="Нам доверяют" centered />
+        <SectionHeading kicker={kicker} title={title} centered />
         <div className="mt-8 overflow-hidden [--carousel-gap:1rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] sm:mt-14 sm:[--carousel-gap:2rem] lg:[--carousel-gap:3rem] lg:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
           <div
             className={`flex gap-[var(--carousel-gap)] ${isTransitioning ? "transition-transform ease-out" : ""}`}
@@ -917,21 +889,33 @@ function ReviewsSection() {
   );
 }
 
-function CtaSection({ onOrder }: Readonly<{ onOrder: () => void }>) {
+function CtaSection({
+  onOrder,
+  heading,
+  text,
+  buttonLabel,
+  backgroundImage,
+}: Readonly<{
+  onOrder: () => void;
+  heading: string;
+  text: string;
+  buttonLabel: string;
+  backgroundImage: string;
+}>) {
   return (
     <section
       className="relative overflow-hidden bg-[#c1aeff] bg-cover bg-center px-4 py-14 text-center text-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] sm:px-5 sm:py-20 lg:px-[100px] lg:py-20"
-      style={{ backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${assets.cta})` }}
+      style={{ backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${backgroundImage})` }}
     >
       <div className="relative mx-auto flex max-w-[1200px] flex-col items-center">
         <h2 className="max-w-[760px] text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
-          Наши наборы - ваш идеальный комплимент!
+          {heading}
         </h2>
         <p className="mt-4 max-w-[540px] text-base font-light leading-[1.55] sm:text-2xl">
-          Подарите минуты душевного равновесия и культурный опыт тем, кто вам важен
+          {text}
         </p>
         <div className="mt-8">
-          <DesignButton size="xl" onClick={onOrder}>Оформить заказ</DesignButton>
+          <DesignButton size="xl" onClick={onOrder}>{buttonLabel}</DesignButton>
         </div>
       </div>
     </section>

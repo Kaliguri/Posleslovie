@@ -1,0 +1,166 @@
+backend:
+  name: github
+  repo: kaliguri/Posleslovie
+  branch: main
+  base_url: https://api.netlify.com
+
+media_folder: public/images
+public_folder: /images
+
+locale: ru
+
+collections:
+  - name: content
+    label: Контент сайта
+    files:
+      - name: site_settings
+        label: Настройки сайта (телефон, email, соцсети)
+        file: content/site-settings.json
+        fields:
+          - { name: name, label: Название сайта, widget: string }
+          - { name: description, label: Описание, widget: text }
+          - { name: phone, label: Телефон, widget: string }
+          - { name: email, label: Email, widget: string }
+          - name: socials
+            label: Социальные сети
+            widget: list
+            fields:
+              - { name: label, label: Название, widget: string }
+              - { name: href, label: Ссылка, widget: string }
+
+      - name: hero
+        label: Главный экран
+        file: content/home-hero.json
+        fields:
+          - { name: heading, label: Заголовок, widget: string }
+          - { name: leadLine1, label: Подзаголовок — строка 1, widget: string }
+          - { name: leadLine2, label: Подзаголовок — строка 2, widget: string }
+          - { name: ctaLabel, label: Текст кнопки, widget: string }
+          - { name: backgroundImage, label: Фоновое изображение, widget: image }
+
+      - name: feature_cards
+        label: Карточки продукта
+        file: content/home-feature-cards.json
+        fields:
+          - { name: sectionTitle, label: Заголовок секции, widget: string }
+          - name: cards
+            label: Карточки
+            widget: list
+            fields:
+              - { name: title, label: Название, widget: string }
+              - { name: description, label: Описание, widget: text }
+              - { name: icon, label: Иконка, widget: image }
+
+      - name: process_sections
+        label: Секции процесса (бомбочки / масла / упаковка)
+        file: content/home-process-sections.json
+        fields:
+          - name: sections
+            label: Секции
+            widget: list
+            fields:
+              - { name: eyebrow, label: Надпись над заголовком, widget: string }
+              - { name: title, label: Заголовок, widget: string }
+              - { name: description, label: Описание, widget: text }
+              - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false }
+              - name: gallery
+                label: Галерея
+                widget: select
+                options:
+                  - { label: Бомбочки, value: bombs }
+                  - { label: Лаванда, value: lavender }
+                  - { label: Упаковка, value: packs }
+              - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
+
+      - name: galleries
+        label: Галереи изображений
+        file: content/home-galleries.json
+        fields:
+          - name: bombs
+            label: Галерея — Бомбочки
+            widget: list
+            fields:
+              - { name: image, label: Изображение, widget: image }
+              - { name: alt, label: Описание (alt), widget: string }
+          - name: lavender
+            label: Галерея — Лаванда
+            widget: list
+            fields:
+              - { name: image, label: Изображение, widget: image }
+              - { name: alt, label: Описание (alt), widget: string }
+          - name: packs
+            label: Галерея — Упаковка
+            widget: list
+            fields:
+              - { name: image, label: Изображение, widget: image }
+              - { name: alt, label: Описание (alt), widget: string }
+
+      - name: why_us
+        label: Секция «Почему выбирают нас»
+        file: content/home-why-us.json
+        fields:
+          - { name: kicker, label: Надпись над заголовком, widget: string }
+          - { name: title, label: Заголовок, widget: string }
+          - { name: backgroundImage, label: Фоновое изображение, widget: image }
+          - name: reasons
+            label: Причины
+            widget: list
+            fields:
+              - { name: title, label: Заголовок, widget: string }
+              - { name: description, label: Описание, widget: text }
+              - { name: icon, label: Иконка, widget: image }
+
+      - name: about
+        label: Секция «О нас»
+        file: content/home-about.json
+        fields:
+          - { name: kicker, label: Надпись над заголовком, widget: string }
+          - { name: title, label: Заголовок, widget: string }
+          - name: paragraphs
+            label: Параграфы текста
+            widget: list
+            field: { name: text, label: Текст, widget: text }
+          - { name: image, label: Изображение, widget: image }
+
+      - name: reviews
+        label: Отзывы
+        file: content/home-reviews.json
+        fields:
+          - { name: kicker, label: Надпись над заголовком, widget: string }
+          - { name: title, label: Заголовок, widget: string }
+          - name: items
+            label: Отзывы
+            widget: list
+            fields:
+              - { name: name, label: Имя автора, widget: string }
+              - { name: image, label: Фото/иллюстрация, widget: image }
+              - { name: text, label: Текст отзыва, widget: text }
+
+      - name: cta
+        label: Финальный призыв к действию
+        file: content/home-cta.json
+        fields:
+          - { name: heading, label: Заголовок, widget: string }
+          - { name: text, label: Текст, widget: text }
+          - { name: buttonLabel, label: Текст кнопки, widget: string }
+          - { name: backgroundImage, label: Фоновое изображение, widget: image }
+
+  - name: legal
+    label: Юридические документы
+    files:
+      - name: legal_documents
+        label: Все документы
+        file: content/legal-documents.json
+        fields:
+          - name: documents
+            label: Документы
+            widget: list
+            fields:
+              - { name: slug, label: Slug (не менять!), widget: string }
+              - { name: pdfPath, label: Путь к PDF, widget: string }
+              - { name: title, label: Полное название, widget: string }
+              - { name: shortTitle, label: Короткое название, widget: string }
+              - name: content
+                label: Текст документа (параграфы)
+                widget: list
+                field: { name: text, label: Абзац, widget: text }
