@@ -10,11 +10,11 @@ public_folder: /images
 locale: ru
 
 collections:
-  - name: content
-    label: Сайт - тексты и блоки
+  - name: site
+    label: Сайт - общие настройки
     files:
       - name: site_settings
-        label: 01. Бренд и контакты
+        label: Бренд и контакты
         file: content/site-settings.json
         fields:
           - { name: name, label: Название сайта, widget: string }
@@ -30,8 +30,11 @@ collections:
               - { name: label, label: Название, widget: string }
               - { name: href, label: Ссылка, widget: string }
 
+  - name: home
+    label: Главная страница
+    files:
       - name: hero
-        label: 02. Главная - первый экран
+        label: 01. Первый экран
         file: content/home-hero.json
         fields:
           - { name: heading, label: Заголовок, widget: string }
@@ -41,7 +44,7 @@ collections:
           - { name: backgroundImage, label: Фоновое изображение, widget: image }
 
       - name: feature_cards
-        label: 03. Главная - карточки продукта
+        label: 02. Карточки продукта
         file: content/home-feature-cards.json
         fields:
           - { name: sectionTitle, label: Заголовок секции, widget: string }
@@ -55,7 +58,7 @@ collections:
               - { name: icon, label: Иконка, widget: image }
 
       - name: process_sections
-        label: 04. Главная - секции процесса
+        label: 03. Секции процесса
         file: content/home-process-sections.json
         fields:
           - name: sections
@@ -78,7 +81,7 @@ collections:
               - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
 
       - name: galleries
-        label: 05. Главная - галереи изображений
+        label: 04. Галереи изображений
         file: content/home-galleries.json
         fields:
           - name: bombs
@@ -104,7 +107,7 @@ collections:
               - { name: alt, label: Описание (alt), widget: string }
 
       - name: why_us
-        label: 06. Главная - почему выбирают нас
+        label: 05. Почему выбирают нас
         file: content/home-why-us.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -120,7 +123,7 @@ collections:
               - { name: icon, label: Иконка, widget: image }
 
       - name: about
-        label: 07. Главная - о нас
+        label: 06. О нас
         file: content/home-about.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -132,7 +135,7 @@ collections:
           - { name: image, label: Изображение, widget: image }
 
       - name: reviews
-        label: 08. Главная - отзывы
+        label: 07. Отзывы
         file: content/home-reviews.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -147,7 +150,7 @@ collections:
               - { name: text, label: Текст отзыва, widget: text }
 
       - name: cta
-        label: 09. Главная - финальный призыв
+        label: 08. Финальный призыв
         file: content/home-cta.json
         fields:
           - { name: heading, label: Заголовок, widget: string }
@@ -159,14 +162,14 @@ collections:
     label: Юридические документы и PDF
     files:
       - name: legal_documents
-        label: Документы (текст + PDF)
+        label: Документы (только PDF)
         file: content/legal-documents.json
         fields:
           - name: documents
             label: Документы
             widget: list
             summary: "{{fields.shortTitle}} ({{fields.slug}})"
-            hint: Можно редактировать текст документа и загружать новый PDF.
+            hint: В CMS редактируются только PDF и названия документов.
             fields:
               - { name: slug, label: Slug (техническое имя, лучше не менять), widget: string, hint: Используется в коде. Меняйте только если понимаете последствия. }
               - name: pdfPath
@@ -180,7 +183,3 @@ collections:
                   - "Разрешены только PDF-файлы"
               - { name: title, label: Полное название, widget: string }
               - { name: shortTitle, label: Короткое название, widget: string }
-              - name: content
-                label: Текст документа (параграфы)
-                widget: list
-                field: { name: text, label: Абзац, widget: text }

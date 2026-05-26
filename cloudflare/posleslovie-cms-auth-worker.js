@@ -19,15 +19,36 @@ function outputAuthHTML({ provider = "unknown", token = "", error = "", errorCod
   return new Response(
     `<!doctype html><html><body><script>
 (() => {
+  const authSignal = ${JSON.stringify(`authorizing:${provider}`)};
+  const authResult = ${JSON.stringify(
+    `authorization:${provider}:${state}:${JSON.stringify(content)}`,
+  )};
+
+  const notify = (targetOrigin) => {
+    window.opener?.postMessage(authSignal, targetOrigin);
+    window.opener?.postMessage(authResult, targetOrigin);
+  };
+
   window.addEventListener("message", ({ data, origin }) => {
-    if (data === "authorizing:${provider}") {
-      window.opener?.postMessage(
-        "authorization:${provider}:${state}:${JSON.stringify(content)}",
-        origin,
-      );
+    if (data === authSignal) {
+      notify(origin);
     }
   });
-  window.opener?.postMessage("authorizing:${provider}", "*");
+
+  // Best effort: send immediately for clients that don't handshake.
+  notify("*");
+
+  if (window.opener) {
+    document.body.innerText = "Authorization finished. You can close this window.";
+    // Give the opener a brief moment to process the message.
+    setTimeout(() => window.close(), 250);
+    return;
+  }
+
+  if (!window.opener) {
+    document.body.innerText =
+      "OAuth callback opened directly. Return to /admin and start Login with GitHub again.";
+  }
 })();
 </script></body></html>`,
     {
@@ -92,6 +113,7 @@ async function handleCmsAuth(request, env) {
     const params = new URLSearchParams({
       client_id: env.GITHUB_CLIENT_ID,
       scope: "repo,user",
+      redirect_uri: `${origin}/callback`,
       state: csrfToken,
     });
 
@@ -192,6 +214,7 @@ async function handleCmsCallback(request, env) {
       code,
       client_id: env.GITHUB_CLIENT_ID,
       client_secret: env.GITHUB_CLIENT_SECRET,
+      redirect_uri: `${origin}/callback`,
     };
   }
 
