@@ -9,7 +9,6 @@ const navigationItems = [
   { label: "Бомбочки", type: "section", target: "bombs" },
   { label: "О нас", type: "section", target: "about" },
   { label: "Отзывы", type: "section", target: "reviews" },
-  { label: "Оплата и доставка", type: "modal", target: "delivery" },
   { label: "Для партнеров", type: "modal", target: "partners" },
   { label: "Контакты", type: "modal", target: "contacts" },
 ] as const;
@@ -100,7 +99,7 @@ export function SiteHeader() {
               </span>
             </button>
 
-            <Link href="/" className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2">
+            <Link href="/" className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 lg:bottom-[14px]">
               <span className="flex h-9 w-9 items-center justify-center rounded-[18px] border-2 border-white text-[14px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
                 П.С
               </span>
@@ -116,7 +115,7 @@ export function SiteHeader() {
             >
               <PhoneIcon />
             </a>
-            <div className="ml-auto hidden items-center gap-3 lg:flex">
+            <div className="ml-auto hidden items-end gap-3 pb-[14px] lg:flex">
               {socialLinks.map((social) => (
                 <SocialIconButton key={social.label} label={social.label} href={social.href} />
               ))}

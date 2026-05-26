@@ -1430,7 +1430,7 @@ function CheckoutStep1Form({
   const hasStepErrors = hasErrors(getStep1Errors(errors));
 
   return (
-    <div>
+    <div className="text-center sm:text-left">
       <h3 className="text-[21px] font-extrabold sm:text-2xl">Контактная информация</h3>
       <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
       <div className="mt-5 grid gap-3 sm:mt-6">
@@ -1498,7 +1498,7 @@ function CheckoutStep1Form({
           </>
         ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded border border-transparent bg-[#f8f8f8] px-3.5 py-3 sm:px-4">
+          <div className="rounded border border-transparent bg-[#f8f8f8] px-3.5 py-3 text-center sm:px-4 sm:text-left">
             <p className="text-base font-bold text-[#0f172a]">Как с вами удобнее связаться?</p>
             <select
               title="Contact method"
@@ -1537,6 +1537,13 @@ function CheckoutStep1Form({
           />
         )}
         <RequiredFieldsNote />
+        <p className="text-sm leading-[1.5] text-[#0f172a] sm:text-left">
+          В случае вопросов с доставкой свяжитесь с менеджером по телефону{" "}
+          <a href="tel:+79786734701" className="font-bold underline underline-offset-2 hover:text-[#b08a35]">
+            +7 (978) 673-47-01
+          </a>
+          .
+        </p>
         <button
           type="button"
           title="Continue to step 2"
@@ -1588,14 +1595,14 @@ function CheckoutStep2Form({
   const activeSeal = values.sealColor || "red";
 
   return (
-    <div>
+    <div className="text-center sm:text-left">
       <h3 className="text-[21px] font-extrabold sm:text-2xl">Пожелания в подарок</h3>
       <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
       <div className="mt-5 grid gap-3 sm:mt-6">
         {hasErrors(errors) ? (
           <FormErrorSummary message="В заказе остались ошибки. Вернитесь к выделенным полям." />
         ) : null}
-        <div className={`relative rounded border bg-[#f8f8f8] p-3.5 pr-12 sm:p-4 ${logoFileError ? "border-red-500" : "border-transparent"}`}>
+        <div className={`relative rounded border bg-[#f8f8f8] p-3.5 pr-12 text-center sm:p-4 sm:text-left ${logoFileError ? "border-red-500" : "border-transparent"}`}>
           <p className="text-base font-bold text-[#0f172a]">Логотип</p>
           <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">
             {logoFile ? `Выбран файл: ${logoFile.name}` : "Файлы формата .jpg .png не больше 3мб"}
@@ -1617,7 +1624,7 @@ function CheckoutStep2Form({
           </label>
         </div>
 
-        <div className="rounded bg-[#f8f8f8] p-3.5 sm:p-4">
+        <div className="rounded bg-[#f8f8f8] p-3.5 text-center sm:p-4 sm:text-left">
           <p className="text-base font-bold text-[#0f172a]">Выбор художника</p>
           <select
             title="Choose artist"
@@ -1631,10 +1638,10 @@ function CheckoutStep2Form({
           </select>
         </div>
 
-        <div className="rounded bg-[#f8f8f8] p-3.5 sm:p-4">
+        <div className="rounded bg-[#f8f8f8] p-3.5 text-center sm:p-4 sm:text-left">
           <p className="text-base font-bold text-[#0f172a]">Цвет сургутной печати</p>
           <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">Фото не является эталонным продуктом*</p>
-          <div className="mt-3 grid grid-cols-4 gap-3 sm:flex sm:gap-4">
+          <div className="mt-3 grid grid-cols-4 justify-items-center gap-3 sm:flex sm:justify-start sm:gap-4">
             {sealColors.map((sc) => (
               <button
                 key={sc.id}
@@ -1744,16 +1751,16 @@ function CheckoutOrderPanel({
   onQuantityChange: (q: number) => void;
 }>) {
   return (
-    <div>
+    <div className="text-center sm:text-left">
       <h3 className="text-[21px] font-extrabold sm:text-2xl">Детали заказа</h3>
       <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
-      <div className="mt-5 flex flex-col gap-4 rounded-2xl bg-[#f8f8f8] p-3.5 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-4">
+      <div className="mt-5 flex flex-col items-center gap-4 rounded-2xl bg-[#f8f8f8] p-3.5 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-4">
         <ZoomImage
           image={checkoutProduct.image}
           label={checkoutProduct.title}
           className="h-24 w-24 shrink-0 rounded-[10px] sm:h-[108px] sm:w-[108px]"
         />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 text-center sm:text-left">
           <p className="font-bold">{checkoutProduct.title}</p>
           <div className="mt-4 flex items-center gap-3">
             <CounterButton
