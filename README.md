@@ -1,78 +1,191 @@
-# Posleslovie Site
+# Послесловие / Posleslovie
 
-Сайт-визитка для продажи бомбочек.
+**Промо-сайт бренда натуральных бомбочек для ванны** — лендинг с галереями, отзывами, оформлением заказа и CMS для редактирования контента без правок кода.
 
-Сайт на GitHub Pages: https://kaliguri.github.io/Posleslovie/
+**Live:** [kaliguri.github.io/Posleslovie](https://kaliguri.github.io/Posleslovie/) · **CMS:** [/admin](https://kaliguri.github.io/Posleslovie/admin/)
 
-## Контекст проекта
+---
 
-Проект создается как компактный промо-сайт: показать продукт, передать настроение бренда и помочь посетителю быстро понять, как оформить покупку или заявку.
+## Содержание · Contents
 
-## Технологии
+| | |
+|---|---|
+| [Русский](#-русский) | [English](#-english) |
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Figma MCP для работы с макетами
+---
 
-## Разработка
+## 🇷🇺 Русский
 
-```bash
-npm run dev
+### О проекте
+
+«Послесловие» — одностраничный сайт-визитка для B2C- и B2B-заказов: показать продукт, передать настроение бренда и провести клиента до заявки. Контент (тексты, изображения, отзывы, юридические документы) хранится в JSON и редактируется через **Sveltia CMS**. Заказы уходят в **AmoCRM** через Cloudflare Worker.
+
+### Возможности
+
+- **Главная страница** — hero, карточки продукта, секции процесса с галереями, «Почему мы», «О нас», отзывы, финальный CTA
+- **Модальные окна** — доставка, партнёрам, контакты, юридические документы
+- **Оформление заказа** — вкладки «Для себя» / «Для компании», валидация, автодополнение городов, загрузка логотипа (B2B)
+- **AmoCRM** — заявки создаются как сделки с заметками и вложениями
+- **Sveltia CMS** — редактирование контента через GitHub, автодеплой после публикации
+- **Адаптивная вёрстка** — mobile-first, дизайн по [макету в Figma](https://www.figma.com/design/WmOedCtt1kVyO6xx1FfEW2/%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D1%81%D0%BB%D0%BE%D0%B2%D0%B8%D0%B5)
+
+### Стек
+
+| Слой | Технологии |
+|------|------------|
+| Frontend | Next.js (static export), React, TypeScript, Tailwind CSS |
+| Контент | JSON в `content/`, Sveltia CMS в `public/admin/` |
+| Хостинг | GitHub Pages + GitHub Actions |
+| Интеграции | Cloudflare Workers (AmoCRM, OAuth для CMS) |
+
+### Структура репозитория
+
+```
+├── content/              # JSON-контент сайта (редактируется через CMS)
+├── public/
+│   ├── admin/            # Sveltia CMS (config.yml, index.html)
+│   ├── images/           # Статические изображения
+│   └── docs/             # PDF юридических документов
+├── src/
+│   ├── app/              # Next.js App Router (layout, page, стили)
+│   └── shared/           # UI-компоненты и конфигурация
+├── cloudflare/           # Workers: AmoCRM checkout, CMS OAuth
+├── .github/workflows/    # CI/CD → GitHub Pages
+└── docs/                 # Документация (CMS, WordPress-архив и др.)
 ```
 
-Проверка качества:
+### Локальная разработка
+
+**Требования:** Node.js 20+
 
 ```bash
+npm install
+npm run dev      # http://localhost:3000
 npm run lint
+npm run build    # результат в out/
 ```
 
-Сборка:
+Сборка — **static export**. Серверные API Next.js на GitHub Pages не работают; checkout и CMS-auth вынесены во внешние Workers.
 
-```bash
-npm run build
+### Редактирование контента (CMS)
+
+1. Откройте [редактор](https://kaliguri.github.io/Posleslovie/admin/)
+2. Войдите через GitHub
+3. Измените секции → **Publish**
+4. Через ~3–5 минут сайт обновится после деплоя Actions
+
+Подробная настройка OAuth: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
+
+### Деплой
+
+Push в ветку `main` запускает workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml):
+
+1. `npm ci` → `npm run build`
+2. Публикация `out/` на GitHub Pages
+
+В репозитории: **Settings → Pages → Build and deployment → GitHub Actions**.
+
+### Интеграции
+
+| Сервис | Назначение | Код |
+|--------|------------|-----|
+| AmoCRM | Приём заявок с формы заказа | `cloudflare/posleslovie-amocrm-worker.js` |
+| GitHub OAuth | Вход в Sveltia CMS | `cloudflare/posleslovie-cms-auth-worker.js` |
+
+Секреты (токены AmoCRM, OAuth client secret) хранятся только в Cloudflare Dashboard, не в репозитории.
+
+### Дизайн
+
+UI сверяется с Figma. Изображения для production — в `public/images/` со стабильными путями `/images/...`, не через временные MCP-URL.
+
+---
+
+## 🇬🇧 English
+
+### About
+
+**Posleslovie** is a single-page promotional site for natural bath bombs, serving both B2C and B2B customers. It showcases the product, captures leads, and routes orders to **AmoCRM**. Content is stored as JSON and editable via **Sveltia CMS** without touching source code.
+
+### Features
+
+- **Landing page** — hero, product cards, process sections with galleries, “Why us”, about, reviews, final CTA
+- **Modals** — delivery info, partners, contacts, legal documents
+- **Checkout flow** — personal / company tabs, validation, city autocomplete, logo upload (B2B)
+- **AmoCRM integration** — orders create leads with notes and attachments
+- **Sveltia CMS** — content editing via GitHub with auto-deploy on publish
+- **Responsive layout** — mobile-first, based on the [Figma design](https://www.figma.com/design/WmOedCtt1kVyO6xx1FfEW2/%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D1%81%D0%BB%D0%BE%D0%B2%D0%B8%D0%B5)
+
+### Tech stack
+
+| Layer | Technologies |
+|-------|--------------|
+| Frontend | Next.js (static export), React, TypeScript, Tailwind CSS |
+| Content | JSON in `content/`, Sveltia CMS in `public/admin/` |
+| Hosting | GitHub Pages + GitHub Actions |
+| Integrations | Cloudflare Workers (AmoCRM, CMS OAuth) |
+
+### Repository layout
+
+```
+├── content/              # Site content JSON (edited via CMS)
+├── public/
+│   ├── admin/            # Sveltia CMS (config.yml, index.html)
+│   ├── images/           # Static images
+│   └── docs/             # Legal PDFs
+├── src/
+│   ├── app/              # Next.js App Router (layout, page, styles)
+│   └── shared/           # UI components and config
+├── cloudflare/           # Workers: AmoCRM checkout, CMS OAuth
+├── .github/workflows/    # CI/CD → GitHub Pages
+└── docs/                 # Documentation (CMS setup, WordPress archive, etc.)
 ```
 
-Сборка настроена как static export Next.js. После `npm run build` готовые файлы появляются в папке `out/`.
+### Local development
 
-## GitHub Pages
-
-Проект подготовлен для публикации через GitHub Pages.
-
-Что нужно сделать в GitHub:
-
-1. Открыть репозиторий.
-2. Перейти в `Settings` -> `Pages`.
-3. В `Build and deployment` выбрать `GitHub Actions`.
-4. Запушить изменения в ветку `main`.
-
-Workflow `.github/workflows/pages.yml` сам установит зависимости, выполнит `npm run build` и опубликует папку `out/` в GitHub Pages.
-
-Для локальной проверки перед публикацией:
+**Requirements:** Node.js 20+
 
 ```bash
+npm install
+npm run dev      # http://localhost:3000
 npm run lint
-npm run build
+npm run build    # output in out/
 ```
 
-Важно: GitHub Pages обслуживает только статические файлы. Серверные маршруты Next.js, например `/api/*`, и backend-интеграции оплаты не выполняются на Pages. Для полноценного checkout позже нужен внешний backend, serverless-функции или отдельный хостинг с Node.js.
+The site uses **static export**. Next.js server routes are not available on GitHub Pages; checkout and CMS auth run on external Cloudflare Workers.
 
-## Рабочий процесс
+### Content editing (CMS)
 
-UI-изменения делаем с опорой на Figma. Перед реализацией страниц, секций и компонентов нужно сверяться с макетом через Figma MCP и переносить решения в код с учетом текущей структуры проекта.
+1. Open the [admin panel](https://kaliguri.github.io/Posleslovie/admin/)
+2. Sign in with GitHub
+3. Edit sections → **Publish**
+4. The site updates in ~3–5 minutes after the Actions deploy
 
-Если ссылка ведет на корень файла, для точной реализации лучше использовать ссылку на конкретный frame или node.
+OAuth setup guide: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
 
-## Cursor: большой счётчик у Review
+### Deployment
 
-Если у кнопки **Review** в Cursor отображаются миллионы добавленных строк, это не означает, что `.gitignore` сломан: в репозитории по-прежнему мало отслеживаемых файлов, но рядом на диске лежат `node_modules/`, `.next/` и `out/` с огромным числом строк. Для Cursor они отделены от Git и перечислены в `.cursorignore`, плюс исключения поиска и watcher в `.vscode/settings.json`.
+Pushing to `main` triggers [`.github/workflows/pages.yml`](.github/workflows/pages.yml):
 
-Откройте проект через **File → Open Folder…** (корень `Posleslovie`, не один файл и не «пустое окно»), затем выполните **Developer: Reload Window** в Command Palette.
+1. `npm ci` → `npm run build`
+2. Deploy `out/` to GitHub Pages
 
-Дополнительно (если Review лагает или Cursor падает):
+In the repo: **Settings → Pages → Build and deployment → GitHub Actions**.
 
-1. В палитре команд: **Developer: Reload Window**, затем **Cursor: Restart Language Server**, при необходимости **Cursor: Reindex Workspace**.
-2. Кэш retrieval для этой папки можно сбросить, удалив в профиле Windows папку `anysphere.cursor-retrieval` внутри `%APPDATA%\Cursor\User\workspaceStorage\<id-вашего-workspace>\` (Cursor пересоздаст её при следующем открытии проекта).
-3. В репозитории обновлён `.gitattributes` на `* text=auto eol=lf`, чтобы реже ловить «весь файл изменён» из‑за CRLF/LF. Глобальный `git config` агентом не менялся; при необходимости вы можете выставить `core.autocrlf` только для себя. Если после смены атрибутов Git внезапно покажет много «переформатированных» файлов, один раз можно применить нормализацию: `git add --renormalize .` и затем закоммитить осознанно.
-4. **`git stash clear` и `git reset --hard`** не выполнялись автоматически: они сотрут ваши текущие незакоммиченные правки.
+### Integrations
+
+| Service | Purpose | Code |
+|---------|---------|------|
+| AmoCRM | Checkout form submissions | `cloudflare/posleslovie-amocrm-worker.js` |
+| GitHub OAuth | Sveltia CMS sign-in | `cloudflare/posleslovie-cms-auth-worker.js` |
+
+Secrets (AmoCRM tokens, OAuth client secret) live in the Cloudflare Dashboard only — never in the repo.
+
+### Design
+
+UI follows the Figma source of truth. Production images live in `public/images/` with stable `/images/...` paths.
+
+---
+
+## Лицензия · License
+
+Private project. All rights reserved.
