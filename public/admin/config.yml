@@ -54,6 +54,24 @@ collections:
               - { name: title, label: Полное название, widget: string, hint: "Используется в модальном окне документа на сайте." }
               - { name: shortTitle, label: Короткое название, widget: string, hint: "Отображается в футере в списке документов." }
 
+      - name: cms_quick_start
+        label: 03. Как пользоваться CMS - быстрый старт
+        file: content/cms-quick-start.md
+        editor:
+          preview: false
+        fields:
+          - { name: title, label: Заголовок, widget: string, hint: "Служебное поле. Лучше не менять." }
+          - { name: body, label: Быстрый старт, widget: markdown, hint: "Краткая инструкция для ежедневной работы клиента." }
+
+      - name: cms_full_guide
+        label: 04. Как пользоваться CMS - полный гайд
+        file: content/cms-full-guide.md
+        editor:
+          preview: false
+        fields:
+          - { name: title, label: Заголовок, widget: string, hint: "Служебное поле. Лучше не менять." }
+          - { name: body, label: Полный гайд, widget: markdown, hint: "Подробная инструкция и решения частых ошибок." }
+
   - name: home
     label: Главная страница
     files:
