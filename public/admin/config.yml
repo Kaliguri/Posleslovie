@@ -2,8 +2,8 @@ backend:
   name: github
   repo: kaliguri/Posleslovie
   branch: main
-  base_url: https://api.netlify.com
-  site_domain: posleslovie.netlify.app
+  auth_type: pkce
+  app_id: Ov23li4eN68A5xPffTZW
 
 media_folder: public/images
 public_folder: /images
