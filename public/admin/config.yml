@@ -11,10 +11,10 @@ locale: ru
 
 collections:
   - name: content
-    label: Контент сайта
+    label: Сайт - тексты и блоки
     files:
       - name: site_settings
-        label: Настройки сайта (телефон, email, соцсети)
+        label: 01. Бренд и контакты
         file: content/site-settings.json
         fields:
           - { name: name, label: Название сайта, widget: string }
@@ -24,12 +24,14 @@ collections:
           - name: socials
             label: Социальные сети
             widget: list
+            summary: "{{fields.label}} -> {{fields.href}}"
+            hint: Добавляйте только те соцсети, которые реально используются.
             fields:
               - { name: label, label: Название, widget: string }
               - { name: href, label: Ссылка, widget: string }
 
       - name: hero
-        label: Главный экран
+        label: 02. Главная - первый экран
         file: content/home-hero.json
         fields:
           - { name: heading, label: Заголовок, widget: string }
@@ -39,25 +41,28 @@ collections:
           - { name: backgroundImage, label: Фоновое изображение, widget: image }
 
       - name: feature_cards
-        label: Карточки продукта
+        label: 03. Главная - карточки продукта
         file: content/home-feature-cards.json
         fields:
           - { name: sectionTitle, label: Заголовок секции, widget: string }
           - name: cards
             label: Карточки
             widget: list
+            summary: "{{fields.title}}"
             fields:
               - { name: title, label: Название, widget: string }
               - { name: description, label: Описание, widget: text }
               - { name: icon, label: Иконка, widget: image }
 
       - name: process_sections
-        label: Секции процесса (бомбочки / масла / упаковка)
+        label: 04. Главная - секции процесса
         file: content/home-process-sections.json
         fields:
           - name: sections
             label: Секции
             widget: list
+            summary: "{{fields.title}} [{{fields.gallery}}]"
+            hint: Для каждой секции выберите соответствующую галерею.
             fields:
               - { name: eyebrow, label: Надпись над заголовком, widget: string }
               - { name: title, label: Заголовок, widget: string }
@@ -73,30 +78,33 @@ collections:
               - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
 
       - name: galleries
-        label: Галереи изображений
+        label: 05. Главная - галереи изображений
         file: content/home-galleries.json
         fields:
           - name: bombs
             label: Галерея — Бомбочки
             widget: list
+            summary: "{{fields.alt}}"
             fields:
               - { name: image, label: Изображение, widget: image }
               - { name: alt, label: Описание (alt), widget: string }
           - name: lavender
             label: Галерея — Лаванда
             widget: list
+            summary: "{{fields.alt}}"
             fields:
               - { name: image, label: Изображение, widget: image }
               - { name: alt, label: Описание (alt), widget: string }
           - name: packs
             label: Галерея — Упаковка
             widget: list
+            summary: "{{fields.alt}}"
             fields:
               - { name: image, label: Изображение, widget: image }
               - { name: alt, label: Описание (alt), widget: string }
 
       - name: why_us
-        label: Секция «Почему выбирают нас»
+        label: 06. Главная - почему выбирают нас
         file: content/home-why-us.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -105,13 +113,14 @@ collections:
           - name: reasons
             label: Причины
             widget: list
+            summary: "{{fields.title}}"
             fields:
               - { name: title, label: Заголовок, widget: string }
               - { name: description, label: Описание, widget: text }
               - { name: icon, label: Иконка, widget: image }
 
       - name: about
-        label: Секция «О нас»
+        label: 07. Главная - о нас
         file: content/home-about.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -123,7 +132,7 @@ collections:
           - { name: image, label: Изображение, widget: image }
 
       - name: reviews
-        label: Отзывы
+        label: 08. Главная - отзывы
         file: content/home-reviews.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -131,13 +140,14 @@ collections:
           - name: items
             label: Отзывы
             widget: list
+            summary: "{{fields.name}}"
             fields:
               - { name: name, label: Имя автора, widget: string }
               - { name: image, label: Фото/иллюстрация, widget: image }
               - { name: text, label: Текст отзыва, widget: text }
 
       - name: cta
-        label: Финальный призыв к действию
+        label: 09. Главная - финальный призыв
         file: content/home-cta.json
         fields:
           - { name: heading, label: Заголовок, widget: string }
@@ -146,18 +156,28 @@ collections:
           - { name: backgroundImage, label: Фоновое изображение, widget: image }
 
   - name: legal
-    label: Юридические документы
+    label: Юридические документы и PDF
     files:
       - name: legal_documents
-        label: Все документы
+        label: Документы (текст + PDF)
         file: content/legal-documents.json
         fields:
           - name: documents
             label: Документы
             widget: list
+            summary: "{{fields.shortTitle}} ({{fields.slug}})"
+            hint: Можно редактировать текст документа и загружать новый PDF.
             fields:
-              - { name: slug, label: Slug (не менять!), widget: string }
-              - { name: pdfPath, label: Путь к PDF, widget: string }
+              - { name: slug, label: Slug (техническое имя, лучше не менять), widget: string, hint: Используется в коде. Меняйте только если понимаете последствия. }
+              - name: pdfPath
+                label: PDF-файл документа
+                widget: file
+                media_folder: public/docs
+                public_folder: /docs
+                hint: Загрузите PDF, чтобы ссылка в футере обновилась автоматически.
+                pattern:
+                  - "\\.pdf$"
+                  - "Разрешены только PDF-файлы"
               - { name: title, label: Полное название, widget: string }
               - { name: shortTitle, label: Короткое название, widget: string }
               - name: content
