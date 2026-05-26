@@ -4,9 +4,9 @@
   "description": "Каждая бомбочка сделана в ручную. В составе исключительно натуральные ингредиенты, прошедшие сертификацию в лаборатории. Мы не экономим на вас, главное принести реальную пользу",
   "reverse": false,
   "slides": [
-    { "image": "/images/desktop-29/bombs-1.jpg", "alt": "Мраморные бомбочки для ванны" },
-    { "image": "/images/desktop-29/bombs-2.jpg", "alt": "Голубые бомбочки с лавандой" },
-    { "image": "/images/desktop-29/bombs-3.jpg", "alt": "Бомбочка крупным планом" }
+    { "image": "/images/photos/bombs-1.jpg", "alt": "Мраморные бомбочки для ванны" },
+    { "image": "/images/photos/bombs-2.jpg", "alt": "Голубые бомбочки с лавандой" },
+    { "image": "/images/photos/bombs-3.jpg", "alt": "Бомбочка крупным планом" }
   ],
   "button": ""
 }

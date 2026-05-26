@@ -7,6 +7,10 @@ backend:
 media_folder: public/images
 public_folder: /images
 
+media_library:
+  config:
+    folder_support: true
+
 locale: ru
 
 collections:
@@ -45,8 +49,8 @@ collections:
               - name: pdfPath
                 label: PDF-файл документа
                 widget: file
-                media_folder: public/images/docs
-                public_folder: /images/docs
+                media_folder: public/images/documents
+                public_folder: /images/documents
                 hint: Загрузите PDF, чтобы ссылка в футере обновилась автоматически.
                 pattern:
                   - "\\.pdf$"
@@ -74,6 +78,8 @@ collections:
 
   - name: home
     label: Главная страница (сверху вниз)
+    media_folder: public/images/photos
+    public_folder: /images/photos
     files:
       - name: hero
         label: "Блок #1. Первый экран (обложка)"

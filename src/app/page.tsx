@@ -81,10 +81,10 @@ const initialCheckoutState: CheckoutState = {
 const amoCRMWorkerUrl = "https://posleslovie-amocrm.kailgurika.workers.dev/";
 
 const assets = {
-  starRow: assetPath("/images/desktop-29/stars.svg"),
-  crystal: assetPath("/images/desktop-29/crystal.png"),
-  pero: assetPath("/images/desktop-29/pero.png"),
-  bombs2: assetPath("/images/desktop-29/bombs-2.jpg"),
+  starRow: assetPath("/images/photos/stars.svg"),
+  crystal: assetPath("/images/photos/crystal.png"),
+  pero: assetPath("/images/photos/pero.png"),
+  bombs2: assetPath("/images/photos/bombs-2.jpg"),
 };
 
 type GallerySlide = { image: string; alt: string };
@@ -1630,7 +1630,7 @@ function CheckoutStep2Form({
             <br />
             Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
             <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/docs/personal-data-consent.pdf`}
+              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/personal-data-consent.pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-[#e8c880]"
@@ -1639,7 +1639,7 @@ function CheckoutStep2Form({
             </a>{" "}
             и ознакомлены с{" "}
             <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/docs/privacy.pdf`}
+              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/privacy.pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-[#e8c880]"
