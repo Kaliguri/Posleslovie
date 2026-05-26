@@ -537,45 +537,37 @@ export default function Home() {
     if (elements.length === 0) {
       return;
     }
-
-    let previousScrollY = window.scrollY;
-    let lastDirection: "down" | "up" = "down";
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) {
+      for (const element of elements) {
+        element.classList.add("is-visible");
+      }
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           const element = entry.target as HTMLElement;
           if (entry.isIntersecting) {
-            element.dataset.scrollDirection = lastDirection;
+            const bounds = entry.boundingClientRect;
+            element.dataset.scrollDirection = bounds.top >= 0 ? "down" : "up";
             element.classList.add("is-visible");
-          } else {
-            element.classList.remove("is-visible");
+            observer.unobserve(element);
           }
         }
       },
       {
-        threshold: 0.15,
-        rootMargin: "0px 0px -8% 0px",
+        threshold: 0.12,
+        rootMargin: "0px 0px -10% 0px",
       },
     );
-
-    const updateDirection = () => {
-      const currentScrollY = window.scrollY;
-      if (Math.abs(currentScrollY - previousScrollY) < 2) {
-        return;
-      }
-      lastDirection = currentScrollY > previousScrollY ? "down" : "up";
-      previousScrollY = currentScrollY;
-    };
-
-    window.addEventListener("scroll", updateDirection, { passive: true });
 
     for (const element of elements) {
       observer.observe(element);
     }
 
     return () => {
-      window.removeEventListener("scroll", updateDirection);
       observer.disconnect();
     };
   }, []);

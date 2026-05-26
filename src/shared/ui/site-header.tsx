@@ -89,17 +89,17 @@ export function SiteHeader() {
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-navigation"
               onClick={() => setIsMobileMenuOpen((current) => !current)}
-              className="relative z-50 flex h-[52px] w-[52px] items-center justify-center rounded-[18px] border-2 border-[#e8c880] bg-[#0f2037]/85 text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:border-[#ffdfa0] hover:text-[#ffdfa0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
+              className="fixed left-3 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-2xl border-2 border-[#e8c880] bg-[#0f2037]/90 text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:border-[#ffdfa0] hover:text-[#ffdfa0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
             >
               <span className="sr-only">{isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}</span>
-              <span className="flex w-6 flex-col gap-1.5" aria-hidden="true">
+              <span className="flex w-5 flex-col gap-1.5" aria-hidden="true">
                 <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "translate-y-2 rotate-45" : ""}`} />
                 <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "opacity-0" : ""}`} />
                 <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
               </span>
             </button>
 
-            <Link href="/" className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 lg:bottom-[14px]">
+            <Link href="/" className="absolute bottom-3 left-1/2 flex -translate-x-[44%] items-center gap-2 sm:-translate-x-1/2 lg:bottom-[14px]">
               <span className="flex h-11 w-11 items-center justify-center rounded-[20px] border-2 border-white text-[16px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
                 П.С
               </span>
