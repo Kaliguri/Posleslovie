@@ -18,7 +18,7 @@ collections:
         file: content/site-settings.json
         fields:
           - { name: name, label: Название сайта, widget: string, hint: Отображается в метаданных и служебных местах сайта. }
-          - { name: description, label: Краткое описание сайта, widget: text, hint: Используется как общее описание проекта. }
+          - { name: description, label: Краткое описание сайта, widget: text, hint: Используется в описании сайта для поисковых систем (SEO). }
           - { name: phone, label: Телефон, widget: string, hint: "Формат +7XXXXXXXXXX или +7 (XXX) XXX-XX-XX.", pattern: ["^\\+7[\\d\\s()\\-]{10,}$", "Введите телефон в формате +7..."] }
           - { name: email, label: Email, widget: string, hint: "Основной контактный email.", pattern: ["^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", "Введите корректный email"] }
           - name: socials
@@ -39,7 +39,7 @@ collections:
             label: Документы
             widget: list
             summary: "{{fields.shortTitle}}"
-            hint: Редактируйте только название и PDF-файл документа.
+            hint: Редактируйте только короткое название и PDF-файл. Существующие документы не удаляйте.
             fields:
               - { name: slug, widget: hidden }
               - name: pdfPath
@@ -107,54 +107,26 @@ collections:
           - name: sections
             label: Секции
             widget: list
-            summary: "{{fields.title}} [{{fields.gallery}}]"
-            hint: Для каждой секции выберите соответствующую галерею.
+            summary: "{{fields.title}}"
+            hint: В каждой секции редактируются текст и свои изображения.
             max: 3
             fields:
               - { name: eyebrow, label: Надпись над заголовком, widget: string }
               - { name: title, label: Заголовок, widget: string }
               - { name: description, label: Описание, widget: text }
-              - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false }
-              - name: gallery
-                label: Галерея
-                widget: select
-                options:
-                  - { label: Бомбочки, value: bombs }
-                  - { label: Лаванда, value: lavender }
-                  - { label: Упаковка, value: packs }
+              - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false, hint: "Включите, чтобы поменять местами блок текста и блок фото." }
+              - name: slides
+                label: Изображения секции
+                widget: list
+                summary: "{{fields.alt}}"
+                max: 12
+                fields:
+                  - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+                  - { name: alt, label: Описание изображения (alt), widget: string, required: true, hint: "Коротко опишите, что изображено на фото." }
               - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
 
-      - name: galleries
-        label: 04. Галереи изображений
-        file: content/home-galleries.json
-        fields:
-          - name: bombs
-            label: Галерея — Бомбочки
-            widget: list
-            summary: "{{fields.alt}}"
-            max: 12
-            fields:
-              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
-              - { name: alt, label: Описание (alt), widget: string, required: true, hint: "Обязательное описание изображения для доступности и SEO." }
-          - name: lavender
-            label: Галерея — Лаванда
-            widget: list
-            summary: "{{fields.alt}}"
-            max: 12
-            fields:
-              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
-              - { name: alt, label: Описание (alt), widget: string, required: true, hint: "Обязательное описание изображения для доступности и SEO." }
-          - name: packs
-            label: Галерея — Упаковка
-            widget: list
-            summary: "{{fields.alt}}"
-            max: 12
-            fields:
-              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
-              - { name: alt, label: Описание (alt), widget: string, required: true, hint: "Обязательное описание изображения для доступности и SEO." }
-
       - name: why_us
-        label: 05. Почему выбирают нас
+        label: 04. Почему выбирают нас
         file: content/home-why-us.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -171,7 +143,7 @@ collections:
               - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
 
       - name: about
-        label: 06. О нас
+        label: 05. О нас
         file: content/home-about.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -184,7 +156,7 @@ collections:
           - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 900x1200 px (вертикальное)." }
 
       - name: reviews
-        label: 07. Отзывы
+        label: 06. Отзывы
         file: content/home-reviews.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -200,7 +172,7 @@ collections:
               - { name: text, label: Текст отзыва, widget: text }
 
       - name: cta
-        label: 08. Финальный призыв
+        label: 07. Финальный призыв
         file: content/home-cta.json
         fields:
           - { name: heading, label: Заголовок, widget: string }

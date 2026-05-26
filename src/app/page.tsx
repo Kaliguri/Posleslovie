@@ -8,7 +8,6 @@ import { siteConfig } from "@/shared/config/site";
 import homeHeroJson from "../../content/home-hero.json";
 import homeFeatureCardsJson from "../../content/home-feature-cards.json";
 import homeProcessSectionsJson from "../../content/home-process-sections.json";
-import homeGalleriesJson from "../../content/home-galleries.json";
 import homeWhyUsJson from "../../content/home-why-us.json";
 import homeAboutJson from "../../content/home-about.json";
 import homeReviewsJson from "../../content/home-reviews.json";
@@ -86,14 +85,7 @@ const assets = {
   bombs2: assetPath("/images/desktop-29/bombs-2.jpg"),
 };
 
-const gallerySlides = {
-  bombs: homeGalleriesJson.bombs.map((s) => ({ ...s, image: assetPath(s.image) })),
-  lavender: homeGalleriesJson.lavender.map((s) => ({ ...s, image: assetPath(s.image) })),
-  packs: homeGalleriesJson.packs.map((s) => ({ ...s, image: assetPath(s.image) })),
-};
-
-type GalleryKind = keyof typeof gallerySlides;
-type GallerySlide = (typeof gallerySlides)[GalleryKind][number];
+type GallerySlide = { image: string; alt: string };
 
 const featureCards = homeFeatureCardsJson.cards.map((card) => ({
   ...card,
@@ -102,7 +94,10 @@ const featureCards = homeFeatureCardsJson.cards.map((card) => ({
 
 const processSections = homeProcessSectionsJson.sections.map((section) => ({
   ...section,
-  gallery: section.gallery as GalleryKind,
+  slides: section.slides.map((slide) => ({
+    ...slide,
+    image: assetPath(slide.image),
+  })),
 }));
 
 const reasons = homeWhyUsJson.reasons.map((r) => ({
@@ -632,7 +627,7 @@ function ProcessSection({
   title,
   description,
   reverse,
-  gallery,
+  slides,
   button,
   onOrder,
   index,
@@ -641,7 +636,7 @@ function ProcessSection({
   title: string;
   description: string;
   reverse: boolean;
-  gallery: GalleryKind;
+  slides: GallerySlide[];
   button?: string;
   onOrder: () => void;
   index: number;
@@ -673,7 +668,7 @@ function ProcessSection({
         <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:min-h-[665px] lg:grid-cols-[525px_552px] lg:items-start lg:gap-16 lg:p-12">
           <ProductGallery
             reverse={reverse}
-            slides={gallerySlides[gallery]}
+            slides={slides}
           />
 
           <div className={reverse ? "lg:order-1" : ""}>
