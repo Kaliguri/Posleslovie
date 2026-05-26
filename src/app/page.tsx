@@ -621,27 +621,41 @@ function HeroSection({
   backgroundImage: string;
   backgroundVideo: string;
 }>) {
+  const [isVideoReady, setIsVideoReady] = useState(backgroundMediaType !== "video");
+
+  useEffect(() => {
+    setIsVideoReady(backgroundMediaType !== "video");
+  }, [backgroundMediaType, backgroundVideo]);
+
   return (
     <section className="relative min-h-[600px] overflow-hidden bg-[#102038] sm:min-h-[720px] lg:min-h-[1080px]">
+      <img
+        src={backgroundImage}
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 h-full w-full scale-[1.04] object-cover object-center"
+      />
       {backgroundMediaType === "video" && backgroundVideo ? (
         <video
-          className="absolute inset-x-[-16vw] top-0 h-full w-[132vw] scale-[1.01] object-cover sm:inset-x-[-5vw] sm:w-[110vw] lg:inset-x-[-103px] lg:w-[calc(100%+206px)]"
+          className={`absolute inset-0 h-full w-full scale-[1.04] object-cover object-center transition-opacity duration-500 ${
+            isVideoReady ? "opacity-100" : "opacity-0"
+          }`}
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           poster={backgroundImage}
           aria-hidden="true"
+          onLoadedData={() => setIsVideoReady(true)}
+          onCanPlay={() => setIsVideoReady(true)}
         >
           <source src={backgroundVideo} />
         </video>
-      ) : (
-        <div
-          className="absolute inset-x-[-16vw] top-0 h-full scale-[1.01] bg-cover bg-center sm:inset-x-[-5vw] lg:inset-x-[-103px]"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
-        />
-      )}
+      ) : null}
       <div className="absolute inset-0 bg-black/45 sm:bg-black/25" />
       <div className="absolute left-1/2 top-[265px] hidden h-[572px] w-[64.3vw] max-w-[1234px] -translate-x-1/2 rounded-[385px] bg-black/[0.01] backdrop-blur-[5px] lg:block" />
       <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-32 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">

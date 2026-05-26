@@ -14,6 +14,12 @@ const navigationItems = [
   { label: "Контакты", type: "modal", target: "contacts" },
 ] as const;
 const socialOrder = ["VK", "TG", "MAX"] as const;
+const socialIconPaths: Record<(typeof socialOrder)[number], string> = {
+  VK: "/images/social/vk-round.svg",
+  TG: "/images/social/tg-round.svg",
+  MAX: "/images/social/max-round.svg",
+};
+const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
 
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -248,53 +254,13 @@ function SocialIconButton({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-white/70 text-white transition hover:border-[#e8c880] hover:text-[#e8c880] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
+      className="flex h-11 w-11 items-center justify-center rounded-full transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
-      {label === "VK" ? <VkIcon /> : null}
-      {label === "TG" ? <TelegramIcon /> : null}
-      {label === "MAX" ? <MaxIcon /> : null}
+      <img
+        src={assetPath(socialIconPaths[label])}
+        alt={label}
+        className="h-11 w-11 rounded-full object-cover"
+      />
     </a>
-  );
-}
-
-function VkIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4.5 7.5c.13 5.68 2.97 8.91 7.93 9V13.4c1.73.17 2.96 1.35 3.49 3.1H19c-.78-2.84-2.65-4.41-3.82-5 .98-.58 2.63-2 3.3-4H15.8c-.87 1.94-2.36 3.36-3.37 3.53V7.5H9.75v6.17c-1.05-.27-2.38-1.78-2.44-6.17H4.5Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function TelegramIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M21.2 4.2 17.9 19c-.25 1.1-.9 1.35-1.82.84l-4.99-3.68-2.4 2.32c-.26.26-.49.49-1 .49l.36-5.1 9.29-8.39c.4-.36-.08-.57-.62-.2l-11.5 7.24-4.95-1.55c-1.08-.34-1.1-1.08.23-1.6l19.36-7.46c.9-.33 1.7.2 1.4 1.69Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function MaxIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="m5 17 2.4-10 4.6 6.2L16.6 7 19 17M9 17h6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

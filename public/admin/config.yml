@@ -122,7 +122,7 @@ collections:
             required: false
             media_folder: public/images/videos
             public_folder: /images/videos
-            hint: "Видео будет зациклено и запущено без звука."
+            hint: "Рекомендуемый размер: 1920x1080 px (16:9). Видео будет зациклено и запущено без звука."
             pattern:
               - "\\.(mp4|webm)$"
               - "Разрешены только видео MP4 или WEBM"
