@@ -2,6 +2,7 @@ backend:
   name: github
   repo: kaliguri/Posleslovie
   branch: main
+  base_url: https://posleslovie-cms-auth.kailgurika.workers.dev
 
 media_folder: public/images
 public_folder: /images
