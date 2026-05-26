@@ -79,7 +79,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="absolute inset-x-0 top-0 z-50 text-white">
+      <header className="fixed inset-x-0 top-0 z-50 text-white lg:absolute">
         <div className="mx-auto max-w-[1720px] px-5 lg:px-[100px]">
           <div className="relative flex h-[76px] items-center lg:h-[85px]">
             <HeaderRule />
@@ -89,7 +89,7 @@ export function SiteHeader() {
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-navigation"
               onClick={() => setIsMobileMenuOpen((current) => !current)}
-              className="fixed left-3 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-2xl border-2 border-[#e8c880] bg-[#0f2037]/90 text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:border-[#ffdfa0] hover:text-[#ffdfa0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
+              className="absolute left-0 top-1/2 z-50 flex h-[46px] w-[46px] -translate-y-1/2 items-center justify-center rounded-2xl border-2 border-[#e8c880] bg-[#0f2037]/90 text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:border-[#ffdfa0] hover:text-[#ffdfa0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
             >
               <span className="sr-only">{isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}</span>
               <span className="flex w-5 flex-col gap-1.5" aria-hidden="true">
@@ -99,7 +99,7 @@ export function SiteHeader() {
               </span>
             </button>
 
-            <Link href="/" className="absolute left-1/2 top-3 ml-2 flex -translate-x-1/2 items-center gap-2 sm:ml-0 lg:top-auto lg:bottom-[14px]">
+            <Link href="/" className="absolute left-1/2 top-1/2 ml-2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 sm:ml-0 lg:top-auto lg:bottom-[14px] lg:-translate-y-0">
               <span className="flex h-11 w-11 items-center justify-center rounded-[20px] border-2 border-white text-[16px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
                 П.С
               </span>
