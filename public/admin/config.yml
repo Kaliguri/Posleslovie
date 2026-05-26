@@ -3,7 +3,7 @@ backend:
   repo: kaliguri/Posleslovie
   branch: main
   base_url: https://api.netlify.com
-  site_domain: calm-marzipan-21b499.netlify.app
+  site_domain: posleslovie.netlify.app
 
 media_folder: public/images
 public_folder: /images
