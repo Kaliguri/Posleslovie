@@ -2,8 +2,6 @@ backend:
   name: github
   repo: kaliguri/Posleslovie
   branch: main
-  auth_type: pkce
-  app_id: Ov23li4eN68A5xPffTZW
 
 media_folder: public/images
 public_folder: /images
