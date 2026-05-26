@@ -528,6 +528,58 @@ export default function Home() {
     };
   }, [modal]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-scroll-pop]"));
+    if (elements.length === 0) {
+      return;
+    }
+
+    let previousScrollY = window.scrollY;
+    let lastDirection: "down" | "up" = "down";
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const element = entry.target as HTMLElement;
+          if (entry.isIntersecting) {
+            element.dataset.scrollDirection = lastDirection;
+            element.classList.add("is-visible");
+          } else {
+            element.classList.remove("is-visible");
+          }
+        }
+      },
+      {
+        threshold: 0.15,
+        rootMargin: "0px 0px -8% 0px",
+      },
+    );
+
+    const updateDirection = () => {
+      const currentScrollY = window.scrollY;
+      if (Math.abs(currentScrollY - previousScrollY) < 2) {
+        return;
+      }
+      lastDirection = currentScrollY > previousScrollY ? "down" : "up";
+      previousScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", updateDirection, { passive: true });
+
+    for (const element of elements) {
+      observer.observe(element);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", updateDirection);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <div className="overflow-x-hidden bg-[#f8f8f8] text-[#0f172a]">
       <HeroSection
@@ -541,7 +593,7 @@ export default function Home() {
         backgroundVideo={heroBackgroundVideo}
       />
 
-      <section id="bombs" className="px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]">
+      <section id="bombs" data-scroll-pop className="px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]">
         <div className="mx-auto max-w-[1280px] rounded-[28px] bg-white px-4 py-10 sm:rounded-[48px] sm:px-6 sm:py-14 lg:min-h-[750px] lg:rounded-[100px] lg:px-20 lg:py-20">
           <SectionHeading title={homeFeatureCardsJson.sectionTitle} centered />
           <div className="mt-8 grid gap-6 sm:mt-14 lg:grid-cols-3 lg:gap-16">
@@ -623,12 +675,8 @@ function HeroSection({
 }>) {
   const [isVideoReady, setIsVideoReady] = useState(backgroundMediaType !== "video");
 
-  useEffect(() => {
-    setIsVideoReady(backgroundMediaType !== "video");
-  }, [backgroundMediaType, backgroundVideo]);
-
   return (
-    <section className="relative min-h-[600px] overflow-hidden bg-[#102038] sm:min-h-[720px] lg:min-h-[1080px]">
+    <section className="relative min-h-[560px] overflow-hidden bg-[#102038] sm:min-h-[720px] lg:min-h-[1080px]">
       <img
         src={backgroundImage}
         alt=""
@@ -636,7 +684,7 @@ function HeroSection({
         loading="eager"
         fetchPriority="high"
         decoding="async"
-        className="absolute inset-0 h-full w-full scale-[1.04] object-cover object-center"
+        className="absolute inset-0 h-full w-full scale-[1.06] object-cover object-[52%_center] sm:scale-[1.04] sm:object-center"
       />
       {backgroundMediaType === "video" && backgroundVideo ? (
         <video
@@ -656,19 +704,19 @@ function HeroSection({
           <source src={backgroundVideo} />
         </video>
       ) : null}
-      <div className="absolute inset-0 bg-black/45 sm:bg-black/25" />
+      <div className="absolute inset-0 bg-black/55 sm:bg-black/25" />
       <div className="absolute left-1/2 top-[265px] hidden h-[572px] w-[64.3vw] max-w-[1234px] -translate-x-1/2 rounded-[385px] bg-black/[0.01] backdrop-blur-[5px] lg:block" />
-      <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-32 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">
+      <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-28 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">
         <div className="max-w-[1234px]">
-          <h1 className="text-[44px] font-normal leading-[0.95] text-white [font-family:var(--font-educational)] min-[390px]:text-[48px] sm:text-7xl lg:text-[126px]">
+          <h1 className="text-[34px] font-normal leading-[0.97] text-white [font-family:var(--font-educational)] min-[390px]:text-[40px] sm:text-7xl lg:text-[126px]">
             {heading}
           </h1>
-          <p className="mx-auto mt-5 max-w-[340px] text-[15px] font-medium leading-[1.55] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] sm:text-xl lg:max-w-none lg:text-[25px]">
+          <p className="mx-auto mt-4 max-w-[320px] text-[14px] font-medium leading-[1.5] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] sm:text-xl lg:max-w-none lg:text-[25px]">
             <span className="block sm:inline">{leadLine1}</span>
             <br className="hidden sm:block" />
             <span className="block sm:inline">{leadLine2}</span>
           </p>
-          <div className="mt-9 sm:mt-16">
+          <div className="mt-8 sm:mt-16">
             <DesignButton size="xl" variant="filled" onClick={onOrder}>
               {ctaLabel}
             </DesignButton>
@@ -699,7 +747,7 @@ function ProcessSection({
   index: number;
 }>) {
   return (
-    <section className="relative bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
+    <section data-scroll-pop className="relative bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
       <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white shadow-[0_5px_5px_rgba(255,93,93,0.1)] sm:rounded-[42px] lg:rounded-[70px]">
         <div
           className={`pointer-events-none absolute inset-0 hidden lg:grid ${
@@ -827,6 +875,7 @@ function WhyUsSection({
 }>) {
   return (
     <section
+      data-scroll-pop
       className="relative overflow-hidden bg-cover bg-center px-4 py-12 text-white sm:px-5 sm:py-16 lg:px-[235px] lg:py-20"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
@@ -859,7 +908,7 @@ function AboutSection({
   image: string;
 }>) {
   return (
-    <section id="about" className="bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
+    <section id="about" data-scroll-pop className="bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
       <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white sm:rounded-[42px] lg:rounded-[70px]">
         <div className="pointer-events-none absolute inset-0 hidden grid-cols-[1fr_323px] lg:grid">
           <div />
@@ -902,7 +951,7 @@ function ReviewsSection({
     useInfiniteCarousel(reviews);
 
   return (
-    <section id="reviews" className="overflow-hidden bg-[#f8f8f8] px-3 py-12 sm:px-5 sm:py-16 lg:px-[100px] lg:py-20">
+    <section id="reviews" data-scroll-pop className="overflow-hidden bg-[#f8f8f8] px-3 py-12 sm:px-5 sm:py-16 lg:px-[100px] lg:py-20">
       <div className="mx-auto max-w-[1280px]">
         <SectionHeading kicker={kicker} title={title} centered />
         <div className="mt-8 overflow-hidden [--carousel-gap:1rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] sm:mt-14 sm:[--carousel-gap:2rem] lg:[--carousel-gap:3rem] lg:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
@@ -956,6 +1005,7 @@ function CtaSection({
 }>) {
   return (
     <section
+      data-scroll-pop
       className="relative overflow-hidden bg-[#c1aeff] bg-cover bg-center px-4 py-14 text-center text-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] sm:px-5 sm:py-20 lg:px-[100px] lg:py-20"
       style={{ backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${backgroundImage})` }}
     >

@@ -89,10 +89,10 @@ export function SiteHeader() {
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-navigation"
               onClick={() => setIsMobileMenuOpen((current) => !current)}
-              className="relative z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/70 text-white transition hover:border-[#e8c880] hover:text-[#e8c880] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
+              className="relative z-50 flex h-[52px] w-[52px] items-center justify-center rounded-[18px] border-2 border-[#e8c880] bg-[#0f2037]/85 text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:border-[#ffdfa0] hover:text-[#ffdfa0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
             >
               <span className="sr-only">{isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}</span>
-              <span className="flex w-5 flex-col gap-1.5" aria-hidden="true">
+              <span className="flex w-6 flex-col gap-1.5" aria-hidden="true">
                 <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "translate-y-2 rotate-45" : ""}`} />
                 <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "opacity-0" : ""}`} />
                 <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
@@ -100,21 +100,13 @@ export function SiteHeader() {
             </button>
 
             <Link href="/" className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 lg:bottom-[14px]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[18px] border-2 border-white text-[14px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
+              <span className="flex h-11 w-11 items-center justify-center rounded-[20px] border-2 border-white text-[16px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
                 П.С
               </span>
               <span className="text-2xl font-normal leading-[1.1] [font-family:var(--font-educational)] sm:text-[30px]">
                 {siteConfig.name}
               </span>
             </Link>
-
-            <a
-              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-              aria-label={`Позвонить ${siteConfig.phone}`}
-              className="ml-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/70 text-sm font-bold transition hover:border-[#e8c880] hover:text-[#e8c880] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
-            >
-              <PhoneIcon />
-            </a>
             <div className="ml-auto hidden items-end gap-3 pb-[14px] lg:flex">
               {socialLinks.map((social) => (
                 <SocialIconButton key={social.label} label={social.label} href={social.href} />
@@ -223,20 +215,6 @@ function HeaderPillText({ children }: Readonly<{ children: React.ReactNode }>) {
         className="pointer-events-none absolute left-1/2 top-[29px] h-2 w-2 -translate-x-1/2 rotate-45 bg-[#e8c880] opacity-0 transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-[-2px] group-hover:opacity-100 group-focus-visible:translate-y-[-2px] group-focus-visible:opacity-100"
       />
     </span>
-  );
-}
-
-function PhoneIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none">
-      <path
-        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
   );
 }
 
