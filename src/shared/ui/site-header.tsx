@@ -22,14 +22,6 @@ const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}$
 
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 40);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const socialsByLabel = new Map(
     siteConfig.socials.map((social) => [social.label.trim().toUpperCase(), social.href]),
@@ -104,7 +96,7 @@ export function SiteHeader() {
         </span>
       </button>
 
-      <header className={`fixed inset-x-0 top-0 z-40 text-white transition-colors duration-300 ${isScrolled ? "bg-[#0f2037]/95 backdrop-blur-md shadow-[0_2px_20px_rgba(0,0,0,0.4)]" : ""}`}>
+      <header className="absolute inset-x-0 top-0 z-40 text-white">
         <div className="mx-auto max-w-[1720px] px-5 lg:px-[100px]">
           <div className="relative flex h-[76px] items-center lg:h-[85px]">
             <HeaderRule />

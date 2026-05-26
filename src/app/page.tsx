@@ -591,7 +591,7 @@ export default function Home() {
         backgroundVideo={heroBackgroundVideo}
       />
 
-      <section id="bombs" data-scroll-pop className="scroll-mt-20 lg:scroll-mt-[185px] px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]">
+      <section id="bombs" data-scroll-pop className="px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]">
         <div className="mx-auto max-w-[1280px] rounded-[28px] bg-white px-4 py-10 sm:rounded-[48px] sm:px-6 sm:py-14 lg:min-h-[750px] lg:rounded-[100px] lg:px-20 lg:py-20">
           <SectionHeading title={homeFeatureCardsJson.sectionTitle} centered />
           <div className="mt-8 grid gap-6 sm:mt-14 lg:grid-cols-3 lg:gap-16">
@@ -906,7 +906,7 @@ function AboutSection({
   image: string;
 }>) {
   return (
-    <section id="about" data-scroll-pop className="scroll-mt-20 lg:scroll-mt-[185px] bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
+    <section id="about" data-scroll-pop className="bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
       <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white sm:rounded-[42px] lg:rounded-[70px]">
         <div className="pointer-events-none absolute inset-0 hidden grid-cols-[1fr_323px] lg:grid">
           <div />
@@ -949,7 +949,7 @@ function ReviewsSection({
     useInfiniteCarousel(reviews);
 
   return (
-    <section id="reviews" data-scroll-pop className="scroll-mt-20 lg:scroll-mt-[185px] overflow-hidden bg-[#f8f8f8] px-3 py-12 sm:px-5 sm:py-16 lg:px-[100px] lg:py-20">
+    <section id="reviews" data-scroll-pop className="overflow-hidden bg-[#f8f8f8] px-3 py-12 sm:px-5 sm:py-16 lg:px-[100px] lg:py-20">
       <div className="mx-auto max-w-[1280px]">
         <SectionHeading kicker={kicker} title={title} centered />
         <div className="mt-8 overflow-hidden [--carousel-gap:1rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] sm:mt-14 sm:[--carousel-gap:2rem] lg:[--carousel-gap:3rem] lg:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
