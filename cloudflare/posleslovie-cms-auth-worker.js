@@ -4,7 +4,15 @@ function escapeRegExp(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function outputAuthHTML({ provider = "unknown", token, error, errorCode }) {
+/**
+ * @param {{
+ *   provider?: string;
+ *   token?: string;
+ *   error?: string;
+ *   errorCode?: string;
+ * }} args
+ */
+function outputAuthHTML({ provider = "unknown", token = "", error = "", errorCode = "" }) {
   const state = error ? "error" : "success";
   const content = error ? { provider, error, errorCode } : { provider, token };
 
@@ -29,6 +37,14 @@ function outputAuthHTML({ provider = "unknown", token, error, errorCode }) {
       },
     },
   );
+}
+
+function createCsrfToken() {
+  let token = "";
+  for (let i = 0; i < 32; i += 1) {
+    token += Math.floor(Math.random() * 16).toString(16);
+  }
+  return token;
 }
 
 function isAllowedDomain(domain, allowedDomains) {
@@ -62,7 +78,7 @@ async function handleCmsAuth(request, env) {
     });
   }
 
-  const csrfToken = globalThis.crypto.randomUUID().replaceAll("-", "");
+  const csrfToken = createCsrfToken();
 
   if (provider === "github") {
     if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
@@ -235,7 +251,8 @@ async function handleCmsCallback(request, env) {
 
 export default {
   async fetch(request, env) {
-    const { pathname, method } = new URL(request.url);
+    const { pathname } = new URL(request.url);
+    const { method } = request;
 
     if (method === "GET" && ["/auth", "/oauth/authorize"].includes(pathname)) {
       return handleCmsAuth(request, env);
