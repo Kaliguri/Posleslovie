@@ -99,7 +99,7 @@ export function SiteHeader() {
               </span>
             </button>
 
-            <Link href="/" className="absolute bottom-3 left-1/2 flex -translate-x-[44%] items-center gap-2 sm:-translate-x-1/2 lg:bottom-[14px]">
+            <Link href="/" className="absolute left-1/2 top-3 ml-2 flex -translate-x-1/2 items-center gap-2 sm:ml-0 lg:top-auto lg:bottom-[14px]">
               <span className="flex h-11 w-11 items-center justify-center rounded-[20px] border-2 border-white text-[16px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
                 П.С
               </span>
@@ -180,7 +180,7 @@ function HeaderRule() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute bottom-0 left-1/2 flex w-[calc(100vw-32px)] -translate-x-1/2 items-center lg:w-[calc(100vw-80px)]"
+      className="pointer-events-none absolute bottom-0 left-0 right-0 flex items-center"
     >
       <span className="h-2 w-2 shrink-0 rotate-45 bg-[#e8c880]" />
       <span className="h-px flex-1 bg-[#e8c880]" />

@@ -76,6 +76,12 @@ collections:
               - { name: price, label: Стоимость (₽), widget: number, value_type: int, min: 0 }
               - { name: image, label: Фото товара, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
 
+      - name: site_behavior
+        label: 04. Настройки
+        file: content/site-behavior.json
+        fields:
+          - { name: enableScrollAnimations, label: Включить анимацию блоков при прокрутке, widget: boolean, default: true, hint: "Если выключить, секции будут появляться без анимации." }
+
       - name: cms_quick_start
         label: 98. Как пользоваться CMS - быстрый старт
         file: content/cms-quick-start.md

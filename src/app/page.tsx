@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState, type InputHTMLAttributes } fr
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
 import { russianCities } from "@/shared/config/russian-cities";
 import { siteConfig } from "@/shared/config/site";
+import siteBehaviorJson from "../../content/site-behavior.json";
 import siteProductsJson from "../../content/site-products.json";
 import homeHeroJson from "../../content/home-hero.json";
 import homeFeatureCardsJson from "../../content/home-feature-cards.json";
@@ -79,6 +80,7 @@ const initialCheckoutState: CheckoutState = {
 };
 
 const amoCRMWorkerUrl = "https://posleslovie-amocrm.kailgurika.workers.dev/";
+const siteBehavior = siteBehaviorJson;
 
 const assets = {
   starRow: assetPath("/images/photos/stars.svg"),
@@ -530,6 +532,13 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window === "undefined") {
+      return;
+    }
+    if (!siteBehavior.enableScrollAnimations) {
+      const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-scroll-pop]"));
+      for (const element of elements) {
+        element.classList.add("is-visible");
+      }
       return;
     }
 
