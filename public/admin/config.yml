@@ -73,25 +73,25 @@ collections:
           - { name: body, label: Полный гайд, widget: markdown, hint: "Подробная инструкция и решения частых ошибок." }
 
   - name: home
-    label: Главная страница
+    label: Главная страница (сверху вниз)
     files:
       - name: hero
-        label: 01. Первый экран
+        label: "Блок #1. Первый экран (обложка)"
         file: content/home-hero.json
         fields:
-          - { name: heading, label: Заголовок, widget: string }
+          - { name: heading, label: Главный заголовок, widget: string }
           - { name: leadLine1, label: Подзаголовок — строка 1, widget: string }
           - { name: leadLine2, label: Подзаголовок — строка 2, widget: string }
-          - { name: ctaLabel, label: Текст кнопки, widget: string }
+          - { name: ctaLabel, label: Текст кнопки на первом экране, widget: string }
           - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1920x1080 px." }
 
       - name: feature_cards
-        label: 02. Карточки продукта
+        label: "Блок #2. Карточки преимуществ"
         file: content/home-feature-cards.json
         fields:
-          - { name: sectionTitle, label: Заголовок секции, widget: string }
+          - { name: sectionTitle, label: Заголовок блока, widget: string }
           - name: cards
-            label: Карточки
+            label: Карточки преимуществ
             widget: list
             summary: "{{fields.title}}"
             max: 6
@@ -101,11 +101,11 @@ collections:
               - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
 
       - name: process_sections
-        label: 03. Секции процесса
+        label: "Блок #3. История производства (3 секции)"
         file: content/home-process-sections.json
         fields:
           - name: sections
-            label: Секции
+            label: Секции блока
             widget: list
             summary: "{{fields.title}}"
             hint: В каждой секции редактируются текст и свои изображения.
@@ -126,14 +126,14 @@ collections:
               - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
 
       - name: why_us
-        label: 04. Почему выбирают нас
+        label: "Блок #4. Почему выбирают нас"
         file: content/home-why-us.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
-          - { name: title, label: Заголовок, widget: string }
+          - { name: title, label: Заголовок блока, widget: string }
           - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1600x900 px." }
           - name: reasons
-            label: Причины
+            label: Карточки причин
             widget: list
             summary: "{{fields.title}}"
             max: 6
@@ -143,11 +143,11 @@ collections:
               - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
 
       - name: about
-        label: 05. О нас
+        label: "Блок #5. О нас"
         file: content/home-about.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
-          - { name: title, label: Заголовок, widget: string }
+          - { name: title, label: Заголовок блока, widget: string }
           - name: paragraphs
             label: Параграфы текста
             widget: list
@@ -156,11 +156,11 @@ collections:
           - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 900x1200 px (вертикальное)." }
 
       - name: reviews
-        label: 06. Отзывы
+        label: "Блок #6. Отзывы клиентов"
         file: content/home-reviews.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
-          - { name: title, label: Заголовок, widget: string }
+          - { name: title, label: Заголовок блока, widget: string }
           - name: items
             label: Отзывы
             widget: list
@@ -172,10 +172,10 @@ collections:
               - { name: text, label: Текст отзыва, widget: text }
 
       - name: cta
-        label: 07. Финальный призыв
+        label: "Блок #7. Нижний баннер с кнопкой"
         file: content/home-cta.json
         fields:
-          - { name: heading, label: Заголовок, widget: string }
-          - { name: text, label: Текст, widget: text }
-          - { name: buttonLabel, label: Текст кнопки, widget: string }
+          - { name: heading, label: Заголовок баннера, widget: string }
+          - { name: text, label: Текст под заголовком, widget: text }
+          - { name: buttonLabel, label: Текст кнопки баннера, widget: string }
           - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1920x1080 px." }
