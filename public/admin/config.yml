@@ -4,8 +4,8 @@ backend:
   branch: main
   base_url: https://posleslovie-cms-auth.kailgurika.workers.dev
 
-media_folder: public/images
-public_folder: /images
+media_folder: public
+public_folder: /
 
 locale: ru
 
@@ -74,6 +74,8 @@ collections:
 
   - name: home
     label: Главная страница (сверху вниз)
+    media_folder: public/images
+    public_folder: /images
     files:
       - name: hero
         label: "Блок #1. Первый экран (обложка)"
@@ -100,33 +102,62 @@ collections:
               - { name: description, label: Описание, widget: text }
               - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
 
-      - name: process_sections
-        label: "Блок #3. История производства (3 секции)"
-        file: content/home-process-sections.json
+      - name: process_bombs
+        label: "Блок #3. Как мы делаем бомбочки"
+        file: content/home-process-bombs.json
         fields:
-          - name: sections
-            label: Секции блока
+          - { name: eyebrow, label: Надпись над заголовком, widget: string }
+          - { name: title, label: Заголовок блока, widget: string }
+          - { name: description, label: Описание, widget: text }
+          - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false, hint: "Включите, чтобы поменять местами блок текста и блок фото." }
+          - name: slides
+            label: Изображения блока
             widget: list
-            summary: "{{fields.title}}"
-            hint: В каждой секции редактируются текст и свои изображения.
-            max: 3
+            summary: "{{fields.alt}}"
+            max: 12
             fields:
-              - { name: eyebrow, label: Надпись над заголовком, widget: string }
-              - { name: title, label: Заголовок, widget: string }
-              - { name: description, label: Описание, widget: text }
-              - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false, hint: "Включите, чтобы поменять местами блок текста и блок фото." }
-              - name: slides
-                label: Изображения секции
-                widget: list
-                summary: "{{fields.alt}}"
-                max: 12
-                fields:
-                  - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
-                  - { name: alt, label: Описание изображения (alt), widget: string, required: true, hint: "Коротко опишите, что изображено на фото." }
-              - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
+              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+              - { name: alt, label: Описание изображения (alt), widget: string, required: true, hint: "Коротко опишите, что изображено на фото." }
+          - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
+
+      - name: process_lavender
+        label: "Блок #4. Собираем лаванду вручную"
+        file: content/home-process-lavender.json
+        fields:
+          - { name: eyebrow, label: Надпись над заголовком, widget: string }
+          - { name: title, label: Заголовок блока, widget: string }
+          - { name: description, label: Описание, widget: text }
+          - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false, hint: "Включите, чтобы поменять местами блок текста и блок фото." }
+          - name: slides
+            label: Изображения блока
+            widget: list
+            summary: "{{fields.alt}}"
+            max: 12
+            fields:
+              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+              - { name: alt, label: Описание изображения (alt), widget: string, required: true, hint: "Коротко опишите, что изображено на фото." }
+          - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
+
+      - name: process_packs
+        label: "Блок #5. Упаковываем с любовью"
+        file: content/home-process-packs.json
+        fields:
+          - { name: eyebrow, label: Надпись над заголовком, widget: string }
+          - { name: title, label: Заголовок блока, widget: string }
+          - { name: description, label: Описание, widget: text }
+          - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false, hint: "Включите, чтобы поменять местами блок текста и блок фото." }
+          - name: slides
+            label: Изображения блока
+            widget: list
+            summary: "{{fields.alt}}"
+            max: 12
+            fields:
+              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+              - { name: alt, label: Описание изображения (alt), widget: string, required: true, hint: "Коротко опишите, что изображено на фото." }
+          - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
 
       - name: why_us
-        label: "Блок #4. Почему выбирают нас"
+        label: "Блок #6. Почему выбирают нас"
         file: content/home-why-us.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -143,7 +174,7 @@ collections:
               - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
 
       - name: about
-        label: "Блок #5. О нас"
+        label: "Блок #7. О нас"
         file: content/home-about.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -156,7 +187,7 @@ collections:
           - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 900x1200 px (вертикальное)." }
 
       - name: reviews
-        label: "Блок #6. Отзывы клиентов"
+        label: "Блок #8. Отзывы клиентов"
         file: content/home-reviews.json
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
@@ -172,7 +203,7 @@ collections:
               - { name: text, label: Текст отзыва, widget: text }
 
       - name: cta
-        label: "Блок #7. Нижний баннер с кнопкой"
+        label: "Блок #9. Нижний баннер с кнопкой"
         file: content/home-cta.json
         fields:
           - { name: heading, label: Заголовок баннера, widget: string }

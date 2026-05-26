@@ -7,7 +7,9 @@ import { russianCities } from "@/shared/config/russian-cities";
 import { siteConfig } from "@/shared/config/site";
 import homeHeroJson from "../../content/home-hero.json";
 import homeFeatureCardsJson from "../../content/home-feature-cards.json";
-import homeProcessSectionsJson from "../../content/home-process-sections.json";
+import homeProcessBombsJson from "../../content/home-process-bombs.json";
+import homeProcessLavenderJson from "../../content/home-process-lavender.json";
+import homeProcessPacksJson from "../../content/home-process-packs.json";
 import homeWhyUsJson from "../../content/home-why-us.json";
 import homeAboutJson from "../../content/home-about.json";
 import homeReviewsJson from "../../content/home-reviews.json";
@@ -92,7 +94,11 @@ const featureCards = homeFeatureCardsJson.cards.map((card) => ({
   icon: assetPath(card.icon),
 }));
 
-const processSections = homeProcessSectionsJson.sections.map((section) => ({
+const processSections = [
+  homeProcessBombsJson,
+  homeProcessLavenderJson,
+  homeProcessPacksJson,
+].map((section) => ({
   ...section,
   slides: section.slides.map((slide) => ({
     ...slide,
