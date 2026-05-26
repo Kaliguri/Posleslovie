@@ -29,10 +29,14 @@ collections:
             label: Социальные сети
             widget: list
             summary: "{{fields.label}} -> {{fields.href}}"
-            hint: Добавляйте только те соцсети, которые реально используются.
-            max: 8
+            hint: Для иконок в шапке используйте VK, TG и MAX.
+            min: 3
+            max: 3
             fields:
-              - { name: label, label: Название, widget: string }
+              - name: label
+                label: Название
+                widget: select
+                options: ["VK", "TG", "MAX"]
               - { name: href, label: Ссылка, widget: string, pattern: ["^https?://", "Ссылка должна начинаться с http:// или https://"] }
 
       - name: legal_documents
@@ -103,7 +107,25 @@ collections:
           - { name: leadLine1, label: Подзаголовок — строка 1, widget: string }
           - { name: leadLine2, label: Подзаголовок — строка 2, widget: string }
           - { name: ctaLabel, label: Текст кнопки на первом экране, widget: string }
+          - name: backgroundMediaType
+            label: Что использовать в фоне
+            widget: select
+            default: image
+            options:
+              - { label: Изображение, value: image }
+              - { label: Видео, value: video }
+            hint: Выберите, что показывать на обложке - изображение или видео.
           - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1920x1080 px." }
+          - name: backgroundVideo
+            label: Фоновое видео (mp4/webm)
+            widget: file
+            required: false
+            media_folder: public/images/videos
+            public_folder: /images/videos
+            hint: "Видео будет зациклено и запущено без звука."
+            pattern:
+              - "\\.(mp4|webm)$"
+              - "Разрешены только видео MP4 или WEBM"
 
       - name: feature_cards
         label: "Блок #2. Карточки преимуществ"

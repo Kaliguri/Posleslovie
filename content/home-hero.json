@@ -3,5 +3,7 @@
   "leadLine1": "Энергия природы в каждой бомбочке для ванны",
   "leadLine2": "Внимание и забота к каждой минуте наедине с собой",
   "ctaLabel": "Оформить заказ",
-  "backgroundImage": "/images/photos/hero.jpg"
+  "backgroundMediaType": "video",
+  "backgroundImage": "/images/photos/hero.jpg",
+  "backgroundVideo": "/images/videos/hero-cover.mp4"
 }

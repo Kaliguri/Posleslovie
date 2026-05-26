@@ -495,6 +495,8 @@ export default function Home() {
   const [modal, setModal] = useState<ModalType>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const { checkoutState, updateQuantity, updateField, updateTab } = useCheckoutState();
+  const heroBackgroundMediaType = homeHeroJson.backgroundMediaType === "video" ? "video" : "image";
+  const heroBackgroundVideo = homeHeroJson.backgroundVideo ? assetPath(homeHeroJson.backgroundVideo) : "";
 
   useEffect(() => {
     if (window.location.hash) {
@@ -534,7 +536,9 @@ export default function Home() {
         leadLine1={homeHeroJson.leadLine1}
         leadLine2={homeHeroJson.leadLine2}
         ctaLabel={homeHeroJson.ctaLabel}
+        backgroundMediaType={heroBackgroundMediaType}
         backgroundImage={assetPath(homeHeroJson.backgroundImage)}
+        backgroundVideo={heroBackgroundVideo}
       />
 
       <section id="bombs" className="px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]">
@@ -604,21 +608,40 @@ function HeroSection({
   leadLine1,
   leadLine2,
   ctaLabel,
+  backgroundMediaType,
   backgroundImage,
+  backgroundVideo,
 }: Readonly<{
   onOrder: () => void;
   heading: string;
   leadLine1: string;
   leadLine2: string;
   ctaLabel: string;
+  backgroundMediaType: "image" | "video";
   backgroundImage: string;
+  backgroundVideo: string;
 }>) {
   return (
     <section className="relative min-h-[600px] overflow-hidden bg-[#102038] sm:min-h-[720px] lg:min-h-[1080px]">
-      <div
-        className="absolute inset-x-[-16vw] top-0 h-full scale-[1.01] bg-cover bg-center sm:inset-x-[-5vw] lg:inset-x-[-103px]"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      />
+      {backgroundMediaType === "video" && backgroundVideo ? (
+        <video
+          className="absolute inset-x-[-16vw] top-0 h-full w-[132vw] scale-[1.01] object-cover sm:inset-x-[-5vw] sm:w-[110vw] lg:inset-x-[-103px] lg:w-[calc(100%+206px)]"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={backgroundImage}
+          aria-hidden="true"
+        >
+          <source src={backgroundVideo} />
+        </video>
+      ) : (
+        <div
+          className="absolute inset-x-[-16vw] top-0 h-full scale-[1.01] bg-cover bg-center sm:inset-x-[-5vw] lg:inset-x-[-103px]"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        />
+      )}
       <div className="absolute inset-0 bg-black/45 sm:bg-black/25" />
       <div className="absolute left-1/2 top-[265px] hidden h-[572px] w-[64.3vw] max-w-[1234px] -translate-x-1/2 rounded-[385px] bg-black/[0.01] backdrop-blur-[5px] lg:block" />
       <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-32 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">
