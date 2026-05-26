@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState, type InputHTMLAttributes } fr
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
 import { russianCities } from "@/shared/config/russian-cities";
 import { siteConfig } from "@/shared/config/site";
+import siteProductsJson from "../../content/site-products.json";
 import homeHeroJson from "../../content/home-hero.json";
 import homeFeatureCardsJson from "../../content/home-feature-cards.json";
 import homeProcessBombsJson from "../../content/home-process-bombs.json";
@@ -54,7 +55,6 @@ type AmoCRMCheckoutPayload = CheckoutState & {
 
 const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
 const checkoutStorageKey = "posleslovie:checkout-state";
-const productPrice = 999;
 const maxLogoFileSize = 3 * 1024 * 1024;
 const normalizedRussianCities = new Map(
   russianCities.map((city) => [normalizeCitySearchValue(city), city]),
@@ -84,8 +84,21 @@ const assets = {
   starRow: assetPath("/images/photos/stars.svg"),
   crystal: assetPath("/images/photos/crystal.png"),
   pero: assetPath("/images/photos/pero.png"),
-  bombs2: assetPath("/images/photos/bombs-2.jpg"),
 };
+
+const fallbackCheckoutProduct = {
+  title: "Бомбочка для ванны",
+  price: 999,
+  image: assetPath("/images/photos/bombs-2.jpg"),
+};
+
+const checkoutProducts = siteProductsJson.items.map((item) => ({
+  ...item,
+  image: assetPath(item.image),
+}));
+
+const primaryCheckoutProduct = checkoutProducts[0] ?? fallbackCheckoutProduct;
+type CheckoutProduct = (typeof primaryCheckoutProduct);
 
 type GallerySlide = { image: string; alt: string };
 
@@ -574,6 +587,7 @@ export default function Home() {
       <ScrollTopButton visible={showScrollTop} />
       <HomeModal
         type={modal}
+        checkoutProduct={primaryCheckoutProduct}
         checkoutState={checkoutState}
         onCheckoutFieldChange={updateField}
         onCheckoutQuantityChange={updateQuantity}
@@ -941,7 +955,7 @@ function isLegalDocumentSlug(type: ModalType): type is LegalDocumentSlug {
   return Boolean(type && legalDocuments.some((document) => document.slug === type));
 }
 
-function getModalHeader(type: Exclude<ModalType, null>) {
+function getModalHeader(type: Exclude<ModalType, null>, checkoutTitle: string) {
   if (isLegalDocumentSlug(type)) {
     const document = legalDocuments.find((item) => item.slug === type);
     return {
@@ -965,7 +979,7 @@ function getModalHeader(type: Exclude<ModalType, null>) {
     },
     checkout: {
       kicker: "Оформление заказа",
-      title: "Бомбочка для ванны",
+      title: checkoutTitle,
     },
   } satisfies Record<Exclude<ModalType, LegalDocumentSlug | null>, { kicker: string; title: string }>;
 
@@ -974,6 +988,7 @@ function getModalHeader(type: Exclude<ModalType, null>) {
 
 function HomeModal({
   type,
+  checkoutProduct,
   checkoutState,
   onCheckoutFieldChange,
   onCheckoutQuantityChange,
@@ -981,6 +996,7 @@ function HomeModal({
   onClose,
 }: Readonly<{
   type: ModalType;
+  checkoutProduct: CheckoutProduct;
   checkoutState: CheckoutState;
   onCheckoutFieldChange: (field: CheckoutField, value: string) => void;
   onCheckoutQuantityChange: (quantity: number) => void;
@@ -1014,7 +1030,7 @@ function HomeModal({
     return null;
   }
 
-  const header = getModalHeader(type);
+  const header = getModalHeader(type, checkoutProduct.title || "Товар");
   const isCheckout = type === "checkout";
 
   const handleCheckoutTabChange = (newTab: "personal" | "company") => {
@@ -1102,6 +1118,7 @@ function HomeModal({
           {type === "contacts" ? <ContactsModal /> : null}
           {isCheckout ? (
             <CheckoutModal
+              checkoutProduct={checkoutProduct}
               checkoutState={checkoutState}
               step={checkoutStep}
               onStepChange={setCheckoutStep}
@@ -1172,12 +1189,14 @@ function ContactsModal() {
 }
 
 function CheckoutModal({
+  checkoutProduct,
   checkoutState,
   step,
   onStepChange,
   onFieldChange,
   onQuantityChange,
 }: Readonly<{
+  checkoutProduct: CheckoutProduct;
   checkoutState: CheckoutState;
   step: 1 | 2;
   onStepChange: (step: 1 | 2) => void;
@@ -1191,7 +1210,7 @@ function CheckoutModal({
   const [logoFile, setLogoFile] = useState<CheckoutLogoFile | null>(null);
   const [logoFileError, setLogoFileError] = useState<string | null>(null);
   const { tab, quantity, formValues } = checkoutState;
-  const total = quantity * productPrice;
+  const total = quantity * checkoutProduct.price;
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -1347,6 +1366,7 @@ function CheckoutModal({
         </div>
 
         <CheckoutOrderPanel
+          checkoutProduct={checkoutProduct}
           quantity={quantity}
           total={total}
           error={errors.quantity}
@@ -1674,11 +1694,13 @@ function CheckoutStep2Form({
 }
 
 function CheckoutOrderPanel({
+  checkoutProduct,
   quantity,
   total,
   error,
   onQuantityChange,
 }: Readonly<{
+  checkoutProduct: CheckoutProduct;
   quantity: number;
   total: number;
   error?: string;
@@ -1690,12 +1712,12 @@ function CheckoutOrderPanel({
       <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
       <div className="mt-5 flex flex-col gap-4 rounded-2xl bg-[#f8f8f8] p-3.5 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-4">
         <ZoomImage
-          image={assets.bombs2}
-          label="Бомбочка для ванны"
+          image={checkoutProduct.image}
+          label={checkoutProduct.title}
           className="h-24 w-24 shrink-0 rounded-[10px] sm:h-[108px] sm:w-[108px]"
         />
         <div className="min-w-0 flex-1">
-          <p className="font-bold">Бомбочка для ванны</p>
+          <p className="font-bold">{checkoutProduct.title}</p>
           <div className="mt-4 flex items-center gap-3">
             <CounterButton
               onClick={() => onQuantityChange(quantity - 1)}
@@ -1719,12 +1741,12 @@ function CheckoutOrderPanel({
           </div>
           {error ? <FieldErrorMessage message={error} /> : null}
         </div>
-        <p className="shrink-0 font-bold sm:self-start">{productPrice} ₽</p>
+        <p className="shrink-0 font-bold sm:self-start">{checkoutProduct.price} ₽</p>
       </div>
       <div className="mt-5 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-6" />
       <div className="mt-5 space-y-2 text-base sm:mt-6 sm:space-y-4 sm:text-xl">
         <p className="font-light">Количество: {quantity} шт.</p>
-        <p className="font-light">Цена за 1 шт.: {productPrice} руб.</p>
+        <p className="font-light">Цена за 1 шт.: {checkoutProduct.price} руб.</p>
         <p className="font-extrabold">Итоговая сумма: {total} руб.</p>
       </div>
     </div>

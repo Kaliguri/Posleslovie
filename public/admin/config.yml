@@ -58,8 +58,22 @@ collections:
               - { name: title, widget: hidden }
               - { name: shortTitle, label: Короткое название, widget: string, hint: "Отображается в футере в списке документов." }
 
+      - name: products
+        label: 03. Товары
+        file: content/site-products.json
+        fields:
+          - name: items
+            label: Карточки товаров
+            widget: list
+            summary: "{{fields.title}} — {{fields.price}} ₽"
+            hint: "Добавляйте и удаляйте товары. В корзине сейчас используется первый товар в списке."
+            fields:
+              - { name: title, label: Название товара, widget: string }
+              - { name: price, label: Стоимость (₽), widget: number, value_type: int, min: 0 }
+              - { name: image, label: Фото товара, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+
       - name: cms_quick_start
-        label: 03. Как пользоваться CMS - быстрый старт
+        label: 98. Как пользоваться CMS - быстрый старт
         file: content/cms-quick-start.md
         editor:
           preview: false
@@ -68,7 +82,7 @@ collections:
           - { name: body, label: Быстрый старт, widget: markdown, hint: "Краткая инструкция для ежедневной работы клиента." }
 
       - name: cms_full_guide
-        label: 04. Как пользоваться CMS - полный гайд
+        label: 99. Как пользоваться CMS - полный гайд
         file: content/cms-full-guide.md
         editor:
           preview: false
