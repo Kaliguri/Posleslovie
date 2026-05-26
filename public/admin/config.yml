@@ -14,21 +14,45 @@ collections:
     label: Сайт - общие настройки
     files:
       - name: site_settings
-        label: Бренд и контакты
+        label: 01. Бренд и контакты
         file: content/site-settings.json
         fields:
-          - { name: name, label: Название сайта, widget: string }
-          - { name: description, label: Описание, widget: text }
-          - { name: phone, label: Телефон, widget: string }
-          - { name: email, label: Email, widget: string }
+          - { name: name, label: Название сайта, widget: string, hint: Отображается в метаданных и служебных местах сайта. }
+          - { name: description, label: Краткое описание сайта, widget: text, hint: Используется как общее описание проекта. }
+          - { name: phone, label: Телефон, widget: string, hint: "Формат +7XXXXXXXXXX или +7 (XXX) XXX-XX-XX.", pattern: ["^\\+7[\\d\\s()\\-]{10,}$", "Введите телефон в формате +7..."] }
+          - { name: email, label: Email, widget: string, hint: "Основной контактный email.", pattern: ["^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", "Введите корректный email"] }
           - name: socials
             label: Социальные сети
             widget: list
             summary: "{{fields.label}} -> {{fields.href}}"
             hint: Добавляйте только те соцсети, которые реально используются.
+            max: 8
             fields:
               - { name: label, label: Название, widget: string }
-              - { name: href, label: Ссылка, widget: string }
+              - { name: href, label: Ссылка, widget: string, pattern: ["^https?://", "Ссылка должна начинаться с http:// или https://"] }
+
+      - name: legal_documents
+        label: 02. Юридические документы (PDF)
+        file: content/legal-documents.json
+        fields:
+          - name: documents
+            label: Документы
+            widget: list
+            summary: "{{fields.shortTitle}} ({{fields.slug}})"
+            hint: В CMS редактируются только PDF и названия документов.
+            fields:
+              - { name: slug, label: Slug (служебное поле, не редактировать), widget: string, hint: "Используется в коде сайта для привязки модалок и ссылок.", pattern: ["^[a-z0-9-]+$", "Только латиница, цифры и дефис"] }
+              - name: pdfPath
+                label: PDF-файл документа
+                widget: file
+                media_folder: public/docs
+                public_folder: /docs
+                hint: Загрузите PDF, чтобы ссылка в футере обновилась автоматически.
+                pattern:
+                  - "\\.pdf$"
+                  - "Разрешены только PDF-файлы"
+              - { name: title, label: Полное название, widget: string, hint: "Используется в модальном окне документа на сайте." }
+              - { name: shortTitle, label: Короткое название, widget: string, hint: "Отображается в футере в списке документов." }
 
   - name: home
     label: Главная страница
@@ -41,7 +65,7 @@ collections:
           - { name: leadLine1, label: Подзаголовок — строка 1, widget: string }
           - { name: leadLine2, label: Подзаголовок — строка 2, widget: string }
           - { name: ctaLabel, label: Текст кнопки, widget: string }
-          - { name: backgroundImage, label: Фоновое изображение, widget: image }
+          - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1920x1080 px." }
 
       - name: feature_cards
         label: 02. Карточки продукта
@@ -52,10 +76,11 @@ collections:
             label: Карточки
             widget: list
             summary: "{{fields.title}}"
+            max: 6
             fields:
               - { name: title, label: Название, widget: string }
               - { name: description, label: Описание, widget: text }
-              - { name: icon, label: Иконка, widget: image }
+              - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
 
       - name: process_sections
         label: 03. Секции процесса
@@ -66,6 +91,7 @@ collections:
             widget: list
             summary: "{{fields.title}} [{{fields.gallery}}]"
             hint: Для каждой секции выберите соответствующую галерею.
+            max: 3
             fields:
               - { name: eyebrow, label: Надпись над заголовком, widget: string }
               - { name: title, label: Заголовок, widget: string }
@@ -88,23 +114,26 @@ collections:
             label: Галерея — Бомбочки
             widget: list
             summary: "{{fields.alt}}"
+            max: 12
             fields:
-              - { name: image, label: Изображение, widget: image }
-              - { name: alt, label: Описание (alt), widget: string }
+              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+              - { name: alt, label: Описание (alt), widget: string, required: true, hint: "Обязательное описание изображения для доступности и SEO." }
           - name: lavender
             label: Галерея — Лаванда
             widget: list
             summary: "{{fields.alt}}"
+            max: 12
             fields:
-              - { name: image, label: Изображение, widget: image }
-              - { name: alt, label: Описание (alt), widget: string }
+              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+              - { name: alt, label: Описание (alt), widget: string, required: true, hint: "Обязательное описание изображения для доступности и SEO." }
           - name: packs
             label: Галерея — Упаковка
             widget: list
             summary: "{{fields.alt}}"
+            max: 12
             fields:
-              - { name: image, label: Изображение, widget: image }
-              - { name: alt, label: Описание (alt), widget: string }
+              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+              - { name: alt, label: Описание (alt), widget: string, required: true, hint: "Обязательное описание изображения для доступности и SEO." }
 
       - name: why_us
         label: 05. Почему выбирают нас
@@ -112,15 +141,16 @@ collections:
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
           - { name: title, label: Заголовок, widget: string }
-          - { name: backgroundImage, label: Фоновое изображение, widget: image }
+          - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1600x900 px." }
           - name: reasons
             label: Причины
             widget: list
             summary: "{{fields.title}}"
+            max: 6
             fields:
               - { name: title, label: Заголовок, widget: string }
               - { name: description, label: Описание, widget: text }
-              - { name: icon, label: Иконка, widget: image }
+              - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
 
       - name: about
         label: 06. О нас
@@ -131,8 +161,9 @@ collections:
           - name: paragraphs
             label: Параграфы текста
             widget: list
+            max: 8
             field: { name: text, label: Текст, widget: text }
-          - { name: image, label: Изображение, widget: image }
+          - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 900x1200 px (вертикальное)." }
 
       - name: reviews
         label: 07. Отзывы
@@ -144,9 +175,10 @@ collections:
             label: Отзывы
             widget: list
             summary: "{{fields.name}}"
+            max: 10
             fields:
               - { name: name, label: Имя автора, widget: string }
-              - { name: image, label: Фото/иллюстрация, widget: image }
+              - { name: image, label: Фото/иллюстрация, widget: image, hint: "Рекомендуемый размер: 400x400 px (квадрат)." }
               - { name: text, label: Текст отзыва, widget: text }
 
       - name: cta
@@ -156,30 +188,4 @@ collections:
           - { name: heading, label: Заголовок, widget: string }
           - { name: text, label: Текст, widget: text }
           - { name: buttonLabel, label: Текст кнопки, widget: string }
-          - { name: backgroundImage, label: Фоновое изображение, widget: image }
-
-  - name: legal
-    label: Юридические документы и PDF
-    files:
-      - name: legal_documents
-        label: Документы (только PDF)
-        file: content/legal-documents.json
-        fields:
-          - name: documents
-            label: Документы
-            widget: list
-            summary: "{{fields.shortTitle}} ({{fields.slug}})"
-            hint: В CMS редактируются только PDF и названия документов.
-            fields:
-              - { name: slug, label: Slug (техническое имя, лучше не менять), widget: string, hint: Используется в коде. Меняйте только если понимаете последствия. }
-              - name: pdfPath
-                label: PDF-файл документа
-                widget: file
-                media_folder: public/docs
-                public_folder: /docs
-                hint: Загрузите PDF, чтобы ссылка в футере обновилась автоматически.
-                pattern:
-                  - "\\.pdf$"
-                  - "Разрешены только PDF-файлы"
-              - { name: title, label: Полное название, widget: string }
-              - { name: shortTitle, label: Короткое название, widget: string }
+          - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1920x1080 px." }
