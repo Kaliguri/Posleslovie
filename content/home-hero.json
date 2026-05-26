@@ -4,6 +4,6 @@
   "leadLine2": "Внимание и забота к каждой минуте наедине с собой",
   "ctaLabel": "Оформить заказ",
   "backgroundMediaType": "video",
-  "backgroundImage": "/images/photos/hero.jpg",
-  "backgroundVideo": "/images/videos/hero-cover.mp4"
+  "backgroundImage": "/images/photos/hero-video-poster.png",
+  "backgroundVideo": "/images/videos/hero-cover.webm"
 }
