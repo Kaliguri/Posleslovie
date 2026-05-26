@@ -4,8 +4,8 @@ backend:
   branch: main
   base_url: https://posleslovie-cms-auth.kailgurika.workers.dev
 
-media_folder: public/docs
-public_folder: /docs
+media_folder: public/images
+public_folder: /images
 
 locale: ru
 
@@ -45,8 +45,8 @@ collections:
               - name: pdfPath
                 label: PDF-файл документа
                 widget: file
-                media_folder: public/docs
-                public_folder: /docs
+                media_folder: public/images/docs
+                public_folder: /images/docs
                 hint: Загрузите PDF, чтобы ссылка в футере обновилась автоматически.
                 pattern:
                   - "\\.pdf$"
@@ -74,8 +74,6 @@ collections:
 
   - name: home
     label: Главная страница (сверху вниз)
-    media_folder: public/images
-    public_folder: /images
     files:
       - name: hero
         label: "Блок #1. Первый экран (обложка)"

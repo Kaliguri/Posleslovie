@@ -2,7 +2,7 @@
   "documents": [
     {
       "slug": "privacy",
-      "pdfPath": "/docs/privacy.pdf",
+      "pdfPath": "/images/docs/privacy.pdf",
       "title": "Политика в отношении обработки персональных данных",
       "shortTitle": "Политика конфиденциальности",
       "content": [
@@ -50,7 +50,7 @@
     },
     {
       "slug": "offer",
-      "pdfPath": "/docs/offer.pdf",
+      "pdfPath": "/images/docs/offer.pdf",
       "title": "Договор публичной оферты",
       "shortTitle": "Договор оферты",
       "content": [
@@ -103,7 +103,7 @@
     },
     {
       "slug": "personal-data-consent",
-      "pdfPath": "/docs/personal-data-consent.pdf",
+      "pdfPath": "/images/docs/personal-data-consent.pdf",
       "title": "Согласие на обработку персональных данных",
       "shortTitle": "Согласие на обработку данных",
       "content": [
@@ -115,7 +115,7 @@
     },
     {
       "slug": "personal-data-distribution",
-      "pdfPath": "/docs/personal-data-distribution.pdf",
+      "pdfPath": "/images/docs/personal-data-distribution.pdf",
       "title": "Согласие на распространение персональных данных",
       "shortTitle": "Согласие на распространение данных",
       "content": [
@@ -129,7 +129,7 @@
     },
     {
       "slug": "marketing-consent",
-      "pdfPath": "/docs/marketing-consent.pdf",
+      "pdfPath": "/images/docs/marketing-consent.pdf",
       "title": "Согласие на получение рекламных и информационных материалов",
       "shortTitle": "Согласие на рассылку",
       "content": [

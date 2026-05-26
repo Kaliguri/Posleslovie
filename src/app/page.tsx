@@ -1630,7 +1630,7 @@ function CheckoutStep2Form({
             <br />
             Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
             <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/docs/personal-data-consent.pdf`}
+              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/docs/personal-data-consent.pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-[#e8c880]"
@@ -1639,7 +1639,7 @@ function CheckoutStep2Form({
             </a>{" "}
             и ознакомлены с{" "}
             <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/docs/privacy.pdf`}
+              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/docs/privacy.pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-[#e8c880]"
