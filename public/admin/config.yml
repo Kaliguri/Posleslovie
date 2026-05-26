@@ -4,8 +4,8 @@ backend:
   branch: main
   base_url: https://posleslovie-cms-auth.kailgurika.workers.dev
 
-media_folder: public
-public_folder: /
+media_folder: public/docs
+public_folder: /docs
 
 locale: ru
 
