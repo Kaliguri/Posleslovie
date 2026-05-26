@@ -38,10 +38,10 @@ collections:
           - name: documents
             label: Документы
             widget: list
-            summary: "{{fields.shortTitle}} ({{fields.slug}})"
-            hint: В CMS редактируются только PDF и названия документов.
+            summary: "{{fields.shortTitle}}"
+            hint: Редактируйте только название и PDF-файл документа.
             fields:
-              - { name: slug, label: Slug (служебное поле, не редактировать), widget: string, hint: "Используется в коде сайта для привязки модалок и ссылок.", pattern: ["^[a-z0-9-]+$", "Только латиница, цифры и дефис"] }
+              - { name: slug, widget: hidden }
               - name: pdfPath
                 label: PDF-файл документа
                 widget: file
@@ -51,7 +51,7 @@ collections:
                 pattern:
                   - "\\.pdf$"
                   - "Разрешены только PDF-файлы"
-              - { name: title, label: Полное название, widget: string, hint: "Используется в модальном окне документа на сайте." }
+              - { name: title, widget: hidden }
               - { name: shortTitle, label: Короткое название, widget: string, hint: "Отображается в футере в списке документов." }
 
       - name: cms_quick_start
