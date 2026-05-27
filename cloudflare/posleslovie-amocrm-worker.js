@@ -284,8 +284,8 @@ const worker = {
       return jsonResponse({ error: "Method not allowed" }, 405, origin);
     }
 
-    if (!env.Token22) {
-      return jsonResponse({ error: "Token22 secret is not configured" }, 500, origin);
+    if (!env.AmoToken) {
+      return jsonResponse({ error: "AmoToken secret is not configured" }, 500, origin);
     }
 
     try {
@@ -295,7 +295,7 @@ const worker = {
         return jsonResponse({ error: "Invalid checkout payload" }, 400, origin);
       }
 
-      const result = await createAmoCRMCheckout(payload, env.Token22);
+      const result = await createAmoCRMCheckout(payload, env.AmoToken);
       return jsonResponse({ ok: true, ...result }, 200, origin);
     } catch (error) {
       console.error(error);
