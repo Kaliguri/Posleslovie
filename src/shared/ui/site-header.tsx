@@ -118,15 +118,7 @@ export function SiteHeader() {
           <div className="relative flex h-[76px] items-center lg:h-[85px]">
             <HeaderRule />
 
-            <Link href="/" className="absolute bottom-3 left-1/2 ml-2 flex -translate-x-1/2 items-center gap-2 sm:ml-0 lg:bottom-[14px]">
-              <span className="flex h-11 w-11 items-center justify-center rounded-[20px] border-2 border-white text-[16px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
-                П.С
-              </span>
-              <span className="text-2xl font-normal leading-[1.1] [font-family:var(--font-educational)] sm:text-[30px]">
-                {siteConfig.name}
-              </span>
-            </Link>
-            <div className="ml-auto hidden items-end gap-3 pb-[14px] lg:flex">
+            <div className="hidden items-center gap-3 lg:flex">
               {socialLinks.map((social) => (
                 <SocialIconButton
                   key={social.label}
@@ -135,16 +127,28 @@ export function SiteHeader() {
                   icon={social.icon}
                 />
               ))}
-              <a
-                href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-                className="pl-3 text-base font-medium leading-[1.1] [font-family:var(--font-inter)]"
-              >
-                {siteConfig.phone}
-              </a>
             </div>
+
+            <Link
+              href="/"
+              className="absolute left-1/2 top-1/2 ml-2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 sm:ml-0"
+            >
+              <span className="flex h-11 w-11 items-center justify-center rounded-[20px] border-2 border-white text-[16px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
+                П.С
+              </span>
+              <span className="text-2xl font-normal leading-[1.1] [font-family:var(--font-educational)] sm:text-[30px]">
+                {siteConfig.name}
+              </span>
+            </Link>
+            <a
+              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
+              className="ml-auto hidden items-center text-lg font-medium leading-[1.1] [font-family:var(--font-inter)] lg:flex"
+            >
+              {siteConfig.phone}
+            </a>
           </div>
 
-          <nav className="hidden h-[100px] items-center justify-center lg:flex">
+          <nav className="hidden h-[100px] items-center justify-center lg:flex lg:-mt-6">
             <div className="flex items-center">
               {navigationItems.map((item) => (
                 <HeaderPill key={item.label} onClick={() => handleNavigation(item)}>
@@ -264,12 +268,12 @@ function SocialIconButton({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="flex h-11 w-11 items-center justify-center rounded-full transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
+      className="flex h-9 w-9 items-center justify-center rounded-full transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
       <img
         src={assetPath(icon)}
         alt={label}
-        className="h-11 w-11 rounded-full object-cover"
+        className="h-9 w-9 rounded-full object-cover"
       />
     </a>
   );

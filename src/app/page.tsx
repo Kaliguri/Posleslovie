@@ -252,13 +252,20 @@ function parseCheckoutState(value: string | null): CheckoutState {
       ...(parsed.formValues ?? {}),
     };
 
+    const contactMethod =
+      formValues.contactMethod === "max" ||
+      formValues.contactMethod === "phone" ||
+      formValues.contactMethod === "email"
+        ? formValues.contactMethod
+        : "tg";
+
     return {
       quantity: Math.max(1, Number(parsed.quantity) || initialCheckoutState.quantity),
       tab: parsed.tab === "company" ? "company" : "personal",
       formValues: {
         ...formValues,
         phone: formatRussianPhoneInput(formValues.phone),
-        contactMethod: formValues.contactMethod === "max" ? "max" : "tg",
+        contactMethod,
       },
     };
   } catch {
@@ -375,9 +382,7 @@ function validateCheckout(values: CheckoutFormValues, tab: "personal" | "company
     errors.company = "Укажите название компании.";
   }
 
-  if (values.contactMethod === "tg" && !values.contactHandle.trim()) {
-    errors.contactHandle = "Укажите ник в Telegram.";
-  } else if (values.contactMethod === "tg" && !isValidTelegramHandle(values.contactHandle)) {
+  if (values.contactMethod === "tg" && values.contactHandle.trim() && !isValidTelegramHandle(values.contactHandle)) {
     errors.contactHandle = "Введите @ и 5-32 символа: латиница, цифры или _.";
   }
 
@@ -436,7 +441,10 @@ function prepareCheckoutPayload({
       inn: tab === "company" ? trimmedValues.inn : "",
       ogrn: tab === "company" ? trimmedValues.ogrn : "",
       city: tab === "personal" ? getRussianCityName(trimmedValues.city) ?? trimmedValues.city : "",
-      contactHandle: trimmedValues.contactMethod === "tg" ? trimmedValues.contactHandle : "",
+      contactHandle:
+        trimmedValues.contactMethod === "tg" || trimmedValues.contactMethod === "max"
+          ? trimmedValues.contactHandle
+          : "",
     },
   };
 }
@@ -500,6 +508,7 @@ function useCheckoutState() {
 
 export default function Home() {
   const [modal, setModal] = useState<ModalType>(null);
+  const [isHeroVideoOpen, setIsHeroVideoOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const { checkoutState, updateQuantity, updateField, updateTab } = useCheckoutState();
   const heroBackgroundMediaType = homeHeroJson.backgroundMediaType === "video" ? "video" : "image";
@@ -536,6 +545,16 @@ export default function Home() {
   }, [modal]);
 
   useEffect(() => {
+    if (!isHeroVideoOpen) {
+      return;
+    }
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isHeroVideoOpen]);
+
+  useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
@@ -559,18 +578,82 @@ export default function Home() {
       return;
     }
 
+    const typewriterQueue = new Set<HTMLElement>();
+    let typewriterRaf = 0;
+    const TYPEWRITER_CHARS_PER_SEC = 26;
+    let lastTypewriterTs = 0;
+    const runTypewriterStep = (ts = 0) => {
+      typewriterRaf = 0;
+      const dt = lastTypewriterTs ? Math.min(80, ts - lastTypewriterTs) : 16;
+      lastTypewriterTs = ts;
+      const charsThisFrame = Math.max(1, Math.floor((TYPEWRITER_CHARS_PER_SEC * dt) / 1000));
+
+      for (const element of typewriterQueue) {
+        if (element.dataset.twDone === "1") {
+          typewriterQueue.delete(element);
+          continue;
+        }
+        const fullText = element.dataset.twText ?? element.textContent ?? "";
+        if (!element.dataset.twText) {
+          element.dataset.twText = fullText;
+          element.textContent = "";
+          element.dataset.twIndex = "0";
+        }
+        const currentIndex = Number(element.dataset.twIndex ?? "0");
+        if (!Number.isFinite(currentIndex)) {
+          element.dataset.twIndex = "0";
+        }
+        const nextIndex = Math.min(fullText.length, currentIndex + charsThisFrame);
+        element.textContent = fullText.slice(0, nextIndex);
+        element.dataset.twIndex = String(nextIndex);
+        if (nextIndex >= fullText.length) {
+          element.dataset.twDone = "1";
+          typewriterQueue.delete(element);
+        }
+      }
+      if (typewriterQueue.size > 0) {
+        typewriterRaf = window.requestAnimationFrame(runTypewriterStep);
+      }
+    };
+    const enqueueTypewriter = (root: HTMLElement) => {
+      const targets = Array.from(root.querySelectorAll<HTMLElement>("[data-typewriter]"));
+      for (const target of targets) {
+        if (target.dataset.twDone === "1") continue;
+        typewriterQueue.add(target);
+      }
+      if (!typewriterRaf && typewriterQueue.size > 0) {
+        lastTypewriterTs = 0;
+        typewriterRaf = window.requestAnimationFrame(runTypewriterStep);
+      }
+    };
+
+    let lastScrollY = window.scrollY;
+    let hasUserScrolled = false;
+    const onScrollMark = () => {
+      hasUserScrolled = true;
+    };
+    window.addEventListener("scroll", onScrollMark, { passive: true });
     const observer = new IntersectionObserver(
       (entries) => {
+        const nextScrollY = window.scrollY;
+        const isScrollingDown = nextScrollY > lastScrollY;
+        lastScrollY = nextScrollY;
+
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
+            if (!hasUserScrolled || isScrollingDown) {
+              entry.target.classList.add("is-visible");
+              if (isScrollingDown) {
+                enqueueTypewriter(entry.target as HTMLElement);
+              }
+              observer.unobserve(entry.target);
+            }
           }
         }
       },
       {
-        threshold: 0.08,
-        rootMargin: "0px 0px -5% 0px",
+        threshold: 0.12,
+        rootMargin: "0px 0px -12% 0px",
       },
     );
 
@@ -580,6 +663,8 @@ export default function Home() {
 
     return () => {
       observer.disconnect();
+      window.removeEventListener("scroll", onScrollMark);
+      if (typewriterRaf) window.cancelAnimationFrame(typewriterRaf);
     };
   }, []);
 
@@ -587,6 +672,7 @@ export default function Home() {
     <div className="overflow-x-hidden bg-[#f8f8f8] text-[#0f172a]">
       <HeroSection
         onOrder={() => setModal("checkout")}
+        onOpenHowWeMakeVideo={() => setIsHeroVideoOpen(true)}
         heading={homeHeroJson.heading}
         leadLine1={homeHeroJson.leadLine1}
         leadLine2={homeHeroJson.leadLine2}
@@ -655,12 +741,19 @@ export default function Home() {
         withOverlay={globalOverlaysEnabled}
         onClose={() => setModal(null)}
       />
+      <HeroVideoModal
+        open={isHeroVideoOpen}
+        src={assetPath("/videos/how-we-make-bath-bombs.mp4")}
+        title="Как мы делаем бомбочки для ванн?"
+        onClose={() => setIsHeroVideoOpen(false)}
+      />
     </div>
   );
 }
 
 function HeroSection({
   onOrder,
+  onOpenHowWeMakeVideo,
   heading,
   leadLine1,
   leadLine2,
@@ -670,6 +763,7 @@ function HeroSection({
   backgroundVideo,
 }: Readonly<{
   onOrder: () => void;
+  onOpenHowWeMakeVideo: () => void;
   heading: string;
   leadLine1: string;
   leadLine2: string;
@@ -711,24 +805,115 @@ function HeroSection({
       ) : null}
       {globalOverlaysEnabled ? <div className="absolute inset-0 bg-black/55 sm:bg-black/25" /> : null}
       <div className="absolute left-1/2 top-[265px] hidden h-[572px] w-[64.3vw] max-w-[1234px] -translate-x-1/2 rounded-[385px] bg-black/[0.01] backdrop-blur-[5px] lg:block" />
-      <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-28 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">
-        <div className="max-w-[1234px]">
+      <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-28 text-center sm:px-5 sm:pt-48 lg:justify-start lg:px-[100px] lg:pt-[331px] lg:text-left">
+        <div className="max-w-[1234px] origin-top scale-[0.96] transform-gpu lg:origin-top-left lg:max-w-[860px] lg:scale-[0.97]">
           <h1 className="text-[34px] font-normal leading-[0.97] text-white [font-family:var(--font-educational)] min-[390px]:text-[40px] sm:text-7xl lg:text-[126px]">
-            {heading}
+            <span className="whitespace-nowrap">Послесловие&nbsp;к</span>
+            <br />
+            Вашему дню
           </h1>
-          <p className="mx-auto mt-4 max-w-[320px] text-[14px] font-medium leading-[1.5] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] sm:text-xl lg:max-w-none lg:text-[25px]">
-            <span className="block sm:inline">{leadLine1}</span>
-            <br className="hidden sm:block" />
-            <span className="block sm:inline">{leadLine2}</span>
+          <p className="mx-auto mt-4 max-w-[320px] text-[14px] font-medium leading-[1.5] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] sm:text-xl lg:mx-0 lg:max-w-[860px] lg:text-[25px]">
+            <span className="block">{leadLine1}</span>
+            <span className="block">{leadLine2}</span>
           </p>
-          <div className="mt-8 sm:mt-16">
+          <div className="mt-8 flex flex-col items-center gap-12 sm:mt-16 sm:flex-row sm:justify-center lg:items-start lg:justify-start">
             <DesignButton size="xl" variant="filled" onClick={onOrder}>
               {ctaLabel}
             </DesignButton>
+            <button
+              type="button"
+              onClick={onOpenHowWeMakeVideo}
+              className="group inline-flex items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+            >
+              <img
+                src={assetPath("/images/icons/how-we-make-play.png")}
+                alt=""
+                aria-hidden="true"
+                className="h-12 w-12 shrink-0 transition-transform duration-200 group-hover:scale-110 sm:h-14 sm:w-14 lg:h-16 lg:w-16"
+              />
+              <span className="w-[220px] text-[16px] font-normal leading-none text-white sm:w-[250px] sm:text-[18px] lg:w-[285px] lg:text-[24px]">
+                Как мы делаем бомбочки для ванн?
+              </span>
+            </button>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function HeroVideoModal({
+  open,
+  src,
+  title,
+  onClose,
+}: Readonly<{ open: boolean; src: string; title: string; onClose: () => void }>) {
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center px-3 py-3 sm:px-6 sm:py-6 ${
+        globalOverlaysEnabled ? "bg-black/60 backdrop-blur-sm" : "bg-black/40"
+      }`}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="relative w-full max-w-[1400px] overflow-hidden rounded-[22px] bg-[#0b1321] shadow-2xl sm:rounded-[36px] lg:rounded-[50px]"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Закрыть"
+          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/70 text-white transition hover:border-white hover:bg-white/10 sm:right-5 sm:top-5 sm:h-12 sm:w-12"
+        >
+          <CrossIcon />
+        </button>
+        <div className="grid">
+          <div className="flex items-center gap-3 px-5 pb-4 pt-5 text-white sm:px-8 sm:pb-6 sm:pt-7">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10">
+              <PlayIcon color="white" />
+            </span>
+            <p className="text-sm font-bold sm:text-base">{title}</p>
+          </div>
+          <div className="h-[62vh] w-full bg-black sm:h-[68vh] lg:h-[75vh]">
+            <video src={src} controls autoPlay className="h-full w-full object-contain" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PlayIcon({ color = "currentColor" }: Readonly<{ color?: string }>) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <path
+        d="M9 18V6l12 6-12 6Z"
+        fill={color}
+      />
+    </svg>
   );
 }
 
@@ -739,6 +924,7 @@ function ProcessSection({
   reverse,
   slides,
   button,
+  buttonHref,
   onOrder,
   index,
 }: Readonly<{
@@ -748,12 +934,13 @@ function ProcessSection({
   reverse: boolean;
   slides: GallerySlide[];
   button?: string;
+  buttonHref?: string;
   onOrder: () => void;
   index: number;
 }>) {
   return (
     <section data-scroll-pop className="relative bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]">
-      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white shadow-[0_5px_5px_rgba(255,93,93,0.1)] sm:rounded-[42px] lg:rounded-[70px]">
+      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white shadow-none sm:rounded-[42px] lg:rounded-[70px]">
         <div
           className={`pointer-events-none absolute inset-0 hidden lg:grid ${
             reverse ? "grid-cols-[1fr_323px]" : "grid-cols-[323px_1fr]"
@@ -793,7 +980,19 @@ function ProcessSection({
               </p>
               {button ? (
                 <div className="mt-8 lg:mt-16">
-                  <DesignButton onClick={onOrder}>{button}</DesignButton>
+                  {buttonHref ? (
+                    <a
+                      href={buttonHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-4 rounded-full border-2 border-[#e8c880] px-5 py-3 text-base font-bold tracking-[0.5px] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a] sm:px-6 lg:text-xl xl:text-2xl"
+                    >
+                      {button}
+                      <ArrowIcon />
+                    </a>
+                  ) : (
+                    <DesignButton onClick={onOrder}>{button}</DesignButton>
+                  )}
                 </div>
               ) : null}
             </div>
@@ -888,7 +1087,7 @@ function WhyUsSection({
     >
       {useBackgroundOverlay ? <div className="absolute inset-0 bg-black/35 sm:bg-white/10" /> : null}
       <div className="relative mx-auto max-w-[1456px]">
-        <SectionHeading kicker={kicker} title={title} centered light />
+        <SectionHeading kicker={kicker} title={title} centered light typewriter />
         <div className="mt-8 grid gap-7 sm:mt-12 lg:grid-cols-3 lg:gap-24">
           {reasons.map((reason) => (
             <article key={reason.title} className="text-center">
@@ -921,7 +1120,7 @@ function AboutSection({
           <div />
           <div className="bg-white mix-blend-lighten" />
         </div>
-        <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:gap-16 lg:p-12">
+        <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:min-h-[665px] lg:grid-cols-2 lg:items-start lg:gap-16 lg:p-12">
           <div className="max-w-[552px]">
             <SectionKicker>{kicker}</SectionKicker>
             <h2 className="mt-2 text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
@@ -1129,11 +1328,6 @@ function HomeModal({
   const header = getModalHeader(type, checkoutProduct.title || "Товар");
   const isCheckout = type === "checkout";
 
-  const handleCheckoutTabChange = (newTab: "personal" | "company") => {
-    onCheckoutTabChange(newTab);
-    setCheckoutStep(1);
-  };
-
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center px-2 py-2 sm:px-4 sm:py-6 ${
@@ -1168,44 +1362,37 @@ function HomeModal({
           </div>
           {isCheckout ? (
             <div className="mt-4 flex items-center justify-center gap-2 sm:mt-5 sm:gap-4">
-              <button
-                type="button"
-                title="Back to step 1"
-                onClick={() => { if (checkoutStep === 2) setCheckoutStep(1); }}
-                disabled={checkoutStep === 1}
-                className={`flex h-9 w-9 shrink-0 rotate-180 items-center justify-center rounded-full transition sm:h-10 sm:w-10 ${
-                  checkoutStep === 2
-                    ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
-                    : "cursor-default bg-[#d7d7d7] text-[#9a9b9c]"
-                }`}
-              >
-                <ArrowIcon size={18} />
-              </button>
-              <div className="grid w-full max-w-[560px] grid-cols-2 overflow-hidden rounded-full bg-[#d7d7d7]">
+              <div className="relative w-full max-w-[560px]">
                 <button
                   type="button"
-                  title="Order for personal use"
-                  onClick={() => handleCheckoutTabChange("personal")}
-                  className={`px-2 py-3 text-xs font-extrabold transition sm:text-sm ${
-                    checkoutState.tab === "personal"
-                      ? "rounded-full bg-[#e8c880] text-[#0f172a]"
-                      : "text-[#9a9b9c] hover:text-[#0f172a]"
+                  title="Back to step 1"
+                  onClick={() => {
+                    if (checkoutStep === 2) setCheckoutStep(1);
+                  }}
+                  disabled={checkoutStep === 1}
+                  className={`absolute left-0 top-1/2 flex h-9 w-9 -translate-y-1/2 rotate-180 items-center justify-center rounded-full transition sm:h-10 sm:w-10 ${
+                    checkoutStep === 2
+                      ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
+                      : "cursor-default bg-[#d7d7d7] text-[#9a9b9c]"
                   }`}
                 >
-                  Для себя
+                  <ArrowIcon size={18} />
                 </button>
-                <button
-                  type="button"
-                  title="Order for company"
-                  onClick={() => handleCheckoutTabChange("company")}
-                  className={`px-2 py-3 text-xs font-extrabold transition sm:text-sm ${
-                    checkoutState.tab === "company"
-                      ? "rounded-full bg-[#e8c880] text-[#0f172a]"
-                      : "text-[#9a9b9c] hover:text-[#0f172a]"
-                  }`}
-                >
-                  Для компании
-                </button>
+                <div className="mx-auto flex max-w-[420px] items-center justify-between pl-11 sm:pl-12">
+                  {[1, 2, 3].map((step, index) => (
+                    <div key={step} className="contents">
+                      <div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-extrabold sm:h-11 sm:w-11 sm:text-xl ${
+                          step === checkoutStep ? "bg-[#e8c880] text-[#0f172a]" : "bg-[#0f172a] text-white"
+                        }`}
+                        aria-current={step === checkoutStep ? "step" : undefined}
+                      >
+                        {step}
+                      </div>
+                      {index < 2 ? <div className="h-[2px] flex-1 bg-[#d7d7d7]" /> : null}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ) : null}
@@ -1498,27 +1685,25 @@ function CheckoutStep1Form({
         {hasStepErrors ? (
           <FormErrorSummary message="Проверьте контактные данные и детали заказа." />
         ) : null}
-        <div className="grid gap-3 sm:grid-cols-2">
-          <FormField
-            label="Имя"
-            placeholder="Ваше имя"
-            value={values.name}
-            error={errors.name}
-            required
-            autoComplete="name"
-            onChange={(v) => onFieldChange("name", v)}
-          />
-          <FormField
-            label="Телефон"
-            placeholder="+7 (000) 000-00-00"
-            value={values.phone}
-            error={errors.phone}
-            required
-            autoComplete="tel"
-            inputMode="tel"
-            onChange={(v) => onFieldChange("phone", v)}
-          />
-        </div>
+        <FormField
+          label="Имя"
+          placeholder="Ваше имя"
+          value={values.name}
+          error={errors.name}
+          required
+          autoComplete="name"
+          onChange={(v) => onFieldChange("name", v)}
+        />
+        <FormField
+          label="Телефон"
+          placeholder="+7 (000) 000-00-00"
+          value={values.phone}
+          error={errors.phone}
+          required
+          autoComplete="tel"
+          inputMode="tel"
+          onChange={(v) => onFieldChange("phone", v)}
+        />
         <FormField
           label="Email"
           placeholder="Ваш email"
@@ -1569,14 +1754,15 @@ function CheckoutStep1Form({
             >
               <option value="tg">Telegram</option>
               <option value="max">MAX</option>
+              <option value="phone">Телефон</option>
+              <option value="email">Почта</option>
             </select>
           </div>
           <FormField
-            label="Ник (TG)"
+            label="Данные для связи"
             placeholder="@username"
             value={values.contactHandle}
             error={errors.contactHandle}
-            required={values.contactMethod === "tg"}
             onChange={(v) => onFieldChange("contactHandle", v)}
           />
         </div>
@@ -1646,14 +1832,40 @@ function CheckoutStep2Form({
   isSubmitting: boolean;
   onSubmit: () => void;
 }>) {
+  const [artworkModalSrc, setArtworkModalSrc] = useState<string | null>(null);
   const sealColors = [
-    { id: "red", label: "Красный", color: "#b03020" },
-    { id: "green", label: "Зелёный", color: "#2e7d32" },
-    { id: "white", label: "Белый", color: "#e8e6e1" },
-    { id: "blue", label: "Синий", color: "#1565c0" },
+    { id: "red", label: "Красный", image: assetPath("/images/photos/seal-red.png") },
+    { id: "gold", label: "Золотой", image: assetPath("/images/photos/seal-gold.png") },
+    { id: "green", label: "Зелёный", image: assetPath("/images/photos/seal-green.png") },
+    { id: "blue", label: "Синий", image: assetPath("/images/photos/seal-blue.png") },
   ];
 
   const activeSeal = values.sealColor || "red";
+  const resolvedActiveSeal = sealColors.some((sc) => sc.id === activeSeal) ? activeSeal : "red";
+  const selectedArtist = values.artist === "spiritsveta" ? "spiritsveta" : "mortida";
+  const artistShowcase = {
+    mortida: {
+      label: "Mortida",
+      linkHref: "https://vk.ru/mortiidoo",
+      linkLabel: "vk.ru/mortiidoo",
+      works: [
+        assetPath("/images/photos/artist-mortida-1.png"),
+        assetPath("/images/photos/artist-mortida-2.png"),
+        assetPath("/images/photos/artist-mortida-3.png"),
+      ],
+    },
+    spiritsveta: {
+      label: "SpiritSveta",
+      linkHref: "https://t.me/SpiritSveta",
+      linkLabel: "t.me/SpiritSveta",
+      works: [
+        assetPath("/images/photos/artist-spiritsveta-1.png"),
+        assetPath("/images/photos/artist-spiritsveta-2.png"),
+        assetPath("/images/photos/artist-spiritsveta-3.png"),
+      ],
+    },
+  } as const;
+  const currentArtist = artistShowcase[selectedArtist];
 
   return (
     <div className="text-center sm:text-left">
@@ -1689,20 +1901,52 @@ function CheckoutStep2Form({
           <p className="text-base font-bold text-[#0f172a]">Выбор художника</p>
           <select
             title="Choose artist"
-            value={values.artist}
+            value={selectedArtist}
             onChange={(e) => onFieldChange("artist", e.target.value)}
             className="mt-2 w-full bg-transparent text-sm text-[rgba(101,101,101,0.7)] outline-none"
           >
-            <option value="">Художник 1</option>
-            <option value="artist2">Художник 2</option>
-            <option value="artist3">Художник 3</option>
+            <option value="mortida">Mortida</option>
+            <option value="spiritsveta">SpiritSveta</option>
           </select>
+
+          <div className="mt-3 grid grid-cols-3 justify-items-center gap-2 sm:justify-items-start sm:gap-4">
+            {currentArtist.works.map((src, index) => (
+              <button
+                key={`${selectedArtist}-${index}`}
+                type="button"
+                onClick={() => setArtworkModalSrc(src)}
+                className="group relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-white shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
+                title="Открыть изображение"
+              >
+                <div className="h-full w-full bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03]" style={{ backgroundImage: `url(${src})` }} />
+                <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/10" />
+                <div className="pointer-events-none absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-white/90 opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M10 18a8 8 0 1 1 5.3-14 8 8 0 0 1-5.3 14Z" stroke="#0f172a" strokeWidth="2" />
+                    <path d="M21 21l-4.2-4.2" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M10 8v4m-2-2h4" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-sm sm:justify-start">
+            <a
+              href={currentArtist.linkHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold underline underline-offset-2 text-[#0f172a]"
+            >
+              {currentArtist.label}: {currentArtist.linkLabel}
+            </a>
+          </div>
         </div>
 
         <div className="rounded bg-[#f8f8f8] p-3.5 text-center sm:p-4 sm:text-left">
           <p className="text-base font-bold text-[#0f172a]">Цвет сургутной печати</p>
           <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">Фото не является эталонным продуктом*</p>
-          <div className="mt-3 grid grid-cols-4 justify-items-center gap-3 sm:flex sm:justify-start sm:gap-4">
+          <div className="mt-3 grid grid-cols-4 justify-items-center gap-2 sm:justify-items-start sm:gap-4">
             {sealColors.map((sc) => (
               <button
                 key={sc.id}
@@ -1712,14 +1956,14 @@ function CheckoutStep2Form({
                 className="flex flex-col items-center gap-2"
               >
                 <div
-                  className={`h-14 w-14 rounded transition sm:h-[80px] sm:w-[80px] ${
-                    activeSeal === sc.id
+                  className={`h-12 w-12 rounded bg-cover bg-center shadow-sm transition sm:h-[72px] sm:w-[72px] ${
+                    resolvedActiveSeal === sc.id
                       ? "outline outline-[3px] outline-offset-2 outline-[#e8c880]"
                       : "opacity-60 hover:opacity-90"
                   }`}
-                  style={{ backgroundColor: sc.color }}
+                  style={{ backgroundImage: `url(${sc.image})` }}
                 />
-                <span className={`text-xs ${activeSeal === sc.id ? "font-bold text-[#0f172a]" : "text-[rgba(0,0,0,0.5)]"}`}>
+                <span className={`text-xs ${resolvedActiveSeal === sc.id ? "font-bold text-[#0f172a]" : "text-[rgba(0,0,0,0.5)]"}`}>
                   {sc.label}
                 </span>
               </button>
@@ -1794,6 +2038,35 @@ function CheckoutStep2Form({
           </div>
         ) : null}
       </div>
+
+      {artworkModalSrc ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-3 py-3 backdrop-blur-sm sm:px-6 sm:py-6"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setArtworkModalSrc(null);
+          }}
+        >
+          <div className="relative w-full max-w-[1100px] overflow-hidden rounded-[22px] bg-[#0b1321] shadow-2xl sm:rounded-[36px]">
+            <button
+              type="button"
+              onClick={() => setArtworkModalSrc(null)}
+              aria-label="Закрыть"
+              className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/70 text-white transition hover:border-white hover:bg-white/10 sm:right-5 sm:top-5 sm:h-12 sm:w-12"
+            >
+              <CrossIcon />
+            </button>
+            <div className="grid">
+              <div className="grid place-items-center p-3 sm:p-5">
+                <img
+                  src={artworkModalSrc}
+                  alt=""
+                  className="max-h-[86vh] w-auto max-w-full rounded-[14px] bg-transparent sm:rounded-[18px]"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -2174,16 +2447,19 @@ function SectionHeading({
   title,
   centered = false,
   light = false,
+  typewriter = false,
 }: Readonly<{
   kicker?: string;
   title: string;
   centered?: boolean;
   light?: boolean;
+  typewriter?: boolean;
 }>) {
   return (
     <div className={`${centered ? "mx-auto text-center" : ""} max-w-[780px]`}>
       {kicker ? <SectionKicker>{kicker}</SectionKicker> : null}
       <h2
+        data-typewriter={typewriter ? true : undefined}
         className={`text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl ${
           light ? "text-white" : "text-[#0f172a]"
         }`}
