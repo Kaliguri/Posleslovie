@@ -81,6 +81,7 @@ const initialCheckoutState: CheckoutState = {
 
 const amoCRMWorkerUrl = "https://posleslovie-amocrm.kailgurika.workers.dev/";
 const siteBehavior = siteBehaviorJson;
+const globalOverlaysEnabled = Boolean(siteBehavior.enableGlobalOverlays);
 
 const assets = {
   starRow: assetPath("/images/photos/stars.svg"),
@@ -125,6 +126,7 @@ const reasons = homeWhyUsJson.reasons.map((r) => ({
   ...r,
   icon: assetPath(r.icon),
 }));
+const useWhyUsBackgroundOverlay = globalOverlaysEnabled;
 
 const reviews = homeReviewsJson.items.map((r) => ({
   ...r,
@@ -617,6 +619,7 @@ export default function Home() {
         kicker={homeWhyUsJson.kicker}
         title={homeWhyUsJson.title}
         backgroundImage={assetPath(homeWhyUsJson.backgroundImage)}
+        useBackgroundOverlay={useWhyUsBackgroundOverlay}
         reasons={reasons}
       />
       <AboutSection
@@ -646,6 +649,7 @@ export default function Home() {
         onCheckoutFieldChange={updateField}
         onCheckoutQuantityChange={updateQuantity}
         onCheckoutTabChange={updateTab}
+        withOverlay={globalOverlaysEnabled}
         onClose={() => setModal(null)}
       />
     </div>
@@ -699,10 +703,10 @@ function HeroSection({
           onLoadedData={() => setIsVideoReady(true)}
           onCanPlay={() => setIsVideoReady(true)}
         >
-          <source src={backgroundVideo} />
+          <source src={backgroundVideo} type="video/webm" />
         </video>
       ) : null}
-      <div className="absolute inset-0 bg-black/55 sm:bg-black/25" />
+      {globalOverlaysEnabled ? <div className="absolute inset-0 bg-black/55 sm:bg-black/25" /> : null}
       <div className="absolute left-1/2 top-[265px] hidden h-[572px] w-[64.3vw] max-w-[1234px] -translate-x-1/2 rounded-[385px] bg-black/[0.01] backdrop-blur-[5px] lg:block" />
       <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-28 text-center sm:px-5 sm:pt-48 lg:px-[100px] lg:pt-[355px]">
         <div className="max-w-[1234px]">
@@ -864,11 +868,13 @@ function WhyUsSection({
   kicker,
   title,
   backgroundImage,
+  useBackgroundOverlay,
   reasons,
 }: Readonly<{
   kicker: string;
   title: string;
   backgroundImage: string;
+  useBackgroundOverlay: boolean;
   reasons: { title: string; description: string; icon: string }[];
 }>) {
   return (
@@ -877,7 +883,7 @@ function WhyUsSection({
       className="relative overflow-hidden bg-cover bg-center px-4 py-12 text-white sm:px-5 sm:py-16 lg:px-[235px] lg:py-20"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <div className="absolute inset-0 bg-black/35 sm:bg-white/10" />
+      {useBackgroundOverlay ? <div className="absolute inset-0 bg-black/35 sm:bg-white/10" /> : null}
       <div className="relative mx-auto max-w-[1456px]">
         <SectionHeading kicker={kicker} title={title} centered light />
         <div className="mt-8 grid gap-7 sm:mt-12 lg:grid-cols-3 lg:gap-24">
@@ -1078,6 +1084,7 @@ function HomeModal({
   onCheckoutFieldChange,
   onCheckoutQuantityChange,
   onCheckoutTabChange,
+  withOverlay,
   onClose,
 }: Readonly<{
   type: ModalType;
@@ -1086,6 +1093,7 @@ function HomeModal({
   onCheckoutFieldChange: (field: CheckoutField, value: string) => void;
   onCheckoutQuantityChange: (quantity: number) => void;
   onCheckoutTabChange: (tab: "personal" | "company") => void;
+  withOverlay: boolean;
   onClose: () => void;
 }>) {
   const [checkoutStep, setCheckoutStep] = useState<1 | 2>(1);
@@ -1125,7 +1133,9 @@ function HomeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-2 py-2 backdrop-blur-sm sm:px-4 sm:py-6"
+      className={`fixed inset-0 z-50 flex items-center justify-center px-2 py-2 sm:px-4 sm:py-6 ${
+        withOverlay ? "bg-black/60 backdrop-blur-sm" : "bg-transparent"
+      }`}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();

@@ -11,8 +11,6 @@ media_library:
   config:
     folder_support: true
 
-locale: ru
-
 collections:
   - name: site
     label: Сайт - общие настройки
@@ -38,6 +36,13 @@ collections:
                 widget: select
                 options: ["VK", "TG", "MAX"]
               - { name: href, label: Ссылка, widget: string, pattern: ["^https?://", "Ссылка должна начинаться с http:// или https://"] }
+              - name: icon
+                label: Иконка
+                widget: image
+                required: false
+                media_folder: public/images/social
+                public_folder: /images/social
+                hint: "PNG/SVG. Если поле пустое, используется стандартная иконка сети."
 
       - name: legal_documents
         label: 02. Юридические документы (PDF)
@@ -81,6 +86,7 @@ collections:
         file: content/site-behavior.json
         fields:
           - { name: enableScrollAnimations, label: Включить анимацию блоков при прокрутке, widget: boolean, default: true, hint: "Если выключить, секции будут появляться без анимации." }
+          - { name: enableGlobalOverlays, label: Включить затемняющие слои на сайте, widget: boolean, default: false, hint: "Глобально управляет затемнением фоновых изображений и затемнением подложек меню/модалок." }
 
       - name: cms_quick_start
         label: 98. Как пользоваться CMS - быстрый старт

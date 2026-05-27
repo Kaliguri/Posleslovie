@@ -1,3 +1,4 @@
 {
-  "enableScrollAnimations": true
+  "enableScrollAnimations": true,
+  "enableGlobalOverlays": false
 }

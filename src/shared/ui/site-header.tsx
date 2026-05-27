@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { siteConfig } from "@/shared/config/site";
+import siteBehaviorJson from "../../../content/site-behavior.json";
 
 const navigationItems = [
   { label: "Бомбочки", type: "section", target: "bombs" },
@@ -19,18 +20,31 @@ const socialIconPaths: Record<(typeof socialOrder)[number], string> = {
   MAX: "/images/social/max-round.svg",
 };
 const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
+const globalOverlaysEnabled = Boolean(siteBehaviorJson.enableGlobalOverlays);
 
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const socialsByLabel = new Map(
-    siteConfig.socials.map((social) => [social.label.trim().toUpperCase(), social.href]),
+  const socialConfigByLabel = new Map(
+    siteConfig.socials.map((social) => [
+      social.label.trim().toUpperCase(),
+      { href: social.href, icon: social.icon },
+    ]),
   );
-  const socialLinks = socialOrder
-    .map((label) => ({ label, href: socialsByLabel.get(label) }))
-    .filter((social): social is { label: (typeof socialOrder)[number]; href: string } =>
-      Boolean(social.href),
-    );
+  const socialLinks = socialOrder.flatMap((label) => {
+    const config = socialConfigByLabel.get(label);
+    if (!config?.href) {
+      return [];
+    }
+
+    return [
+      {
+        label,
+        href: config.href,
+        icon: config.icon || socialIconPaths[label],
+      },
+    ];
+  });
 
   useEffect(() => {
     if (!isMobileMenuOpen) {
@@ -111,7 +125,12 @@ export function SiteHeader() {
             </Link>
             <div className="ml-auto hidden items-end gap-3 pb-[14px] lg:flex">
               {socialLinks.map((social) => (
-                <SocialIconButton key={social.label} label={social.label} href={social.href} />
+                <SocialIconButton
+                  key={social.label}
+                  label={social.label}
+                  href={social.href}
+                  icon={social.icon}
+                />
               ))}
               <a
                 href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
@@ -137,7 +156,9 @@ export function SiteHeader() {
       {isMobileMenuOpen ? (
         <div
           id="mobile-navigation"
-          className="fixed inset-0 z-40 bg-[#102038]/95 px-5 pb-8 pt-24 text-white backdrop-blur-md lg:hidden"
+          className={`fixed inset-0 z-40 px-5 pb-8 pt-24 text-white lg:hidden ${
+            globalOverlaysEnabled ? "bg-[#102038]/95 backdrop-blur-md" : "bg-[#102038]"
+          }`}
         >
           <nav className="mx-auto flex max-w-sm flex-col gap-3" aria-label="Мобильная навигация">
             {navigationItems.map((item) => (
@@ -168,7 +189,12 @@ export function SiteHeader() {
             </a>
             <div className="mt-2 flex items-center justify-center gap-3">
               {socialLinks.map((social) => (
-                <SocialIconButton key={`mobile-${social.label}`} label={social.label} href={social.href} />
+                <SocialIconButton
+                  key={`mobile-${social.label}`}
+                  label={social.label}
+                  href={social.href}
+                  icon={social.icon}
+                />
               ))}
             </div>
           </nav>
@@ -223,9 +249,11 @@ function HeaderPillText({ children }: Readonly<{ children: React.ReactNode }>) {
 function SocialIconButton({
   label,
   href,
+  icon,
 }: Readonly<{
   label: "VK" | "TG" | "MAX";
   href: string;
+  icon: string;
 }>) {
   return (
     <a
@@ -236,7 +264,7 @@ function SocialIconButton({
       className="flex h-11 w-11 items-center justify-center rounded-full transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
       <img
-        src={assetPath(socialIconPaths[label])}
+        src={assetPath(icon)}
         alt={label}
         className="h-11 w-11 rounded-full object-cover"
       />

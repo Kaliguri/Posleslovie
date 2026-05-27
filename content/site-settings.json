@@ -4,11 +4,20 @@
   "phone": "+7 (978) 673-47-01",
   "email": "Posle.Slovie@yandex.ru",
   "socials": [
-    { "label": "VK", "href": "https://vk.ru/club164435206" },
-    { "label": "TG", "href": "https://t.me/PolinaSif" },
+    {
+      "label": "VK",
+      "href": "https://vk.ru/club164435206",
+      "icon": "/images/social/vk-round.svg"
+    },
+    {
+      "label": "TG",
+      "href": "https://t.me/PolinaSif",
+      "icon": "/images/social/tg-round.svg"
+    },
     {
       "label": "MAX",
-      "href": "https://max.ru/u/f9LHodD0cOL7ltaB7_IibnM_ktW8ioDtyIOGYzpCoSBKTDcZLByFh6WfXF0"
+      "href": "https://max.ru/u/f9LHodD0cOL7ltaB7_IibnM_ktW8ioDtyIOGYzpCoSBKTDcZLByFh6WfXF0",
+      "icon": "/images/social/max-round.svg"
     }
   ]
 }
