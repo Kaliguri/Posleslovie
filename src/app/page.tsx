@@ -54,7 +54,10 @@ type AmoCRMCheckoutPayload = CheckoutState & {
   logoFile?: CheckoutLogoFile | null;
 };
 
-const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
+const assetPath = (path: string) => {
+  const normalized = path && !path.startsWith("/") ? `/${path}` : path;
+  return `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${normalized}`;
+};
 const checkoutStorageKey = "posleslovie:checkout-state";
 const maxLogoFileSize = 3 * 1024 * 1024;
 const normalizedRussianCities = new Map(

@@ -19,7 +19,10 @@ const socialIconPaths: Record<(typeof socialOrder)[number], string> = {
   TG: "/images/social/tg-round.svg",
   MAX: "/images/social/max-round.svg",
 };
-const assetPath = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
+const assetPath = (path: string) => {
+  const normalized = path && !path.startsWith("/") ? `/${path}` : path;
+  return `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${normalized}`;
+};
 const globalOverlaysEnabled = Boolean(siteBehaviorJson.enableGlobalOverlays);
 
 export function SiteHeader() {
