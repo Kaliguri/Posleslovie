@@ -1,4 +1,4 @@
-const AMO_CRM_BASE_URL = "https://kailgurika.amocrm.ru";
+const DEFAULT_AMO_CRM_BASE_URL = "https://kailgurika.amocrm.ru";
 const ALLOWED_ORIGIN = "https://posleslovie.online";
 const PRODUCT_PRICE = 999;
 const MAX_LOGO_FILE_SIZE = 3 * 1024 * 1024;
@@ -34,6 +34,27 @@ function getContactMethodLabel(method) {
 function addLineIfValue(lines, label, value) {
   if (value) {
     lines.push(`${label}: ${value}`);
+  }
+}
+
+function resolveAmoCRMBaseUrl(env) {
+  const configuredValue = env.AmoBaseUrl?.trim();
+
+  if (!configuredValue) {
+    return DEFAULT_AMO_CRM_BASE_URL;
+  }
+
+  const withProtocol = /^https?:\/\//i.test(configuredValue)
+    ? configuredValue
+    : `https://${configuredValue}`;
+
+  try {
+    const parsed = new URL(withProtocol);
+    return parsed.origin;
+  } catch {
+    throw new Error(
+      `AmoBaseUrl is invalid: "${configuredValue}". Expected value like "https://example.amocrm.ru".`,
+    );
   }
 }
 
@@ -82,7 +103,8 @@ function buildOrderNote({ tab, quantity, total, formValues }) {
 }
 
 async function amoRequest(path, token, body, options = {}) {
-  const response = await fetch(`${options.baseUrl ?? AMO_CRM_BASE_URL}${path}`, {
+  const requestBaseUrl = options.baseUrl ?? options.defaultBaseUrl ?? DEFAULT_AMO_CRM_BASE_URL;
+  const response = await fetch(`${requestBaseUrl}${path}`, {
     method: options.method ?? "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -93,17 +115,32 @@ async function amoRequest(path, token, body, options = {}) {
   });
 
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  let data = null;
+
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = null;
+    }
+  }
 
   if (!response.ok) {
     throw new Error(`AmoCRM ${path} failed with ${response.status}: ${text}`);
   }
 
+  if (text && data === null) {
+    throw new Error(`AmoCRM ${path} returned a non-JSON response: ${text}`);
+  }
+
   return data;
 }
 
-async function getAmoCRMDriveUrl(token) {
-  const account = await amoRequest("/api/v4/account?with=drive_url", token, null, { method: "GET" });
+async function getAmoCRMDriveUrl(token, amoBaseUrl) {
+  const account = await amoRequest("/api/v4/account?with=drive_url", token, null, {
+    method: "GET",
+    defaultBaseUrl: amoBaseUrl,
+  });
   const driveUrl = account?.drive_url ?? account?._links?.drive_url?.href;
 
   if (!driveUrl) {
@@ -142,10 +179,10 @@ function validateLogoFile(logoFile) {
   }
 }
 
-async function uploadLogoFileToAmoCRM(logoFile, token) {
+async function uploadLogoFileToAmoCRM(logoFile, token, amoBaseUrl) {
   validateLogoFile(logoFile);
 
-  const driveUrl = await getAmoCRMDriveUrl(token);
+  const driveUrl = await getAmoCRMDriveUrl(token, amoBaseUrl);
   const session = await amoRequest(
     "/v1.0/sessions",
     token,
@@ -174,10 +211,22 @@ async function uploadLogoFileToAmoCRM(logoFile, token) {
       body: chunk,
     });
     const text = await response.text();
-    const data = text ? JSON.parse(text) : null;
+    let data = null;
+
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
+    }
 
     if (!response.ok) {
       throw new Error(`AmoCRM file upload failed with ${response.status}: ${text}`);
+    }
+
+    if (text && data === null) {
+      throw new Error(`AmoCRM file upload returned a non-JSON response: ${text}`);
     }
 
     if (data?.uuid) {
@@ -202,7 +251,7 @@ function getLeadId(createdLeadResponse) {
   return createdLeadResponse?._embedded?.leads?.[0]?.id ?? createdLeadResponse?.id;
 }
 
-async function createAmoCRMCheckout(payload, token) {
+async function createAmoCRMCheckout(payload, token, amoBaseUrl) {
   const { tab, quantity, total, formValues, logoFile } = payload;
   const isCompanyOrder = tab === "company";
   const contactFields = [
@@ -220,22 +269,27 @@ async function createAmoCRMCheckout(payload, token) {
       : null,
   ].filter(Boolean);
 
-  const createdLeadResponse = await amoRequest("/api/v4/leads/complex", token, [
-    {
-      name: `${isCompanyOrder ? "B2B" : "B2C"} заказ с сайта: Бомбочка для ванны x${quantity}${
-        isCompanyOrder && formValues.company ? `, ${formValues.company}` : ""
-      }`,
-      price: total,
-      _embedded: {
-        contacts: [
-          {
-            first_name: formValues.name || "Клиент с сайта",
-            custom_fields_values: contactFields,
-          },
-        ],
+  const createdLeadResponse = await amoRequest(
+    "/api/v4/leads/complex",
+    token,
+    [
+      {
+        name: `${isCompanyOrder ? "B2B" : "B2C"} заказ с сайта: Бомбочка для ванны x${quantity}${
+          isCompanyOrder && formValues.company ? `, ${formValues.company}` : ""
+        }`,
+        price: total,
+        _embedded: {
+          contacts: [
+            {
+              first_name: formValues.name || "Клиент с сайта",
+              custom_fields_values: contactFields,
+            },
+          ],
+        },
       },
-    },
-  ]);
+    ],
+    { defaultBaseUrl: amoBaseUrl },
+  );
 
   const leadId = getLeadId(createdLeadResponse);
 
@@ -243,27 +297,37 @@ async function createAmoCRMCheckout(payload, token) {
     return { leadId: null, warning: "Lead created, but lead id was not found in AmoCRM response." };
   }
 
-  await amoRequest(`/api/v4/leads/${leadId}/notes`, token, [
-    {
-      note_type: "common",
-      params: {
-        text: buildOrderNote(payload),
-      },
-    },
-  ]);
-
-  if (logoFile) {
-    const uploadedFile = await uploadLogoFileToAmoCRM(logoFile, token);
-    await amoRequest(`/api/v4/leads/${leadId}/notes`, token, [
+  await amoRequest(
+    `/api/v4/leads/${leadId}/notes`,
+    token,
+    [
       {
-        note_type: "attachment",
+        note_type: "common",
         params: {
-          file_uuid: uploadedFile.uuid,
-          version_uuid: uploadedFile.version_uuid,
-          file_name: logoFile.name,
+          text: buildOrderNote(payload),
         },
       },
-    ]);
+    ],
+    { defaultBaseUrl: amoBaseUrl },
+  );
+
+  if (logoFile) {
+    const uploadedFile = await uploadLogoFileToAmoCRM(logoFile, token, amoBaseUrl);
+    await amoRequest(
+      `/api/v4/leads/${leadId}/notes`,
+      token,
+      [
+        {
+          note_type: "attachment",
+          params: {
+            file_uuid: uploadedFile.uuid,
+            version_uuid: uploadedFile.version_uuid,
+            file_name: logoFile.name,
+          },
+        },
+      ],
+      { defaultBaseUrl: amoBaseUrl },
+    );
   }
 
   return { leadId };
@@ -289,13 +353,14 @@ const worker = {
     }
 
     try {
+      const amoBaseUrl = resolveAmoCRMBaseUrl(env);
       const payload = await request.json();
 
       if (!payload?.formValues || !payload?.quantity || !payload?.total) {
         return jsonResponse({ error: "Invalid checkout payload" }, 400, origin);
       }
 
-      const result = await createAmoCRMCheckout(payload, env.AmoToken);
+      const result = await createAmoCRMCheckout(payload, env.AmoToken, amoBaseUrl);
       return jsonResponse({ ok: true, ...result }, 200, origin);
     } catch (error) {
       console.error(error);
