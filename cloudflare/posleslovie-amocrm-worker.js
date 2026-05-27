@@ -1,5 +1,5 @@
 const AMO_CRM_BASE_URL = "https://kailgurika.amocrm.ru";
-const ALLOWED_ORIGIN = "https://kaliguri.github.io";
+const ALLOWED_ORIGIN = "https://posleslovie.online";
 const PRODUCT_PRICE = 999;
 const MAX_LOGO_FILE_SIZE = 3 * 1024 * 1024;
 
