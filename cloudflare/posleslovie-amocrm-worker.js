@@ -2,7 +2,6 @@ const AMO_CRM_BASE_URL = "https://kailgurika.amocrm.ru";
 const ALLOWED_ORIGIN = "https://posleslovie.online";
 const PRODUCT_PRICE = 999;
 const MAX_LOGO_FILE_SIZE = 3 * 1024 * 1024;
-const AMO_OAUTH_TOKEN_URL = `${AMO_CRM_BASE_URL}/oauth2/access_token`;
 
 function corsHeaders(origin) {
   return {
@@ -101,47 +100,6 @@ async function amoRequest(path, token, body, options = {}) {
   }
 
   return data;
-}
-
-async function getAmoOAuthAccessToken(env) {
-  if (!env.AmoClientId || !env.AmoClientSecret || !env.AmoRefreshToken) {
-    throw new Error(
-      "AmoCRM OAuth secrets are not configured. Expected AmoClientId, AmoClientSecret and AmoRefreshToken.",
-    );
-  }
-
-  const response = await fetch(AMO_OAUTH_TOKEN_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      client_id: env.AmoClientId,
-      client_secret: env.AmoClientSecret,
-      grant_type: "refresh_token",
-      refresh_token: env.AmoRefreshToken,
-    }),
-  });
-
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
-
-  if (!response.ok) {
-    throw new Error(`AmoCRM token refresh failed with ${response.status}: ${text}`);
-  }
-
-  if (!data?.access_token) {
-    throw new Error("AmoCRM token refresh response does not contain access_token.");
-  }
-
-  if (data?.refresh_token && data.refresh_token !== env.AmoRefreshToken) {
-    console.warn(
-      "AmoCRM returned a new refresh token. Update AmoRefreshToken secret in Cloudflare to avoid future auth issues.",
-    );
-  }
-
-  return data.access_token;
 }
 
 async function getAmoCRMDriveUrl(token) {
@@ -326,6 +284,10 @@ const worker = {
       return jsonResponse({ error: "Method not allowed" }, 405, origin);
     }
 
+    if (!env.AmoToken) {
+      return jsonResponse({ error: "AmoToken secret is not configured" }, 500, origin);
+    }
+
     try {
       const payload = await request.json();
 
@@ -333,8 +295,7 @@ const worker = {
         return jsonResponse({ error: "Invalid checkout payload" }, 400, origin);
       }
 
-      const accessToken = await getAmoOAuthAccessToken(env);
-      const result = await createAmoCRMCheckout(payload, accessToken);
+      const result = await createAmoCRMCheckout(payload, env.AmoToken);
       return jsonResponse({ ok: true, ...result }, 200, origin);
     } catch (error) {
       console.error(error);
