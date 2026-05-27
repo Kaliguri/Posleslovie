@@ -669,7 +669,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="overflow-x-hidden bg-[#f8f8f8] text-[#0f172a]">
+    <div className="bg-[#f8f8f8] text-[#0f172a]">
       <HeroSection
         onOrder={() => setModal("checkout")}
         onOpenHowWeMakeVideo={() => setIsHeroVideoOpen(true)}
