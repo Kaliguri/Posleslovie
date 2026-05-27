@@ -7,17 +7,17 @@
     {
       "label": "VK",
       "href": "https://vk.ru/club164435206",
-      "icon": "/images/social/vk-round.svg"
+      "icon": "/images/icon_vk.svg"
     },
     {
       "label": "TG",
       "href": "https://t.me/PolinaSif",
-      "icon": "/images/social/tg-round.svg"
+      "icon": "/images/icon_telega.svg"
     },
     {
       "label": "MAX",
       "href": "https://max.ru/u/f9LHodD0cOL7ltaB7_IibnM_ktW8ioDtyIOGYzpCoSBKTDcZLByFh6WfXF0",
-      "icon": "/images/social/max-round.svg"
+      "icon": "/images/icon_max.svg"
     }
   ]
 }
