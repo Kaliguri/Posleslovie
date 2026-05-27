@@ -142,7 +142,7 @@ export function SiteHeader() {
             </Link>
             <a
               href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-              className="ml-auto hidden items-center text-base font-medium leading-[1.1] [font-family:var(--font-inter)] lg:flex"
+              className="ml-auto hidden items-center text-lg font-medium leading-[1.1] [font-family:var(--font-inter)] lg:flex"
             >
               {siteConfig.phone}
             </a>
@@ -268,12 +268,12 @@ function SocialIconButton({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="flex h-8 w-8 items-center justify-center rounded-full transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
+      className="flex h-9 w-9 items-center justify-center rounded-full transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
       <img
         src={assetPath(icon)}
         alt={label}
-        className="h-8 w-8 rounded-full object-cover"
+        className="h-9 w-9 rounded-full object-cover"
       />
     </a>
   );

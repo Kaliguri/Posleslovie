@@ -4,9 +4,10 @@
   "description": "Наши партнеры собирают лаванду и изготавливают масло в ручную. Букет из 50 сортов лаванды в каждой бомбочке.",
   "reverse": true,
   "slides": [
-    { "image": "/images/photos/product-2.svg", "alt": "Лавандовая бомбочка для ванны" },
-    { "image": "/images/photos/product-1.svg", "alt": "Натуральные масла и сухоцветы" },
-    { "image": "/images/photos/product-3.svg", "alt": "Временное изображение лавандового блока" }
+    { "image": "/images/photos/lavender-1.png", "alt": "Лавандовое поле Послесловие" },
+    { "image": "/images/photos/lavender-2.png", "alt": "Сбор лаванды в поле" },
+    { "image": "/images/photos/lavender-3.png", "alt": "Лаванда крупным планом" }
   ],
-  "button": ""
+  "button": "Посмотреть больше",
+  "buttonHref": "https://t.me/akmesoap"
 }
