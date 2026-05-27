@@ -5,5 +5,5 @@
   "ctaLabel": "Оформить заказ",
   "backgroundMediaType": "video",
   "backgroundImage": "/images/photos/hero-video-poster.png",
-  "backgroundVideo": "/images/videos/hero-cover.webm"
+  "backgroundVideo": "images/videos/background_video_v5_1080p_optimized.webm"
 }
