@@ -47,7 +47,7 @@ const homeHero = parseWithFallback(
   () => homeHeroSchema.parse(homeHeroJson),
   () =>
     homeHeroSchema.parse({
-      heading: "Бомбочки",
+      heading: "Послесловие к вашему дню",
       leadLine1: "Послесловие к вашему ритуалу ухода",
       leadLine2: "Ручная работа в Севастополе",
       ctaLabel: "Оформить заказ",

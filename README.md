@@ -121,15 +121,15 @@ src/
     └── config/               # typed config backed by content JSON
 ```
 
-**How to demo project**
+**Демонстрация проекта**
 
 1. `npm install`
-2. `npm run dev` and open [http://localhost:3000](http://localhost:3000)
-3. Show key scenarios:
-   - hero CTA -> checkout modal opens
-   - mobile menu -> checkout action
-   - partners modal -> lead submit flow
-4. Before client demo run:
+2. `npm run dev` и открыть [http://localhost:3000](http://localhost:3000)
+3. Ключевые сценарии:
+   - CTA на Hero -> открывается модал оформления заказа
+   - Мобильное меню -> кнопка оформления заказа
+   - Модал «Для партнеров» -> форма отправки заявки
+4. Перед демо клиенту:
    - `npm run check:full`
 
 > Требуется Node.js 22+. Checkout и CMS-авторизация работают через внешние Cloudflare Workers.
@@ -137,8 +137,7 @@ src/
 **Деплой:** push в `main` -> GitHub Actions -> `out/` на GitHub Pages.  
 **Настройка Pages:** `Settings -> Pages -> GitHub Actions`.
 
-**Контент:** [posleslovie.online/admin/](https://posleslovie.online/admin/) -> GitHub -> Edit -> Publish (~3 мин).  
-**Документация:** [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md).
+**Контент:** [posleslovie.online/admin/](https://posleslovie.online/admin/) -> GitHub -> Edit -> Publish (~3 мин).
 
 **Интеграции**
 
@@ -149,11 +148,11 @@ src/
 
 Секреты (токены AmoCRM, OAuth) хранятся только в Cloudflare Dashboard, не в репозитории.
 
-**Known limitations (for transparent expectation management)**
+**Известные ограничения**
 
-- Modal state uses a lightweight custom event bus (`posleslovie:open-modal`) instead of router-based state.
-- Some UI blocks still use native `<img>` (acceptable for current static-export scope, planned gradual optimization path).
-- `cloudflare/` worker lint warnings for anonymous default export are non-blocking.
+- Состояние модалок управляется лёгкой шиной событий (`posleslovie:open-modal`) вместо router-based state.
+- Часть UI-блоков использует нативный `<img>` (допустимо для static export, постепенная оптимизация запланирована).
+- Lint-предупреждения в `cloudflare/` для анонимного default export не блокируют сборку.
 
 </details>
 
@@ -246,8 +245,7 @@ src/
 **Deployment:** push to `main` -> GitHub Actions -> `out/` to GitHub Pages.  
 **Pages setup:** `Settings -> Pages -> GitHub Actions`.
 
-**Content:** [posleslovie.online/admin/](https://posleslovie.online/admin/) -> GitHub -> Edit -> Publish (~3 min).  
-**Docs:** [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md).
+**Content:** [posleslovie.online/admin/](https://posleslovie.online/admin/) -> GitHub -> Edit -> Publish (~3 min).
 
 **Integrations**
 

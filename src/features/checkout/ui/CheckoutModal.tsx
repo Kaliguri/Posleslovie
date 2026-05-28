@@ -30,7 +30,6 @@ import { LeadForm } from "@/features/checkout/ui/checkout-modal/LeadForm";
 import { LegalDocumentModal } from "@/features/checkout/ui/checkout-modal/LegalDocumentModal";
 
 export type ModalType =
-  | "delivery"
   | "partners"
   | "contacts"
   | "checkout"
@@ -72,10 +71,6 @@ function getModalHeader(type: Exclude<ModalType, null>, checkoutTitle: string) {
   }
 
   const headers = {
-    delivery: {
-      kicker: "Оплата и доставка",
-      title: "Условия оплаты и доставки",
-    },
     partners: {
       kicker: "Партнерство",
       title: "Хотите стать нашим партнером?",
@@ -187,7 +182,6 @@ export function HomeModal({
           ) : null}
         </div>
         <div className="modal-scroll min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-5 sm:px-6 sm:pt-8 lg:px-12 lg:pb-4">
-          {type === "delivery" ? <DeliveryModal /> : null}
           {type === "partners" ? <PartnersModal /> : null}
           {type === "contacts" ? <ContactsModal /> : null}
           {isCheckout ? (
@@ -224,26 +218,6 @@ function PartnersModal() {
   );
 }
 
-function DeliveryModal() {
-  return (
-    <div className="max-w-[760px]">
-      <div className="space-y-6 text-base leading-[1.75] text-[#0f172a]">
-        <InfoBlock title="1. Оплата">
-          Доступны СБП, банковская карта и оплата при получении. Онлайн-оплата будет подключаться
-          через отдельный backend, потому что GitHub Pages обслуживает только статические файлы.
-        </InfoBlock>
-        <InfoBlock title="2. Способы доставки">
-          При оформлении заказа доступны курьерская доставка до двери, доставка в пункт выдачи и
-          постамат через сервисы доставки. Стоимость зависит от адреса, веса и объёма заказа.
-        </InfoBlock>
-        <InfoBlock title="3. Сроки">
-          После подтверждения заказа менеджер согласует удобный интервал и финальные детали
-          упаковки.
-        </InfoBlock>
-      </div>
-    </div>
-  );
-}
 
 function ContactsModal() {
   return (
@@ -255,12 +229,16 @@ function ContactsModal() {
           href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
         />
         <ContactItem label="Почта" value={siteConfig.email} href={`mailto:${siteConfig.email}`} />
-        <ContactItem label="Адрес" value="г. Севастополь, ул. Бориса Михайлова 3А, кв. 44" />
-        <div className="grid gap-3 sm:grid-cols-[234px_1fr]">
-          <ContactItem label="ИНН" value="Будет указан после открытия ИП" compact />
-          <ContactItem label="ОГРНИП" value="Будет указан после открытия ИП" compact />
-        </div>
-        <ContactItem label="ИП" value="Серебренникова Полина Кирилловна" />
+        {siteConfig.address ? <ContactItem label="Адрес" value={siteConfig.address} /> : null}
+        {(siteConfig.inn || siteConfig.ogrnip) ? (
+          <div className="grid gap-3 sm:grid-cols-[234px_1fr]">
+            {siteConfig.inn ? <ContactItem label="ИНН" value={siteConfig.inn} compact /> : null}
+            {siteConfig.ogrnip ? (
+              <ContactItem label="ОГРНИП" value={siteConfig.ogrnip} compact />
+            ) : null}
+          </div>
+        ) : null}
+        {siteConfig.ownerName ? <ContactItem label="ИП" value={siteConfig.ownerName} /> : null}
       </dl>
     </div>
   );
@@ -461,14 +439,6 @@ function CheckoutModal({
   );
 }
 
-function InfoBlock({ title, children }: Readonly<{ title: string; children: React.ReactNode }>) {
-  return (
-    <section className="rounded-2xl bg-[#f8f8f8] p-4 sm:p-5">
-      <h3 className="font-bold">{title}</h3>
-      <p className="mt-2">{children}</p>
-    </section>
-  );
-}
 
 function ContactItem({
   label,

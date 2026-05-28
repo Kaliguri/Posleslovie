@@ -78,7 +78,7 @@ export function SiteHeader() {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const openHomeModal = (type: "delivery" | "partners" | "contacts" | "checkout") => {
+  const openHomeModal = (type: "partners" | "contacts" | "checkout") => {
     window.dispatchEvent(new CustomEvent("posleslovie:open-modal", { detail: type }));
   };
 

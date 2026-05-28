@@ -5,11 +5,13 @@ export function DesignButton({
   onClick,
   size = "md",
   variant = "outline",
+  disabled = false,
 }: Readonly<{
   children: React.ReactNode;
   onClick: () => void;
   size?: "md" | "xl";
   variant?: "outline" | "filled";
+  disabled?: boolean;
 }>) {
   const isFilled = variant === "filled";
 
@@ -17,7 +19,8 @@ export function DesignButton({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center justify-center gap-4 rounded-full border-2 border-[#e8c880] font-bold tracking-[0.5px] transition ${
+      disabled={disabled}
+      className={`inline-flex items-center justify-center gap-4 rounded-full border-2 border-[#e8c880] font-bold tracking-[0.5px] transition disabled:cursor-not-allowed disabled:opacity-60 ${
         isFilled
           ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
           : "text-[#e8c880] hover:bg-[#e8c880] hover:text-[#0f172a]"

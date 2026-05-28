@@ -273,7 +273,7 @@ export function CheckoutStep2Form({
           disabled={isSubmitting}
           className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] disabled:cursor-not-allowed disabled:opacity-70 sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
         >
-          {isSubmitting ? "Отправляем..." : tab === "personal" ? "Оплатить" : "Оставить заявку"}
+          {isSubmitting ? "Отправляем..." : "Оставить заявку"}
           <ArrowIcon size={22} />
         </button>
 
