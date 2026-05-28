@@ -9,7 +9,8 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "npm run format:check && npm run lint && npm run typecheck"
   },
   "dependencies": {
     "next": "16.2.4",
@@ -23,7 +24,6 @@
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.4",
-    "playwright": "^1.60.0",
     "prettier": "^3.6.2",
     "tailwindcss": "4.2.2",
     "typescript": "6.0.3"
