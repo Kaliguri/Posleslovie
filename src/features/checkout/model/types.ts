@@ -35,6 +35,19 @@ export type AmoCRMCheckoutPayload = CheckoutState & {
   logoFile?: CheckoutLogoFile | null;
 };
 
+export type AmoCRMLeadPayload = {
+  mode: "lead";
+  formValues: {
+    name: string;
+    phone: string;
+    email: string;
+    contactHandle?: string;
+    company?: string;
+    contactMethod?: string;
+    comment?: string;
+  };
+};
+
 export const checkoutStorageKey = "posleslovie:checkout-state";
 export const maxLogoFileSize = 3 * 1024 * 1024;
 

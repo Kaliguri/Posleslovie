@@ -100,6 +100,38 @@ npm run check  # format + lint + typecheck
 npm run build  # статическая сборка -> out/
 ```
 
+**Карта архитектуры (current boundaries)**
+
+```text
+src/
+├── app/                      # entry, page composition, metadata
+├── widgets/
+│   └── home-sections/
+│       ├── ui/               # section-level UI modules (Hero, Process, WhyUs, ...)
+│       └── model/            # content mapping + runtime schemas
+├── features/
+│   └── checkout/
+│       ├── model/            # state, validation, payload contracts, API
+│       └── ui/
+│           ├── CheckoutModal.tsx         # thin orchestrator
+│           └── checkout-modal/*          # stepper/forms/panels/legal/lead
+└── shared/
+    ├── ui/                   # reusable primitives
+    ├── lib/                  # pure helpers (assetPath, city, phone, structured data)
+    └── config/               # typed config backed by content JSON
+```
+
+**How to demo project**
+
+1. `npm install`
+2. `npm run dev` and open [http://localhost:3000](http://localhost:3000)
+3. Show key scenarios:
+   - hero CTA -> checkout modal opens
+   - mobile menu -> checkout action
+   - partners modal -> lead submit flow
+4. Before client demo run:
+   - `npm run check:full`
+
 > Требуется Node.js 22+. Checkout и CMS-авторизация работают через внешние Cloudflare Workers.
 
 **Деплой:** push в `main` -> GitHub Actions -> `out/` на GitHub Pages.  
@@ -116,6 +148,12 @@ npm run build  # статическая сборка -> out/
 | GitHub OAuth | Авторизация в Sveltia CMS                     |
 
 Секреты (токены AmoCRM, OAuth) хранятся только в Cloudflare Dashboard, не в репозитории.
+
+**Known limitations (for transparent expectation management)**
+
+- Modal state uses a lightweight custom event bus (`posleslovie:open-modal`) instead of router-based state.
+- Some UI blocks still use native `<img>` (acceptable for current static-export scope, planned gradual optimization path).
+- `cloudflare/` worker lint warnings for anonymous default export are non-blocking.
 
 </details>
 
@@ -171,6 +209,38 @@ npm run check  # format + lint + typecheck
 npm run build  # static build -> out/
 ```
 
+**Architecture map (current boundaries)**
+
+```text
+src/
+├── app/                      # entry, page composition, metadata
+├── widgets/
+│   └── home-sections/
+│       ├── ui/               # section-level UI modules (Hero, Process, WhyUs, ...)
+│       └── model/            # content mapping + runtime schemas
+├── features/
+│   └── checkout/
+│       ├── model/            # state, validation, payload contracts, API
+│       └── ui/
+│           ├── CheckoutModal.tsx         # thin orchestrator
+│           └── checkout-modal/*          # stepper/forms/panels/legal/lead
+└── shared/
+    ├── ui/                   # reusable primitives
+    ├── lib/                  # pure helpers (assetPath, city, phone, structured data)
+    └── config/               # typed config backed by content JSON
+```
+
+**How to demo project**
+
+1. `npm install`
+2. `npm run dev` and open [http://localhost:3000](http://localhost:3000)
+3. Show key scenarios:
+   - hero CTA -> checkout modal opens
+   - mobile menu -> checkout action
+   - partners modal -> lead submit flow
+4. Before client demo run:
+   - `npm run check:full`
+
 > Node.js 22+ is required. Checkout and CMS auth are handled by external Cloudflare Workers.
 
 **Deployment:** push to `main` -> GitHub Actions -> `out/` to GitHub Pages.  
@@ -187,6 +257,12 @@ npm run build  # static build -> out/
 | GitHub OAuth | Sveltia CMS sign-in                            |
 
 Secrets (AmoCRM tokens and OAuth credentials) are stored only in the Cloudflare Dashboard, never in the repository.
+
+**Known limitations**
+
+- Modal state currently uses a lightweight custom event bus (`posleslovie:open-modal`) instead of router-based state.
+- Some UI blocks still use native `<img>` (acceptable for the current static-export scope, with a gradual optimization path).
+- `cloudflare/` worker lint warnings for anonymous default export are non-blocking.
 
 </details>
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, type InputHTMLAttributes } from "react";
+import { useEffect, useState } from "react";
 
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
 import { siteConfig } from "@/shared/config/site";
-import { getRussianCitySuggestions } from "@/shared/lib/city";
-import { assetPath } from "@/shared/lib/asset-path";
 import { formatRussianPhoneInput } from "@/shared/lib/phone";
+import { CrossIcon } from "@/shared/ui/CrossIcon";
+import { GoldRule } from "@/shared/ui/GoldRule";
+import { SectionKicker } from "@/shared/ui/SectionKicker";
 import { submitCheckoutToAmoCRM } from "@/features/checkout/model/api";
 import {
   maxLogoFileSize,
@@ -21,6 +22,12 @@ import {
   prepareCheckoutPayload,
   validateCheckout,
 } from "@/features/checkout/model/validation";
+import { CheckoutOrderPanel } from "@/features/checkout/ui/checkout-modal/CheckoutOrderPanel";
+import { CheckoutStep1Form } from "@/features/checkout/ui/checkout-modal/CheckoutStep1Form";
+import { CheckoutStep2Form } from "@/features/checkout/ui/checkout-modal/CheckoutStep2Form";
+import { CheckoutStepper } from "@/features/checkout/ui/checkout-modal/CheckoutStepper";
+import { LeadForm } from "@/features/checkout/ui/checkout-modal/LeadForm";
+import { LegalDocumentModal } from "@/features/checkout/ui/checkout-modal/LegalDocumentModal";
 
 export type ModalType =
   | "delivery"
@@ -95,6 +102,7 @@ export function HomeModal({
   checkoutState,
   onCheckoutFieldChange,
   onCheckoutQuantityChange,
+  onCheckoutTabChange,
   withOverlay,
   onClose,
 }: Readonly<{
@@ -103,6 +111,7 @@ export function HomeModal({
   checkoutState: CheckoutState;
   onCheckoutFieldChange: (field: CheckoutField, value: string) => void;
   onCheckoutQuantityChange: (quantity: number) => void;
+  onCheckoutTabChange: (tab: "personal" | "company") => void;
   withOverlay: boolean;
   onClose: () => void;
 }>) {
@@ -169,42 +178,12 @@ export function HomeModal({
             <GoldRule />
           </div>
           {isCheckout ? (
-            <div className="mt-4 flex items-center justify-center gap-2 sm:mt-5 sm:gap-4">
-              <div className="relative w-full max-w-[560px]">
-                <button
-                  type="button"
-                  title="Back to step 1"
-                  onClick={() => {
-                    if (checkoutStep === 2) setCheckoutStep(1);
-                  }}
-                  disabled={checkoutStep === 1}
-                  className={`absolute left-0 top-1/2 flex h-9 w-9 -translate-y-1/2 rotate-180 items-center justify-center rounded-full transition sm:h-10 sm:w-10 ${
-                    checkoutStep === 2
-                      ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
-                      : "cursor-default bg-[#d7d7d7] text-[#9a9b9c]"
-                  }`}
-                >
-                  <ArrowIcon size={18} />
-                </button>
-                <div className="mx-auto flex max-w-[420px] items-center justify-between pl-11 sm:pl-12">
-                  {[1, 2, 3].map((step, index) => (
-                    <div key={step} className="contents">
-                      <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-extrabold sm:h-11 sm:w-11 sm:text-xl ${
-                          step === checkoutStep
-                            ? "bg-[#e8c880] text-[#0f172a]"
-                            : "bg-[#0f172a] text-white"
-                        }`}
-                        aria-current={step === checkoutStep ? "step" : undefined}
-                      >
-                        {step}
-                      </div>
-                      {index < 2 ? <div className="h-[2px] flex-1 bg-[#d7d7d7]" /> : null}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <CheckoutStepper
+              step={checkoutStep}
+              onBack={() => {
+                if (checkoutStep === 2) setCheckoutStep(1);
+              }}
+            />
           ) : null}
         </div>
         <div className="modal-scroll min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-5 sm:px-6 sm:pt-8 lg:px-12 lg:pb-4">
@@ -219,6 +198,7 @@ export function HomeModal({
               onStepChange={setCheckoutStep}
               onFieldChange={onCheckoutFieldChange}
               onQuantityChange={onCheckoutQuantityChange}
+              onTabChange={onCheckoutTabChange}
             />
           ) : null}
           {isLegalDocumentSlug(type) ? <LegalDocumentModal slug={type} /> : null}
@@ -293,6 +273,7 @@ function CheckoutModal({
   onStepChange,
   onFieldChange,
   onQuantityChange,
+  onTabChange,
 }: Readonly<{
   checkoutProduct: CheckoutProduct;
   checkoutState: CheckoutState;
@@ -300,6 +281,7 @@ function CheckoutModal({
   onStepChange: (step: 1 | 2) => void;
   onFieldChange: (field: CheckoutField, value: string) => void;
   onQuantityChange: (quantity: number) => void;
+  onTabChange: (tab: "personal" | "company") => void;
 }>) {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -444,8 +426,10 @@ function CheckoutModal({
               tab={tab}
               values={formValues}
               errors={errors}
+              hasStepErrors={hasErrors(getStep1Errors(errors))}
               onFieldChange={handleFieldChange}
               onContinue={handleContinue}
+              onTabChange={onTabChange}
             />
           ) : (
             <CheckoutStep2Form
@@ -475,799 +459,6 @@ function CheckoutModal({
       </div>
     </div>
   );
-}
-
-function CheckoutStep1Form({
-  tab,
-  values,
-  errors,
-  onFieldChange,
-  onContinue,
-}: Readonly<{
-  tab: "personal" | "company";
-  values: CheckoutState["formValues"];
-  errors: CheckoutErrors;
-  onFieldChange: (field: CheckoutField, value: string) => void;
-  onContinue: () => void;
-}>) {
-  const hasStepErrors = hasErrors(getStep1Errors(errors));
-
-  return (
-    <div className="text-center sm:text-left">
-      <h3 className="text-[21px] font-extrabold sm:text-2xl">Контактная информация</h3>
-      <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
-      <div className="mt-5 grid gap-3 sm:mt-6">
-        {hasStepErrors ? (
-          <FormErrorSummary message="Проверьте контактные данные и детали заказа." />
-        ) : null}
-        <FormField
-          label="Имя"
-          placeholder="Ваше имя"
-          value={values.name}
-          error={errors.name}
-          required
-          autoComplete="name"
-          onChange={(v) => onFieldChange("name", v)}
-        />
-        <FormField
-          label="Телефон"
-          placeholder="+7 (000) 000-00-00"
-          value={values.phone}
-          error={errors.phone}
-          required
-          autoComplete="tel"
-          inputMode="tel"
-          onChange={(v) => onFieldChange("phone", v)}
-        />
-        <FormField
-          label="Email"
-          placeholder="Ваш email"
-          value={values.email}
-          error={errors.email}
-          required
-          type="email"
-          autoComplete="email"
-          onChange={(v) => onFieldChange("email", v)}
-        />
-        {tab === "company" ? (
-          <>
-            <FormField
-              label="Компания"
-              placeholder="Название компании"
-              value={values.company}
-              error={errors.company}
-              required
-              autoComplete="organization"
-              onChange={(v) => onFieldChange("company", v)}
-            />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <FormField
-                label="ИНН"
-                placeholder="ИНН"
-                value={values.inn}
-                inputMode="numeric"
-                onChange={(v) => onFieldChange("inn", v)}
-              />
-              <FormField
-                label="ОГРН"
-                placeholder="ОГРН"
-                value={values.ogrn}
-                inputMode="numeric"
-                onChange={(v) => onFieldChange("ogrn", v)}
-              />
-            </div>
-          </>
-        ) : null}
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded border border-transparent bg-[#f8f8f8] px-3.5 py-3 text-center sm:px-4 sm:text-left">
-            <p className="text-base font-bold text-[#0f172a]">Как с вами удобнее связаться?</p>
-            <select
-              title="Contact method"
-              value={values.contactMethod}
-              onChange={(e) => onFieldChange("contactMethod", e.target.value)}
-              className="mt-2 w-full bg-transparent text-sm text-[#0f172a] outline-none"
-            >
-              <option value="tg">Telegram</option>
-              <option value="max">MAX</option>
-              <option value="phone">Телефон</option>
-              <option value="email">Почта</option>
-            </select>
-          </div>
-          <FormField
-            label="Данные для связи"
-            placeholder="@username"
-            value={values.contactHandle}
-            error={errors.contactHandle}
-            onChange={(v) => onFieldChange("contactHandle", v)}
-          />
-        </div>
-        {tab === "personal" ? (
-          <CitySelectField
-            label="Город доставки"
-            placeholder="Москва"
-            value={values.city}
-            error={errors.city}
-            required
-            onChange={(v) => onFieldChange("city", v)}
-          />
-        ) : (
-          <FormFieldTextarea
-            label="Комментарий к заказу"
-            placeholder="Комментарии, которые помогут нам лучше узнать о задаче"
-            value={values.comment}
-            onChange={(v) => onFieldChange("comment", v)}
-          />
-        )}
-        <RequiredFieldsNote />
-        <p className="text-sm leading-[1.5] text-[#0f172a] sm:text-left">
-          В случае вопросов с доставкой свяжитесь с менеджером по телефону{" "}
-          <a
-            href="tel:+79786734701"
-            className="font-bold underline underline-offset-2 hover:text-[#b08a35]"
-          >
-            +7 (978) 673-47-01
-          </a>
-          .
-        </p>
-        <button
-          type="button"
-          title="Continue to step 2"
-          onClick={onContinue}
-          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
-        >
-          Продолжить оформление
-          <ArrowIcon size={22} />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function CheckoutStep2Form({
-  tab,
-  values,
-  errors,
-  onFieldChange,
-  logoFile,
-  logoFileError,
-  onLogoFileChange,
-  isConsentAccepted,
-  onConsentChange,
-  submitMessage,
-  isSubmitting,
-  onSubmit,
-}: Readonly<{
-  tab: "personal" | "company";
-  values: CheckoutState["formValues"];
-  errors: CheckoutErrors;
-  onFieldChange: (field: CheckoutField, value: string) => void;
-  logoFile: CheckoutLogoFile | null;
-  logoFileError: string | null;
-  onLogoFileChange: (file: File | null) => void;
-  isConsentAccepted: boolean;
-  onConsentChange: (isAccepted: boolean) => void;
-  submitMessage: string | null;
-  isSubmitting: boolean;
-  onSubmit: () => void;
-}>) {
-  const [artworkModalSrc, setArtworkModalSrc] = useState<string | null>(null);
-  const sealColors = [
-    { id: "red", label: "Красный", image: assetPath("/images/photos/seal-red.png") },
-    { id: "gold", label: "Золотой", image: assetPath("/images/photos/seal-gold.png") },
-    { id: "green", label: "Зелёный", image: assetPath("/images/photos/seal-green.png") },
-    { id: "blue", label: "Синий", image: assetPath("/images/photos/seal-blue.png") },
-  ];
-
-  const activeSeal = values.sealColor || "red";
-  const resolvedActiveSeal = sealColors.some((sc) => sc.id === activeSeal) ? activeSeal : "red";
-  const selectedArtist = values.artist === "spiritsveta" ? "spiritsveta" : "mortida";
-  const artistShowcase = {
-    mortida: {
-      label: "Mortida",
-      linkHref: "https://vk.ru/mortiidoo",
-      linkLabel: "vk.ru/mortiidoo",
-      works: [
-        assetPath("/images/photos/artist-mortida-1.png"),
-        assetPath("/images/photos/artist-mortida-2.png"),
-        assetPath("/images/photos/artist-mortida-3.png"),
-      ],
-    },
-    spiritsveta: {
-      label: "SpiritSveta",
-      linkHref: "https://t.me/SpiritSveta",
-      linkLabel: "t.me/SpiritSveta",
-      works: [
-        assetPath("/images/photos/artist-spiritsveta-1.png"),
-        assetPath("/images/photos/artist-spiritsveta-2.png"),
-        assetPath("/images/photos/artist-spiritsveta-3.png"),
-      ],
-    },
-  } as const;
-  const currentArtist = artistShowcase[selectedArtist];
-
-  return (
-    <div className="text-center sm:text-left">
-      <h3 className="text-[21px] font-extrabold sm:text-2xl">Пожелания в подарок</h3>
-      <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
-      <div className="mt-5 grid gap-3 sm:mt-6">
-        {hasErrors(errors) ? (
-          <FormErrorSummary message="В заказе остались ошибки. Вернитесь к выделенным полям." />
-        ) : null}
-        <div
-          className={`relative rounded border bg-[#f8f8f8] p-3.5 pr-12 text-center sm:p-4 sm:text-left ${logoFileError ? "border-red-500" : "border-transparent"}`}
-        >
-          <p className="text-base font-bold text-[#0f172a]">Логотип</p>
-          <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">
-            {logoFile ? `Выбран файл: ${logoFile.name}` : "Файлы формата .jpg .png не больше 3мб"}
-          </p>
-          {logoFileError ? <FieldErrorMessage message={logoFileError} /> : null}
-          <label
-            title="Upload logo file"
-            className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
-                stroke="#0f172a"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-              className="hidden"
-              onChange={(event) => onLogoFileChange(event.target.files?.[0] ?? null)}
-            />
-          </label>
-        </div>
-
-        <div className="rounded bg-[#f8f8f8] p-3.5 text-center sm:p-4 sm:text-left">
-          <p className="text-base font-bold text-[#0f172a]">Выбор художника</p>
-          <select
-            title="Choose artist"
-            value={selectedArtist}
-            onChange={(e) => onFieldChange("artist", e.target.value)}
-            className="mt-2 w-full bg-transparent text-sm text-[rgba(101,101,101,0.7)] outline-none"
-          >
-            <option value="mortida">Mortida</option>
-            <option value="spiritsveta">SpiritSveta</option>
-          </select>
-
-          <div className="mt-3 grid grid-cols-3 justify-items-center gap-2 sm:justify-items-start sm:gap-4">
-            {currentArtist.works.map((src, index) => (
-              <button
-                key={`${selectedArtist}-${index}`}
-                type="button"
-                onClick={() => setArtworkModalSrc(src)}
-                className="group relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-white shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
-                title="Открыть изображение"
-              >
-                <div
-                  className="h-full w-full bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03]"
-                  style={{ backgroundImage: `url(${src})` }}
-                />
-                <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/10" />
-                <div className="pointer-events-none absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-white/90 opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                      d="M10 18a8 8 0 1 1 5.3-14 8 8 0 0 1-5.3 14Z"
-                      stroke="#0f172a"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M21 21l-4.2-4.2"
-                      stroke="#0f172a"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M10 8v4m-2-2h4"
-                      stroke="#0f172a"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-sm sm:justify-start">
-            <a
-              href={currentArtist.linkHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-bold underline underline-offset-2 text-[#0f172a]"
-            >
-              {currentArtist.label}: {currentArtist.linkLabel}
-            </a>
-          </div>
-        </div>
-
-        <div className="rounded bg-[#f8f8f8] p-3.5 text-center sm:p-4 sm:text-left">
-          <p className="text-base font-bold text-[#0f172a]">Цвет сургутной печати</p>
-          <p className="mt-1 text-xs text-[rgba(101,101,101,0.7)]">
-            Фото не является эталонным продуктом*
-          </p>
-          <div className="mt-3 grid grid-cols-4 justify-items-center gap-2 sm:justify-items-start sm:gap-4">
-            {sealColors.map((sc) => (
-              <button
-                key={sc.id}
-                type="button"
-                title={`Выбрать цвет: ${sc.label}`}
-                onClick={() => onFieldChange("sealColor", sc.id)}
-                className="flex flex-col items-center gap-2"
-              >
-                <div
-                  className={`h-12 w-12 rounded bg-cover bg-center shadow-sm transition sm:h-[72px] sm:w-[72px] ${
-                    resolvedActiveSeal === sc.id
-                      ? "outline outline-[3px] outline-offset-2 outline-[#e8c880]"
-                      : "opacity-60 hover:opacity-90"
-                  }`}
-                  style={{ backgroundImage: `url(${sc.image})` }}
-                />
-                <span
-                  className={`text-xs ${resolvedActiveSeal === sc.id ? "font-bold text-[#0f172a]" : "text-[rgba(0,0,0,0.5)]"}`}
-                >
-                  {sc.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <FormFieldTextarea
-          label="Комментарий к заказу"
-          placeholder="Комментарии, которые помогут нам лучше узнать о задаче"
-          value={values.comment}
-          onChange={(v) => onFieldChange("comment", v)}
-        />
-
-        <label
-          className={`mt-2 flex gap-3 rounded-2xl border p-3.5 text-sm leading-[1.4] sm:p-4 ${
-            errors.consent ? "border-red-500 bg-red-50" : "border-transparent"
-          }`}
-        >
-          <input
-            type="checkbox"
-            checked={isConsentAccepted}
-            onChange={(event) => onConsentChange(event.target.checked)}
-            aria-invalid={Boolean(errors.consent)}
-            aria-required="true"
-            className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#0f172a]"
-          />
-          <span>
-            <span className="font-bold">
-              Согласие с условиями
-              <span className="ml-1 text-red-600" aria-label="обязательное поле">
-                *
-              </span>
-            </span>
-            <br />
-            Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
-            <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/personal-data-consent.pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-[#e8c880]"
-            >
-              персональных данных
-            </a>{" "}
-            и ознакомлены с{" "}
-            <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/privacy.pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-[#e8c880]"
-            >
-              политикой конфиденциальности
-            </a>
-            .
-          </span>
-        </label>
-        {errors.consent ? <FieldErrorMessage message={errors.consent} /> : null}
-        <RequiredFieldsNote />
-
-        <button
-          type="button"
-          title="Submit order"
-          onClick={onSubmit}
-          disabled={isSubmitting}
-          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] disabled:cursor-not-allowed disabled:opacity-70 sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
-        >
-          {isSubmitting ? "Отправляем..." : tab === "personal" ? "Оплатить" : "Оставить заявку"}
-          <ArrowIcon size={22} />
-        </button>
-
-        {submitMessage ? (
-          <div className="rounded-2xl border border-[#e8c880] bg-[#fff8e8] p-4 text-sm text-[#0f172a]">
-            {submitMessage}
-          </div>
-        ) : null}
-      </div>
-
-      {artworkModalSrc ? (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-3 py-3 backdrop-blur-sm sm:px-6 sm:py-6"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setArtworkModalSrc(null);
-          }}
-        >
-          <div className="relative w-full max-w-[1100px] overflow-hidden rounded-[22px] bg-[#0b1321] shadow-2xl sm:rounded-[36px]">
-            <button
-              type="button"
-              onClick={() => setArtworkModalSrc(null)}
-              aria-label="Закрыть"
-              className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/70 text-white transition hover:border-white hover:bg-white/10 sm:right-5 sm:top-5 sm:h-12 sm:w-12"
-            >
-              <CrossIcon />
-            </button>
-            <div className="grid">
-              <div className="grid place-items-center p-3 sm:p-5">
-                <img
-                  src={artworkModalSrc}
-                  alt=""
-                  className="max-h-[86vh] w-auto max-w-full rounded-[14px] bg-transparent sm:rounded-[18px]"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function CheckoutOrderPanel({
-  checkoutProduct,
-  quantity,
-  total,
-  error,
-  onQuantityChange,
-}: Readonly<{
-  checkoutProduct: CheckoutProduct;
-  quantity: number;
-  total: number;
-  error?: string;
-  onQuantityChange: (q: number) => void;
-}>) {
-  return (
-    <div className="text-center sm:text-left">
-      <h3 className="text-[21px] font-extrabold sm:text-2xl">Детали заказа</h3>
-      <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
-      <div className="mt-5 flex flex-col items-center gap-4 rounded-2xl bg-[#f8f8f8] p-3.5 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-4">
-        <ZoomImage
-          image={checkoutProduct.image}
-          label={checkoutProduct.title}
-          className="h-24 w-24 shrink-0 rounded-[10px] sm:h-[108px] sm:w-[108px]"
-        />
-        <div className="min-w-0 flex-1 text-center sm:text-left">
-          <p className="font-bold">{checkoutProduct.title}</p>
-          <div className="mt-4 flex items-center gap-3">
-            <CounterButton onClick={() => onQuantityChange(quantity - 1)} disabled={quantity <= 1}>
-              -
-            </CounterButton>
-            <input
-              type="number"
-              min={1}
-              value={quantity}
-              title="Product quantity"
-              aria-label="Количество бомбочек"
-              aria-invalid={Boolean(error)}
-              onChange={(event) => onQuantityChange(Number(event.target.value))}
-              className={`h-10 w-16 rounded-full border bg-white text-center font-bold outline-none ${
-                error ? "border-red-500" : "border-[#e8c880]"
-              }`}
-            />
-            <CounterButton onClick={() => onQuantityChange(quantity + 1)}>+</CounterButton>
-          </div>
-          {error ? <FieldErrorMessage message={error} /> : null}
-        </div>
-        <p className="shrink-0 font-bold sm:self-start">{checkoutProduct.price} ₽</p>
-      </div>
-      <div className="mt-5 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-6" />
-      <div className="mt-5 space-y-2 text-base sm:mt-6 sm:space-y-4 sm:text-xl">
-        <p className="font-light">Количество: {quantity} шт.</p>
-        <p className="font-light">Цена за 1 шт.: {checkoutProduct.price} руб.</p>
-        <p className="font-extrabold">Итоговая сумма: {total} руб.</p>
-      </div>
-    </div>
-  );
-}
-
-function FormFieldTextarea({
-  label,
-  placeholder,
-  value,
-  error,
-  onChange,
-}: Readonly<{
-  label: string;
-  placeholder: string;
-  value: string;
-  error?: string;
-  onChange: (value: string) => void;
-}>) {
-  return (
-    <div
-      className={`rounded border bg-[#f8f8f8] px-3.5 py-3 sm:px-4 ${error ? "border-red-500" : "border-transparent"}`}
-    >
-      <p className="text-base font-bold text-[#0f172a]">{label}</p>
-      <textarea
-        placeholder={placeholder}
-        value={value}
-        title={label}
-        aria-invalid={Boolean(error)}
-        onChange={(e) => onChange(e.target.value)}
-        rows={4}
-        className="mt-2 w-full resize-none bg-transparent text-sm text-[#0f172a] placeholder-[rgba(101,101,101,0.5)] outline-none"
-      />
-      {error ? <FieldErrorMessage message={error} /> : null}
-    </div>
-  );
-}
-
-function LegalDocumentModal({ slug }: Readonly<{ slug: LegalDocumentSlug }>) {
-  const document = legalDocuments.find((item) => item.slug === slug);
-
-  if (!document) {
-    return null;
-  }
-
-  return (
-    <article className="max-w-[760px]">
-      <div className="space-y-4 text-sm leading-[1.7] text-[#0f172a] lg:text-base">
-        {document.content.map((paragraph, index) => (
-          <p key={`${document.slug}-${index}`}>{paragraph}</p>
-        ))}
-      </div>
-    </article>
-  );
-}
-
-function LeadForm({
-  submitLabel,
-  company = false,
-  requiredOnly = false,
-}: Readonly<{ submitLabel: string; company?: boolean; requiredOnly?: boolean }>) {
-  const [formValues, setFormValues] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    company: "",
-    contactMethod: "",
-  });
-  const [debugMessage, setDebugMessage] = useState<string | null>(null);
-  const updateField = (field: keyof typeof formValues, value: string) => {
-    setFormValues((current) => ({ ...current, [field]: value }));
-  };
-
-  return (
-    <form
-      className="mt-5 grid gap-3 sm:mt-6"
-      onSubmit={(event) => {
-        event.preventDefault();
-        setDebugMessage(
-          `Нажали "${submitLabel}". Имя: ${formValues.name || "не указано"}, телефон: ${
-            formValues.phone || "не указан"
-          }, email: ${formValues.email || "не указан"}.`,
-        );
-      }}
-    >
-      <div className="grid gap-3 sm:grid-cols-2">
-        <FormField
-          label={requiredOnly ? "Имя*" : "Имя"}
-          placeholder="Ваше имя"
-          value={formValues.name}
-          onChange={(value) => updateField("name", value)}
-        />
-        <FormField
-          label={requiredOnly ? "Телефон*" : "Телефон"}
-          placeholder="+7 (000) 000-00-00"
-          value={formValues.phone}
-          onChange={(value) => updateField("phone", value)}
-        />
-      </div>
-      <FormField
-        label={requiredOnly ? "Email*" : "Email"}
-        placeholder="Ваш email"
-        value={formValues.email}
-        onChange={(value) => updateField("email", value)}
-      />
-      {company || requiredOnly ? (
-        <FormField
-          label="Компания"
-          placeholder="Название компании"
-          value={formValues.company}
-          onChange={(value) => updateField("company", value)}
-        />
-      ) : null}
-      <FormField
-        label="Как с вами удобнее связаться?"
-        placeholder="Телеграм"
-        value={formValues.contactMethod}
-        onChange={(value) => updateField("contactMethod", value)}
-      />
-      {requiredOnly ? (
-        <p className="text-xs font-light">( * - обязательные для заполнения )</p>
-      ) : (
-        <label className="mt-2 flex gap-3 text-base leading-[1.4]">
-          <input type="checkbox" className="mt-1 h-4 w-4 rounded border-[#0f172a]" />
-          <span className="min-w-0">
-            Нажимая на кнопку, вы соглашаетесь с обработкой <u>персональных данных</u>. Ознакомлены
-            с <u>политикой конфиденциальности</u>
-          </span>
-        </label>
-      )}
-      <button
-        type="submit"
-        className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-2xl"
-      >
-        {submitLabel}
-        <ArrowIcon />
-      </button>
-      {debugMessage ? (
-        <div className="rounded-2xl border border-[#e8c880] bg-[#fff8e8] p-4 text-sm text-[#0f172a]">
-          {debugMessage}
-        </div>
-      ) : null}
-    </form>
-  );
-}
-
-function FormField({
-  label,
-  placeholder,
-  value,
-  error,
-  required = false,
-  type = "text",
-  autoComplete,
-  inputMode,
-  list,
-  onChange,
-}: Readonly<{
-  label: string;
-  placeholder: string;
-  value: string;
-  error?: string;
-  required?: boolean;
-  type?: InputHTMLAttributes<HTMLInputElement>["type"];
-  autoComplete?: string;
-  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
-  list?: string;
-  onChange: (value: string) => void;
-}>) {
-  return (
-    <label
-      className={`grid min-h-[60px] gap-1 rounded border bg-[#f8f8f8] px-3.5 py-3 sm:min-h-16 sm:px-4 ${error ? "border-red-500" : "border-transparent"}`}
-    >
-      <span className="font-bold">
-        {label}
-        {required ? (
-          <span className="ml-1 text-red-600" aria-label="обязательное поле">
-            *
-          </span>
-        ) : null}
-      </span>
-      <input
-        type={type}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        list={list}
-        aria-invalid={Boolean(error)}
-        aria-required={required}
-        className="bg-transparent text-sm text-[#0f172a] outline-none placeholder:text-[#656565]/50 sm:text-xs"
-      />
-      {error ? <FieldErrorMessage message={error} /> : null}
-    </label>
-  );
-}
-
-function CitySelectField({
-  label,
-  placeholder,
-  value,
-  error,
-  required = false,
-  onChange,
-}: Readonly<{
-  label: string;
-  placeholder: string;
-  value: string;
-  error?: string;
-  required?: boolean;
-  onChange: (value: string) => void;
-}>) {
-  const [isFocused, setIsFocused] = useState(false);
-  const suggestions = getRussianCitySuggestions(value);
-  const showSuggestions = isFocused && value.trim().length > 0 && suggestions.length > 0;
-
-  const handleSelect = (city: string) => {
-    onChange(city);
-    setIsFocused(false);
-  };
-
-  return (
-    <div className="relative">
-      <label
-        className={`grid min-h-[60px] gap-1 rounded border bg-[#f8f8f8] px-3.5 py-3 sm:min-h-16 sm:px-4 ${error ? "border-red-500" : "border-transparent"}`}
-      >
-        <span className="font-bold">
-          {label}
-          {required ? (
-            <span className="ml-1 text-red-600" aria-label="обязательное поле">
-              *
-            </span>
-          ) : null}
-        </span>
-        <input
-          type="text"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => {
-            window.setTimeout(() => setIsFocused(false), 120);
-          }}
-          placeholder={placeholder}
-          autoComplete="off"
-          aria-autocomplete="list"
-          aria-invalid={Boolean(error)}
-          aria-required={required}
-          className="bg-transparent text-sm text-[#0f172a] outline-none placeholder:text-[#656565]/50 sm:text-xs"
-        />
-        {error ? <FieldErrorMessage message={error} /> : null}
-      </label>
-
-      {showSuggestions ? (
-        <div className="absolute bottom-[calc(100%+6px)] left-0 right-0 z-30 overflow-hidden rounded-2xl border border-[#e8c880] bg-white shadow-[0_-14px_40px_rgba(15,23,42,0.16)]">
-          <div className="max-h-[190px] overflow-y-auto py-2">
-            {suggestions.map((city) => (
-              <button
-                key={city}
-                type="button"
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                  handleSelect(city);
-                }}
-                className="block w-full px-4 py-3 text-left text-sm font-bold text-[#0f172a] transition hover:bg-[#fff4d8]"
-              >
-                {city}
-              </button>
-            ))}
-          </div>
-          <p className="border-t border-[#e8c880]/40 px-4 py-2 text-xs text-[#656565]">
-            Выберите город из списка
-          </p>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function RequiredFieldsNote() {
-  return (
-    <p className="text-xs text-[#656565]">
-      <span className="font-bold text-red-600">*</span> обязательные поля
-    </p>
-  );
-}
-
-function FormErrorSummary({ message }: Readonly<{ message: string }>) {
-  return (
-    <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm font-bold text-red-700">
-      {message}
-    </div>
-  );
-}
-
-function FieldErrorMessage({ message }: Readonly<{ message: string }>) {
-  return <span className="mt-1 text-xs font-bold text-red-600">{message}</span>;
 }
 
 function InfoBlock({ title, children }: Readonly<{ title: string; children: React.ReactNode }>) {
@@ -1300,85 +491,5 @@ function ContactItem({
         )}
       </dd>
     </div>
-  );
-}
-
-function SectionKicker({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <p className="text-xs font-bold uppercase tracking-[2px] text-[#e8c880] sm:text-base sm:tracking-[3px] lg:text-lg xl:text-xl">
-      {children}
-    </p>
-  );
-}
-
-function GoldRule({ centered = false }: Readonly<{ centered?: boolean }>) {
-  return (
-    <div
-      aria-hidden="true"
-      className={`mt-4 flex w-full max-w-[700px] items-center sm:mt-6 ${centered ? "mx-auto" : ""}`}
-    >
-      <span className="h-2 w-2 shrink-0 rotate-45 bg-[#e8c880]" />
-      <span className="h-px flex-1 bg-[#e8c880]" />
-      <span className="h-2 w-2 shrink-0 rotate-45 bg-[#e8c880]" />
-    </div>
-  );
-}
-
-function ZoomImage({
-  image,
-  label,
-  className,
-}: Readonly<{ image: string; label: string; className: string }>) {
-  return (
-    <div
-      aria-label={label || undefined}
-      role={label ? "img" : undefined}
-      className={`overflow-hidden bg-[#f8f8f8] zoom-frame ${className}`}
-    >
-      <div
-        className="zoom-media h-full w-full bg-cover bg-center"
-        style={{ backgroundImage: `url(${image})` }}
-      />
-    </div>
-  );
-}
-
-function CounterButton({
-  children,
-  disabled = false,
-  onClick,
-}: Readonly<{ children: React.ReactNode; disabled?: boolean; onClick: () => void }>) {
-  return (
-    <button
-      type="button"
-      title={children === "+" ? "Increase product quantity" : "Decrease product quantity"}
-      disabled={disabled}
-      onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0f172a]/50 font-bold transition hover:border-[#e8c880] hover:text-[#e8c880] disabled:cursor-not-allowed disabled:opacity-40"
-    >
-      {children}
-    </button>
-  );
-}
-
-function ArrowIcon({ size = 24 }: Readonly<{ size?: number }>) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" fill="none">
-      <path
-        d="M5 12h14m-6-6 6 6-6 6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CrossIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none">
-      <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
   );
 }

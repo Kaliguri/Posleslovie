@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { siteConfig } from "@/shared/config/site";
+import { assetPath } from "@/shared/lib/asset-path";
 import siteBehaviorJson from "../../../content/site-behavior.json";
 
 const navigationItems = [
@@ -18,10 +19,6 @@ const socialIconPaths: Record<(typeof socialOrder)[number], string> = {
   VK: "/images/social/vk-round.svg",
   TG: "/images/social/tg-round.svg",
   MAX: "/images/social/max-round.svg",
-};
-const assetPath = (path: string) => {
-  const normalized = path && !path.startsWith("/") ? `/${path}` : path;
-  return `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${normalized}`;
 };
 const globalOverlaysEnabled = Boolean(siteBehaviorJson.enableGlobalOverlays);
 
