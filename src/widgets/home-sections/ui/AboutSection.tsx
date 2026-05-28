@@ -20,7 +20,7 @@ export function AboutSection({
     <section
       id="about"
       data-scroll-pop
-      className="bg-[#f8f8f8] px-3 py-6 sm:px-5 sm:py-12 lg:px-[100px] lg:py-[100px]"
+      className="bg-[#f8f8f8] px-3 py-3 sm:px-5 sm:py-6 lg:px-[100px] lg:py-[56px]"
     >
       <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white sm:rounded-[42px] lg:rounded-[70px]">
         <div className="pointer-events-none absolute inset-0 hidden grid-cols-[1fr_323px] lg:grid">

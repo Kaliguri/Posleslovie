@@ -19,6 +19,7 @@ export function CheckoutStep2Actions({
 }>) {
   return (
     <div className="mt-2 grid gap-3 sm:mt-0">
+      <RequiredFieldsNote />
       <label
         className={`flex items-start gap-3 rounded-2xl border p-3.5 text-sm leading-[1.45] sm:p-4 sm:text-base sm:leading-[1.5] ${
           consentError ? "border-red-500 bg-red-50" : "border-transparent"
@@ -44,7 +45,7 @@ export function CheckoutStep2Actions({
             href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/personal-data-consent.pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-[#e8c880]"
+            className="font-semibold text-[#0f172a] underline decoration-[#b08a35] underline-offset-2 hover:text-[#b08a35]"
           >
             персональных данных
           </a>{" "}
@@ -53,7 +54,7 @@ export function CheckoutStep2Actions({
             href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/privacy.pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-[#e8c880]"
+            className="font-semibold text-[#0f172a] underline decoration-[#b08a35] underline-offset-2 hover:text-[#b08a35]"
           >
             политикой конфиденциальности
           </a>
@@ -61,14 +62,14 @@ export function CheckoutStep2Actions({
         </span>
       </label>
       {consentError ? <FieldErrorMessage message={consentError} /> : null}
+
       <div className="grid gap-3 lg:grid-cols-2 lg:gap-10">
         <div>
-          <RequiredFieldsNote />
           <button
             type="button"
             title="Schedule a call"
             onClick={onProceed}
-            className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
+            className="flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
           >
             Договориться о созвоне
             <ArrowIcon size={22} />

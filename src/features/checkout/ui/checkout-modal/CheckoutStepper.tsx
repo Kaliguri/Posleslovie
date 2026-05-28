@@ -34,8 +34,8 @@ export function CheckoutStepper({
                   {stepMarker}
                 </div>
                 {index < 2 ? (
-                  <div className="mx-3 flex items-center sm:mx-4">
-                    <div className="h-[2px] w-16 border-t-2 border-dashed border-[#d7d7d7] sm:w-20" />
+                  <div className="mx-2 flex items-center sm:mx-3">
+                    <div className="h-[2px] w-12 border-t-2 border-dashed border-[#d7d7d7] sm:w-14" />
                   </div>
                 ) : null}
               </div>

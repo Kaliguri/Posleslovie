@@ -102,7 +102,7 @@ export function CitySelectField({
             window.setTimeout(() => setIsFocused(false), 120);
           }}
           placeholder={placeholder}
-          autoComplete="off"
+          autoComplete="address-level2"
           aria-autocomplete="list"
           aria-invalid={Boolean(error)}
           aria-required={required}
@@ -159,6 +159,7 @@ export function FormFieldTextarea({
         placeholder={placeholder}
         value={value}
         title={label}
+        autoComplete="off"
         aria-invalid={Boolean(error)}
         onChange={(e) => onChange(e.target.value)}
         rows={4}

@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+const REVEAL_TRANSITION_MS = 1200;
+
 export function useScrollReveal(enabled: boolean) {
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -13,9 +15,26 @@ export function useScrollReveal(enabled: boolean) {
       return;
     }
 
+    const markAnimating = (element: HTMLElement) => {
+      element.classList.add("is-animating");
+      const onEnd = () => {
+        element.classList.remove("is-animating");
+        element.removeEventListener("transitionend", onEnd);
+      };
+      element.addEventListener("transitionend", onEnd);
+      window.setTimeout(() => element.classList.remove("is-animating"), REVEAL_TRANSITION_MS + 200);
+    };
+
+    const revealElement = (element: HTMLElement, withAnimation = true) => {
+      element.classList.add("is-visible");
+      if (withAnimation) {
+        markAnimating(element);
+      }
+    };
+
     if (!enabled) {
       for (const element of elements) {
-        element.classList.add("is-visible");
+        revealElement(element, false);
       }
       return;
     }
@@ -23,7 +42,7 @@ export function useScrollReveal(enabled: boolean) {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) {
       for (const element of elements) {
-        element.classList.add("is-visible");
+        revealElement(element, false);
       }
       return;
     }
@@ -92,6 +111,11 @@ export function useScrollReveal(enabled: boolean) {
     };
     window.addEventListener("scroll", onScrollMark, { passive: true });
 
+    const revealImmediatelyIfAboveFold = (element: HTMLElement) => {
+      const rect = element.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom > -1;
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         const nextScrollY = window.scrollY;
@@ -100,13 +124,12 @@ export function useScrollReveal(enabled: boolean) {
 
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            if (!hasUserScrolled || isScrollingDown) {
-              entry.target.classList.add("is-visible");
-              if (isScrollingDown) {
-                enqueueTypewriter(entry.target as HTMLElement);
-              }
-              observer.unobserve(entry.target);
+            const target = entry.target as HTMLElement;
+            revealElement(target);
+            if (hasUserScrolled && isScrollingDown) {
+              enqueueTypewriter(target);
             }
+            observer.unobserve(entry.target);
           }
         }
       },
@@ -117,6 +140,10 @@ export function useScrollReveal(enabled: boolean) {
     );
 
     for (const element of elements) {
+      if (revealImmediatelyIfAboveFold(element)) {
+        revealElement(element, false);
+        continue;
+      }
       observer.observe(element);
     }
 

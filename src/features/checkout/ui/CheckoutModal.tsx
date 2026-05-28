@@ -33,6 +33,8 @@ import { CheckoutStep2Actions } from "@/features/checkout/ui/checkout-modal/Chec
 import { CheckoutStep3Actions } from "@/features/checkout/ui/checkout-modal/CheckoutStep3Actions";
 import { CheckoutStep3Form } from "@/features/checkout/ui/checkout-modal/CheckoutStep3Form";
 import { CheckoutStepper } from "@/features/checkout/ui/checkout-modal/CheckoutStepper";
+import { CheckoutStickySummary } from "@/features/checkout/ui/checkout-modal/CheckoutStickySummary";
+import { CheckoutThankYou } from "@/features/checkout/ui/checkout-modal/CheckoutThankYou";
 import { LeadForm } from "@/features/checkout/ui/checkout-modal/LeadForm";
 import { LegalDocumentModal } from "@/features/checkout/ui/checkout-modal/LegalDocumentModal";
 
@@ -113,10 +115,14 @@ export function HomeModal({
   onClose: () => void;
 }>) {
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStepNumber>(1);
+  const [isCheckoutComplete, setIsCheckoutComplete] = useState(false);
 
   useEffect(() => {
     if (type !== "checkout") {
-      queueMicrotask(() => setCheckoutStep(1));
+      queueMicrotask(() => {
+        setCheckoutStep(1);
+        setIsCheckoutComplete(false);
+      });
     }
   }, [type]);
 
@@ -174,7 +180,7 @@ export function HomeModal({
             </h2>
           </div>
           <GoldRule fullWidth />
-          {isCheckout ? (
+          {isCheckout && !isCheckoutComplete ? (
             <CheckoutStepper
               step={checkoutStep}
               onBack={() => {
@@ -196,6 +202,8 @@ export function HomeModal({
               onFieldChange={onCheckoutFieldChange}
               onQuantityChange={onCheckoutQuantityChange}
               onTabChange={onCheckoutTabChange}
+              onClose={onClose}
+              onCheckoutComplete={() => setIsCheckoutComplete(true)}
             />
           ) : null}
           {isLegalDocumentSlug(type) ? <LegalDocumentModal slug={type} /> : null}
@@ -254,6 +262,8 @@ function CheckoutModal({
   onFieldChange,
   onQuantityChange,
   onTabChange,
+  onClose,
+  onCheckoutComplete,
 }: Readonly<{
   checkoutProduct: CheckoutProduct;
   checkoutState: CheckoutState;
@@ -262,9 +272,12 @@ function CheckoutModal({
   onFieldChange: (field: CheckoutField, value: string) => void;
   onQuantityChange: (quantity: number) => void;
   onTabChange: (tab: "personal" | "company") => void;
+  onClose: () => void;
+  onCheckoutComplete: () => void;
 }>) {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckoutComplete, setIsCheckoutComplete] = useState(false);
   const [errors, setErrors] = useState<CheckoutErrors>({});
   const [isConsentAccepted, setIsConsentAccepted] = useState(false);
   const [callScheduling, setCallScheduling] =
@@ -278,6 +291,7 @@ function CheckoutModal({
     queueMicrotask(() => {
       setErrors({});
       setSubmitMessage(null);
+      setIsCheckoutComplete(false);
     });
   }, [tab]);
 
@@ -452,7 +466,9 @@ function CheckoutModal({
           callScheduling,
         }),
       );
-      setSubmitMessage("Ваша заявка отправлена в AmoCRM. Мы свяжемся с вами в ближайшее время.");
+      setIsCheckoutComplete(true);
+      onCheckoutComplete();
+      setSubmitMessage(null);
     } catch (error) {
       console.error(error);
       setSubmitMessage(
@@ -463,10 +479,14 @@ function CheckoutModal({
     }
   };
 
+  if (isCheckoutComplete) {
+    return <CheckoutThankYou total={total} onClose={onClose} />;
+  }
+
   return (
-    <div>
+    <div className={step === 1 ? "pb-24 lg:pb-0" : ""}>
       <div className="grid gap-7 lg:grid-cols-2 lg:gap-10">
-        <div>
+        <div className="order-2 lg:order-1">
           {step === 1 ? (
             <CheckoutStep1Form
               values={formValues}
@@ -495,15 +515,17 @@ function CheckoutModal({
           ) : null}
         </div>
 
-        <CheckoutOrderPanel
-          checkoutProduct={checkoutProduct}
-          quantity={quantity}
-          total={total}
-          error={errors.quantity}
-          onQuantityChange={handleQuantityChange}
-        />
+        <div className="order-1 lg:order-2">
+          <CheckoutOrderPanel
+            checkoutProduct={checkoutProduct}
+            quantity={quantity}
+            total={total}
+            error={errors.quantity}
+            onQuantityChange={handleQuantityChange}
+          />
+        </div>
         {step === 2 ? (
-          <div className="lg:col-span-2">
+          <div className="order-3 lg:col-span-2">
             <CheckoutStep2Actions
               isConsentAccepted={isConsentAccepted}
               onConsentChange={handleConsentChange}
@@ -514,7 +536,7 @@ function CheckoutModal({
           </div>
         ) : null}
         {step === 3 ? (
-          <div className="lg:col-span-2">
+          <div className="order-3 lg:col-span-2">
             <CheckoutStep3Actions
               isSubmitting={isSubmitting}
               submitMessage={submitMessage}
@@ -523,6 +545,9 @@ function CheckoutModal({
           </div>
         ) : null}
       </div>
+      {step === 1 ? (
+        <CheckoutStickySummary total={total} quantity={quantity} onContinue={handleContinue} />
+      ) : null}
     </div>
   );
 }

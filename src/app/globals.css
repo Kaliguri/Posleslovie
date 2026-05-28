@@ -1,9 +1,27 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-gold: #e8c880;
+  --color-brand-gold-hover: #ffecbf;
+  --color-brand-gold-muted: #b08a35;
+  --color-brand-navy: #102038;
+  --color-surface: #f8f8f8;
+  --color-foreground: #0f172a;
+  --color-text-muted: #656565;
+}
+
 :root {
-  --background: #f8f8f8;
-  --foreground: #0f172a;
+  --background: var(--color-surface);
+  --foreground: var(--color-foreground);
+  --brand-gold: var(--color-brand-gold);
+  --brand-gold-hover: var(--color-brand-gold-hover);
+  --brand-navy: var(--color-brand-navy);
   --font-ermilov: "Ermilov", var(--font-roboto), Arial, sans-serif;
+  --font-display: clamp(2.125rem, 5vw + 1rem, 7.875rem);
+  --font-h2: clamp(1.625rem, 2.5vw + 1rem, 3rem);
+  --font-h3: clamp(1.3125rem, 1vw + 1rem, 1.5rem);
+  --font-body: clamp(0.875rem, 0.35vw + 0.8rem, 1.25rem);
+  --font-body-lg: clamp(1rem, 0.5vw + 0.85rem, 1.5625rem);
 }
 
 html {
@@ -21,6 +39,63 @@ body {
 ::selection {
   background: #171717;
   color: #f5f5f4;
+}
+
+.text-display {
+  font-size: var(--font-display);
+  line-height: 0.97;
+}
+
+.text-h2 {
+  font-size: var(--font-h2);
+  line-height: 1.12;
+}
+
+.text-h3 {
+  font-size: var(--font-h3);
+  line-height: 1.2;
+}
+
+.text-body {
+  font-size: var(--font-body);
+}
+
+.text-body-lg {
+  font-size: var(--font-body-lg);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border-radius: 9999px;
+  border: 2px solid var(--brand-gold);
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--brand-gold);
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--brand-gold);
+  color: var(--color-foreground);
+}
+
+.btn-tertiary {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  color: white;
+  transition: opacity 200ms ease;
+}
+
+.btn-tertiary:hover {
+  opacity: 0.9;
 }
 
 .zoom-media {
@@ -41,7 +116,7 @@ body {
 }
 
 .modal-scroll {
-  scrollbar-color: #e8c880 #f8f8f8;
+  scrollbar-color: var(--brand-gold) var(--color-surface);
   scrollbar-width: thin;
 }
 
@@ -50,26 +125,35 @@ body {
 }
 
 .modal-scroll::-webkit-scrollbar-track {
-  background: #f8f8f8;
+  background: var(--color-surface);
   border-radius: 999px;
   margin-bottom: 4px;
   margin-top: 4px;
 }
 
 .modal-scroll::-webkit-scrollbar-thumb {
-  background: #e8c880;
+  background: var(--brand-gold);
   border-radius: 999px;
 }
 
 [data-scroll-pop] {
   opacity: 0;
   transform: translate3d(0, 18px, 0);
-  filter: blur(4px);
+  filter: none;
   transition:
-    opacity 1600ms cubic-bezier(0.16, 1, 0.3, 1) 120ms,
-    transform 1600ms cubic-bezier(0.16, 1, 0.3, 1) 120ms,
-    filter 1600ms cubic-bezier(0.16, 1, 0.3, 1) 120ms;
+    opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1) 80ms,
+    transform 1100ms cubic-bezier(0.16, 1, 0.3, 1) 80ms,
+    filter 1100ms cubic-bezier(0.16, 1, 0.3, 1) 80ms;
+}
+
+[data-scroll-pop].is-animating {
   will-change: opacity, transform, filter;
+}
+
+@media (min-width: 1024px) {
+  [data-scroll-pop]:not(.is-visible) {
+    filter: blur(4px);
+  }
 }
 
 [data-scroll-pop].is-visible {
@@ -84,5 +168,9 @@ body {
     transition: none;
     transform: none;
     filter: none;
+  }
+
+  [data-scroll-pop].is-animating {
+    will-change: auto;
   }
 }

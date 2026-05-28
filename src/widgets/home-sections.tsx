@@ -6,4 +6,5 @@ export { AboutSection } from "@/widgets/home-sections/ui/AboutSection";
 export { ReviewsSection } from "@/widgets/home-sections/ui/ReviewsSection";
 export { CtaSection } from "@/widgets/home-sections/ui/CtaSection";
 export { FeatureCardsSection } from "@/widgets/home-sections/ui/FeatureCardsSection";
+export { FaqSection } from "@/widgets/home-sections/ui/FaqSection";
 export { ScrollTopButton } from "@/widgets/home-sections/ui/ScrollTopButton";

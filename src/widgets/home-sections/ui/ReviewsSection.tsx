@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+
 import { ArrowIcon } from "@/shared/ui/ArrowIcon";
 import { useInfiniteCarousel } from "@/widgets/shared/use-infinite-carousel";
 
@@ -19,11 +21,13 @@ export function ReviewsSection({
   const { orderedItems, offset, isTransitioning, transitionDuration, move } =
     useInfiniteCarousel(reviews);
 
+  const touchRef = useRef<{ x: number; y: number } | null>(null);
+
   return (
     <section
       id="reviews"
       data-scroll-pop
-      className="overflow-hidden bg-[#f8f8f8] px-3 py-12 sm:px-5 sm:py-16 lg:px-[100px] lg:py-20"
+      className="overflow-hidden bg-[#f8f8f8] px-3 py-8 sm:px-5 sm:py-11 lg:px-[100px] lg:py-14"
     >
       <div className="mx-auto max-w-[1280px]">
         <SectionHeading kicker={kicker} title={title} centered />
@@ -34,6 +38,24 @@ export function ReviewsSection({
               transform:
                 offset === 0 ? "translateX(0)" : "translateX(calc(-1 * var(--carousel-step)))",
               transitionDuration: isTransitioning ? `${transitionDuration}ms` : undefined,
+            }}
+            onTouchStart={(event) => {
+              const touch = event.touches[0];
+              if (!touch) return;
+              touchRef.current = { x: touch.clientX, y: touch.clientY };
+            }}
+            onTouchEnd={(event) => {
+              const start = touchRef.current;
+              touchRef.current = null;
+              if (!start) return;
+              const touch = event.changedTouches[0];
+              if (!touch) return;
+
+              const dx = touch.clientX - start.x;
+              const dy = touch.clientY - start.y;
+              if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+
+              move(dx < 0 ? 1 : -1);
             }}
           >
             {orderedItems.map((review) => (
@@ -49,7 +71,8 @@ export function ReviewsSection({
                     zoom={false}
                   />
                   <div
-                    aria-label="5 звезд"
+                    role="img"
+                    aria-label="Оценка: 5 из 5 звёзд"
                     className="mt-5 h-[21px] w-[131px] bg-contain bg-left bg-no-repeat"
                     style={{ backgroundImage: `url(${starRowImage})` }}
                   />

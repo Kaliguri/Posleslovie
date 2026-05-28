@@ -211,24 +211,20 @@ export function CheckoutStep2Form({
             if (event.target === event.currentTarget) setArtworkModalSrc(null);
           }}
         >
-          <div className="relative w-full max-w-[1100px] overflow-hidden rounded-[22px] bg-[#0b1321] shadow-2xl sm:rounded-[36px]">
+          <div className="relative inline-block max-w-full">
+            <img
+              src={artworkModalSrc}
+              alt=""
+              className="max-h-[86vh] w-auto max-w-full rounded-[14px] sm:rounded-[18px]"
+            />
             <button
               type="button"
               onClick={() => setArtworkModalSrc(null)}
               aria-label="Закрыть"
-              className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/70 text-white transition hover:border-white hover:bg-white/10 sm:right-5 sm:top-5 sm:h-12 sm:w-12"
+              className="absolute right-2 top-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/55 text-white shadow-md transition hover:bg-black/75 sm:right-3 sm:top-3 sm:h-11 sm:w-11"
             >
               <CrossIcon />
             </button>
-            <div className="grid">
-              <div className="grid place-items-center p-3 sm:p-5">
-                <img
-                  src={artworkModalSrc}
-                  alt=""
-                  className="max-h-[86vh] w-auto max-w-full rounded-[14px] bg-transparent sm:rounded-[18px]"
-                />
-              </div>
-            </div>
           </div>
         </div>
       ) : null}

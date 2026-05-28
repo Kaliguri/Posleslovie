@@ -19,9 +19,7 @@ export function SectionHeading({
       {kicker ? <SectionKicker>{kicker}</SectionKicker> : null}
       <h2
         data-typewriter={typewriter ? true : undefined}
-        className={`text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl ${
-          light ? "text-white" : "text-[#0f172a]"
-        }`}
+        className={`text-h2 font-extrabold ${light ? "text-white" : "text-foreground"}`}
       >
         {title}
       </h2>

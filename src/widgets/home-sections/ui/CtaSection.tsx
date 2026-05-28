@@ -18,7 +18,7 @@ export function CtaSection({
   return (
     <section
       data-scroll-pop
-      className="relative overflow-hidden bg-[#c1aeff] bg-cover bg-center px-4 py-14 text-center text-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] sm:px-5 sm:py-20 lg:px-[100px] lg:py-20"
+      className="relative overflow-hidden bg-[#c1aeff] bg-cover bg-center px-4 py-10 text-center text-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] sm:px-5 sm:py-14 lg:px-[100px] lg:py-14"
       style={{
         backgroundImage: `linear-gradient(0deg, rgba(14,17,50,0.3), rgba(14,17,50,0.3)), url(${backgroundImage})`,
       }}

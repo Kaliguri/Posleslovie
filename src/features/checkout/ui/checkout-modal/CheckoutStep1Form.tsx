@@ -27,7 +27,7 @@ export function CheckoutStep1Form({
 }>) {
   return (
     <div className="text-center sm:text-left">
-      <h3 className="text-[21px] font-extrabold sm:text-2xl">Контактная информация</h3>
+      <h3 className="text-h3 font-extrabold">Контактная информация</h3>
       <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
       <div className="mt-5 grid gap-3 sm:mt-6">
         {hasStepErrors ? (

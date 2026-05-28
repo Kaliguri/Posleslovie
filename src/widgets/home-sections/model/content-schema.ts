@@ -26,6 +26,19 @@ export const homeFeatureCardsSchema = z.object({
   ),
 });
 
+export const homeFaqSchema = z.object({
+  kicker: z.string().min(1),
+  title: z.string().min(1),
+  items: z
+    .array(
+      z.object({
+        question: z.string().min(1),
+        answer: z.string().min(1),
+      }),
+    )
+    .min(1),
+});
+
 export const homeProcessSectionSchema = z.object({
   eyebrow: z.string().min(1),
   title: z.string().min(1),

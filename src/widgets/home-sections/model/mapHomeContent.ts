@@ -1,6 +1,7 @@
 import { assetPath } from "@/shared/lib/asset-path";
 import homeAboutJson from "../../../../content/home-about.json";
 import homeCtaJson from "../../../../content/home-cta.json";
+import homeFaqJson from "../../../../content/home-faq.json";
 import homeFeatureCardsJson from "../../../../content/home-feature-cards.json";
 import homeGalleriesJson from "../../../../content/home-galleries.json";
 import homeHeroJson from "../../../../content/home-hero.json";
@@ -15,6 +16,7 @@ import siteProductsJson from "../../../../content/site-products.json";
 import {
   homeAboutSchema,
   homeCtaSchema,
+  homeFaqSchema,
   homeFeatureCardsSchema,
   homeGalleriesSchema,
   homeHeroSchema,
@@ -189,6 +191,24 @@ export const featureCardsSection = {
     icon: assetPath(card.icon),
   })),
 };
+
+const homeFaq = parseWithFallback(
+  "home-faq.json",
+  () => homeFaqSchema.parse(homeFaqJson),
+  () =>
+    homeFaqSchema.parse({
+      kicker: "Вопросы",
+      title: "FAQ",
+      items: [
+        {
+          question: "Как оформить заказ?",
+          answer: "Нажмите «Оформить заказ» и заполните форму на сайте.",
+        },
+      ],
+    }),
+);
+
+export const faqContent = homeFaq;
 
 export const processSections = [homeProcessBombs, homeProcessLavender, homeProcessPacks].map(
   (section) => ({

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import type { CheckoutCallScheduling, CheckoutErrors } from "@/features/checkout/model/types";
 import {
@@ -27,7 +27,7 @@ export function CheckoutStep3Form({
 
   return (
     <div className="text-center sm:text-left">
-      <h3 className="text-[21px] font-extrabold sm:text-2xl">Выберите время для звонка</h3>
+      <h3 className="text-[21px] font-extrabold sm:text-2xl">Когда с вами связаться?</h3>
       <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
       <div className="mt-5 grid gap-4 sm:mt-6">
         <label className="flex items-start gap-3 text-left">
@@ -37,12 +37,12 @@ export function CheckoutStep3Form({
             onChange={(event) => onSchedulingChange({ skipScheduling: event.target.checked })}
             className="mt-1 h-4 w-4 shrink-0 rounded border-[#0f172a]"
           />
-          <span className="text-base font-bold text-[#0f172a]">Не назначать время звонка</span>
+          <span className="text-base font-bold text-[#0f172a]">Оформить без звонка</span>
         </label>
 
         <div className={schedulingDisabled ? "pointer-events-none opacity-45" : ""}>
-          <div className="rounded bg-[#f8f8f8] px-3.5 py-3 sm:px-4">
-            <p className="text-base font-bold text-[#0f172a]">Время звонка</p>
+          <div className="py-3">
+            <p className="text-base font-bold text-[#0f172a]">Желаемое время</p>
             <TimeSelect
               value={scheduling.time}
               disabled={schedulingDisabled}
@@ -135,6 +135,7 @@ function CheckoutCallCalendar({
   disabled?: boolean;
   onSelectDate: (dateKey: string) => void;
 }>) {
+  const touchRef = useRef<{ x: number; y: number } | null>(null);
   const selectableDateKeys = getSelectableCallDateKeys();
   const selectableSet = new Set(selectableDateKeys);
   const initialMonth = parseLocalDateKey(selectedDate || selectableDateKeys[0]);
@@ -177,6 +178,33 @@ function CheckoutCallCalendar({
       className={`rounded-[28px] border border-[#ececec] bg-white p-4 shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:p-5 ${
         disabled ? "opacity-60" : ""
       }`}
+      onTouchStart={(event) => {
+        if (disabled) return;
+        const touch = event.touches[0];
+        if (!touch) return;
+        touchRef.current = { x: touch.clientX, y: touch.clientY };
+      }}
+      onTouchEnd={(event) => {
+        const start = touchRef.current;
+        touchRef.current = null;
+        if (disabled || !start) return;
+
+        const touch = event.changedTouches[0];
+        if (!touch) return;
+
+        const dx = touch.clientX - start.x;
+        const dy = touch.clientY - start.y;
+        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+
+        if (dx < 0) {
+          if (!canGoNext) return;
+          setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1));
+          return;
+        }
+
+        if (!canGoPrev) return;
+        setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1));
+      }}
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-lg font-extrabold text-[#0f172a] sm:text-xl">

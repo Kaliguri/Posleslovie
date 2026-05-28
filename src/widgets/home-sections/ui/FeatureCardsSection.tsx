@@ -13,13 +13,11 @@ export function FeatureCardsSection({
     <section
       id="bombs"
       data-scroll-pop
-      className="px-3 py-10 sm:px-5 sm:py-16 lg:px-[100px] lg:py-[100px]"
+      className="px-3 py-6 sm:px-5 sm:py-9 lg:px-[100px] lg:py-[56px]"
     >
-      <div className="mx-auto max-w-[1280px] rounded-[28px] bg-white px-4 py-10 sm:rounded-[48px] sm:px-6 sm:py-14 lg:min-h-[750px] lg:rounded-[100px] lg:px-20 lg:py-20">
+      <div className="mx-auto max-w-[1280px] rounded-[28px] bg-white px-4 py-6 sm:rounded-[48px] sm:px-6 sm:py-8 lg:rounded-[100px] lg:px-20 lg:py-12">
         <div className="mx-auto max-w-[780px] text-center">
-          <h2 className="text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
-            {sectionTitle}
-          </h2>
+          <h2 className="text-h2 font-extrabold">{sectionTitle}</h2>
           <GoldRule centered />
         </div>
         <div className="mt-8 grid gap-6 sm:mt-14 lg:grid-cols-3 lg:gap-16">

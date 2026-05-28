@@ -100,7 +100,7 @@ export function SiteHeader() {
         aria-expanded={isMobileMenuOpen}
         aria-controls="mobile-navigation"
         onClick={() => setIsMobileMenuOpen((current) => !current)}
-        className="fixed left-5 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-2xl border-2 border-[#e8c880] bg-[#0f2037]/90 text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:border-[#ffdfa0] hover:text-[#ffdfa0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
+        className="fixed left-5 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[#e8c880] text-[#0f172a] shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:bg-[#ffecbf] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
       >
         <span className="sr-only">{isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}</span>
         <span className="flex w-5 flex-col gap-1.5" aria-hidden="true">

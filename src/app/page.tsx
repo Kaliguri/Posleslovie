@@ -9,6 +9,7 @@ import { useBodyLock } from "@/shared/hooks/use-body-lock";
 import {
   AboutSection,
   CtaSection,
+  FaqSection,
   FeatureCardsSection,
   HeroSection,
   HeroVideoModal,
@@ -21,6 +22,7 @@ import {
   aboutContent,
   ctaContent,
   decorativeImages,
+  faqContent,
   featureCardsSection,
   globalOverlaysEnabled,
   heroContent,
@@ -84,7 +86,7 @@ export default function Home() {
         cards={featureCardsSection.cards}
       />
 
-      <div className="space-y-6 lg:space-y-0">
+      <div className="space-y-3 lg:space-y-0">
         {processSections.map((section, index) => (
           <ProcessSection
             key={section.title}
@@ -104,18 +106,21 @@ export default function Home() {
         useBackgroundOverlay={globalOverlaysEnabled}
         reasons={whyUsContent.reasons}
       />
-      <AboutSection
-        kicker={aboutContent.kicker}
-        title={aboutContent.title}
-        paragraphs={aboutContent.paragraphs}
-        image={aboutContent.image}
-      />
       <ReviewsSection
         kicker={reviewsContent.kicker}
         title={reviewsContent.title}
         reviews={reviewsContent.items}
         starRowImage={decorativeImages.stars}
       />
+      <AboutSection
+        kicker={aboutContent.kicker}
+        title={aboutContent.title}
+        paragraphs={aboutContent.paragraphs}
+        image={aboutContent.image}
+      />
+
+      <FaqSection kicker={faqContent.kicker} title={faqContent.title} items={faqContent.items} />
+
       <CtaSection
         onOrder={() => setModal("checkout")}
         heading={ctaContent.heading}

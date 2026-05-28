@@ -18,7 +18,7 @@ export function WhyUsSection({
   return (
     <section
       data-scroll-pop
-      className="relative overflow-hidden bg-cover bg-center px-4 py-12 text-white sm:px-5 sm:py-16 lg:px-[235px] lg:py-20"
+      className="relative my-6 overflow-hidden bg-cover bg-center px-4 py-8 text-white sm:my-8 sm:px-5 sm:py-11 lg:my-12 lg:px-[235px] lg:py-14"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       {useBackgroundOverlay ? (
