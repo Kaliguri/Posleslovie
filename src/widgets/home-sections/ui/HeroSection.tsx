@@ -64,7 +64,15 @@ export function HeroSection({
       <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-28 text-center sm:px-5 sm:pt-48 lg:justify-start lg:px-[100px] lg:pt-[331px] lg:text-left">
         <div className="max-w-[1234px] origin-top scale-[0.96] transform-gpu lg:origin-top-left lg:max-w-[860px] lg:scale-[0.97]">
           <h1 className="text-[34px] font-normal leading-[0.97] text-white [font-family:var(--font-educational)] min-[390px]:text-[40px] sm:text-7xl lg:text-[126px]">
-            {heading}
+            {heading === "Послесловие к вашему дню" ? (
+              <>
+                Послесловие к
+                <br />
+                вашему дню
+              </>
+            ) : (
+              heading
+            )}
           </h1>
           <p className="mx-auto mt-4 max-w-[320px] text-[14px] font-medium leading-[1.5] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] sm:text-xl lg:mx-0 lg:max-w-[860px] lg:text-[25px]">
             <span className="block">{leadLine1}</span>

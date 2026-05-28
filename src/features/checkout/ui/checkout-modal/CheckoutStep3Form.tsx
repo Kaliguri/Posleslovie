@@ -4,9 +4,9 @@ import { useState } from "react";
 
 import type { CheckoutCallScheduling, CheckoutErrors } from "@/features/checkout/model/types";
 import {
-  CALL_TIME_SLOTS,
   RUSSIAN_MONTHS,
   RUSSIAN_WEEKDAYS,
+  getCallTimeSlots,
   getSelectableCallDateKeys,
   parseLocalDateKey,
   toLocalDateKey,
@@ -27,7 +27,7 @@ export function CheckoutStep3Form({
 
   return (
     <div className="text-center sm:text-left">
-      <h3 className="text-[21px] font-extrabold sm:text-2xl">Созвон с менеджером</h3>
+      <h3 className="text-[21px] font-extrabold sm:text-2xl">Выберите время для звонка</h3>
       <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
       <div className="mt-5 grid gap-4 sm:mt-6">
         <label className="flex items-start gap-3 text-left">
@@ -43,20 +43,12 @@ export function CheckoutStep3Form({
         <div className={schedulingDisabled ? "pointer-events-none opacity-45" : ""}>
           <div className="rounded bg-[#f8f8f8] px-3.5 py-3 sm:px-4">
             <p className="text-base font-bold text-[#0f172a]">Время звонка</p>
-            <select
-              title="Call time"
+            <TimeSelect
               value={scheduling.time}
               disabled={schedulingDisabled}
-              onChange={(event) => onSchedulingChange({ time: event.target.value })}
-              aria-invalid={Boolean(errors.callTime)}
-              className="mt-2 w-full bg-transparent text-sm text-[#0f172a] outline-none disabled:cursor-not-allowed"
-            >
-              {CALL_TIME_SLOTS.map((slot) => (
-                <option key={slot} value={slot}>
-                  {slot}
-                </option>
-              ))}
-            </select>
+              invalid={Boolean(errors.callTime)}
+              onChange={(time) => onSchedulingChange({ time })}
+            />
             {errors.callTime ? <FieldErrorMessage message={errors.callTime} /> : null}
           </div>
 
@@ -70,6 +62,66 @@ export function CheckoutStep3Form({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function TimeSelect({
+  value,
+  disabled,
+  invalid,
+  onChange,
+}: Readonly<{
+  value: string;
+  disabled: boolean;
+  invalid: boolean;
+  onChange: (value: string) => void;
+}>) {
+  const [open, setOpen] = useState(false);
+  const slots = getCallTimeSlots();
+
+  return (
+    <div className="relative mt-2">
+      <button
+        type="button"
+        title="Call time"
+        disabled={disabled}
+        onClick={() => setOpen((current) => !current)}
+        onBlur={() => {
+          window.setTimeout(() => setOpen(false), 120);
+        }}
+        className={`flex w-full items-center justify-between rounded-2xl border bg-white px-4 py-3 text-left text-sm font-bold text-[#0f172a] outline-none transition disabled:cursor-not-allowed ${
+          invalid ? "border-red-500" : "border-[#e8c880]/60"
+        }`}
+      >
+        <span>{value || slots[0] || "09:00"}</span>
+        <span className="text-[#0f172a]/60" aria-hidden="true">
+          ▾
+        </span>
+      </button>
+
+      {open ? (
+        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-2xl border border-[#e8c880] bg-white shadow-[0_-14px_40px_rgba(15,23,42,0.16)]">
+          <div className="max-h-[220px] overflow-y-auto py-2">
+            {slots.map((slot) => (
+              <button
+                key={slot}
+                type="button"
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  onChange(slot);
+                  setOpen(false);
+                }}
+                className={`block w-full px-4 py-3 text-left text-sm font-bold transition hover:bg-[#fff4d8] ${
+                  slot === value ? "bg-[#fff4d8] text-[#0f172a]" : "text-[#0f172a]"
+                }`}
+              >
+                {slot}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

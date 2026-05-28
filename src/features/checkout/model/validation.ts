@@ -106,19 +106,20 @@ export const RUSSIAN_MONTHS = [
 
 export const RUSSIAN_WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const;
 
-export const CALL_TIME_SLOTS = [
-  "09:00",
-  "10:00",
-  "11:00",
-  "12:00",
-  "13:00",
-  "14:00",
-  "15:00",
-  "16:00",
-  "17:00",
-  "18:00",
-  "19:00",
-] as const;
+export function getCallTimeSlots() {
+  const slots: string[] = [];
+  for (let hour = 9; hour <= 19; hour += 1) {
+    for (const minute of [0, 30]) {
+      if (hour === 19 && minute !== 0) {
+        continue;
+      }
+      const hh = String(hour).padStart(2, "0");
+      const mm = String(minute).padStart(2, "0");
+      slots.push(`${hh}:${mm}`);
+    }
+  }
+  return slots;
+}
 
 export function toLocalDateKey(date: Date) {
   const year = date.getFullYear();
@@ -152,7 +153,7 @@ export function getDefaultCallScheduling(): CheckoutCallScheduling {
   return {
     skipScheduling: false,
     date: firstDate,
-    time: CALL_TIME_SLOTS[0],
+    time: getCallTimeSlots()[0] ?? "09:00",
   };
 }
 
@@ -169,10 +170,7 @@ export function validateCallScheduling(scheduling: CheckoutCallScheduling) {
     errors.callDate = "Выберите дату созвона в ближайшие 7 дней.";
   }
 
-  if (
-    !scheduling.time ||
-    !CALL_TIME_SLOTS.includes(scheduling.time as (typeof CALL_TIME_SLOTS)[number])
-  ) {
+  if (!scheduling.time || !getCallTimeSlots().includes(scheduling.time)) {
     errors.callTime = "Выберите удобное время звонка.";
   }
 

@@ -50,11 +50,23 @@ export function CheckoutOrderPanel({
         <p className="shrink-0 font-bold sm:self-start">{checkoutProduct.price} ₽</p>
       </div>
       <div className="mt-5 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-6" />
-      <div className="mt-5 space-y-2 text-base sm:mt-6 sm:space-y-4 sm:text-xl">
-        <p className="font-light">Количество: {quantity} шт.</p>
-        <p className="font-light">Цена за 1 шт.: {checkoutProduct.price} руб.</p>
-        <p className="font-extrabold">Итоговая сумма: {total} руб.</p>
-      </div>
+      <dl className="mt-5 rounded-2xl bg-[#f8f8f8] p-4 text-base sm:mt-6 sm:p-5 sm:text-xl">
+        <div className="flex items-baseline justify-between gap-4">
+          <dt className="text-[#0f172a]/70">Количество</dt>
+          <dd className="font-semibold text-[#0f172a]">{quantity} шт.</dd>
+        </div>
+        <div className="mt-2 flex items-baseline justify-between gap-4 sm:mt-3">
+          <dt className="text-[#0f172a]/70">Цена за 1 шт.</dt>
+          <dd className="font-semibold text-[#0f172a]">{checkoutProduct.price} руб.</dd>
+        </div>
+        <div aria-hidden="true" className="my-3 h-px bg-[#0f172a]/10 sm:my-4" />
+        <div className="flex items-baseline justify-between gap-4">
+          <dt className="font-bold text-[#0f172a]">Итоговая сумма</dt>
+          <dd className="text-2xl font-extrabold leading-none text-[#0f172a] sm:text-3xl">
+            {total} ₽
+          </dd>
+        </div>
+      </dl>
     </div>
   );
 }

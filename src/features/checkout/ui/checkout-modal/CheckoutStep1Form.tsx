@@ -13,49 +13,23 @@ import {
 } from "./FormParts";
 
 export function CheckoutStep1Form({
-  tab,
   values,
   errors,
   hasStepErrors,
   onFieldChange,
   onContinue,
-  onTabChange,
 }: Readonly<{
-  tab: "personal" | "company";
   values: CheckoutState["formValues"];
   errors: CheckoutErrors;
   hasStepErrors: boolean;
   onFieldChange: (field: CheckoutField, value: string) => void;
   onContinue: () => void;
-  onTabChange: (tab: "personal" | "company") => void;
 }>) {
   return (
     <div className="text-center sm:text-left">
       <h3 className="text-[21px] font-extrabold sm:text-2xl">Контактная информация</h3>
       <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
       <div className="mt-5 grid gap-3 sm:mt-6">
-        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-[#f8f8f8] p-1">
-          <button
-            type="button"
-            onClick={() => onTabChange("personal")}
-            className={`rounded-xl px-3 py-2 text-sm font-bold transition sm:text-base ${
-              tab === "personal"
-                ? "bg-[#e8c880] text-[#0f172a]"
-                : "text-[#0f172a]/75 hover:bg-white"
-            }`}
-          >
-            Для себя
-          </button>
-          <button
-            type="button"
-            onClick={() => onTabChange("company")}
-            className={`rounded-xl px-3 py-2 text-sm font-bold transition sm:text-base ${
-              tab === "company" ? "bg-[#e8c880] text-[#0f172a]" : "text-[#0f172a]/75 hover:bg-white"
-            }`}
-          >
-            Для компании
-          </button>
-        </div>
         {hasStepErrors ? (
           <FormErrorSummary message="Проверьте контактные данные и детали заказа." />
         ) : null}
@@ -88,35 +62,6 @@ export function CheckoutStep1Form({
           autoComplete="email"
           onChange={(v) => onFieldChange("email", v)}
         />
-        {tab === "company" ? (
-          <>
-            <FormField
-              label="Компания"
-              placeholder="Название компании"
-              value={values.company}
-              error={errors.company}
-              required
-              autoComplete="organization"
-              onChange={(v) => onFieldChange("company", v)}
-            />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <FormField
-                label="ИНН"
-                placeholder="ИНН"
-                value={values.inn}
-                inputMode="numeric"
-                onChange={(v) => onFieldChange("inn", v)}
-              />
-              <FormField
-                label="ОГРН"
-                placeholder="ОГРН"
-                value={values.ogrn}
-                inputMode="numeric"
-                onChange={(v) => onFieldChange("ogrn", v)}
-              />
-            </div>
-          </>
-        ) : null}
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded border border-transparent bg-[#f8f8f8] px-3.5 py-3 text-center sm:px-4 sm:text-left">
             <p className="text-base font-bold text-[#0f172a]">Как с вами удобнее связаться?</p>
@@ -140,23 +85,20 @@ export function CheckoutStep1Form({
             onChange={(v) => onFieldChange("contactHandle", v)}
           />
         </div>
-        {tab === "personal" ? (
-          <CitySelectField
-            label="Город доставки"
-            placeholder="Москва"
-            value={values.city}
-            error={errors.city}
-            required
-            onChange={(v) => onFieldChange("city", v)}
-          />
-        ) : (
-          <FormFieldTextarea
-            label="Комментарий к заказу"
-            placeholder="Комментарии, которые помогут нам лучше узнать о задаче"
-            value={values.comment}
-            onChange={(v) => onFieldChange("comment", v)}
-          />
-        )}
+        <CitySelectField
+          label="Город доставки"
+          placeholder="Москва"
+          value={values.city}
+          error={errors.city}
+          required
+          onChange={(v) => onFieldChange("city", v)}
+        />
+        <FormFieldTextarea
+          label="Комментарий к заказу"
+          placeholder="Комментарии, которые помогут нам лучше узнать о задаче"
+          value={values.comment}
+          onChange={(v) => onFieldChange("comment", v)}
+        />
         <RequiredFieldsNote />
         <p className="text-sm leading-[1.5] text-[#0f172a] sm:text-left">
           В случае вопросов с доставкой свяжитесь с менеджером по телефону{" "}

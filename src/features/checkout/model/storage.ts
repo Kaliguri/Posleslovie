@@ -23,7 +23,7 @@ export function parseCheckoutState(value: string | null): CheckoutState {
 
     return {
       quantity: Math.max(1, Number(parsed.quantity) || initialCheckoutState.quantity),
-      tab: parsed.tab === "company" ? "company" : "personal",
+      tab: "personal",
       formValues: {
         ...formValues,
         phone: formatRussianPhoneInput(formValues.phone),

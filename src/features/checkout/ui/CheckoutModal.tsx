@@ -469,13 +469,11 @@ function CheckoutModal({
         <div>
           {step === 1 ? (
             <CheckoutStep1Form
-              tab={tab}
               values={formValues}
               errors={errors}
               hasStepErrors={hasErrors(getStep1Errors(errors))}
               onFieldChange={handleFieldChange}
               onContinue={handleContinue}
-              onTabChange={onTabChange}
             />
           ) : null}
           {step === 2 ? (
