@@ -19,24 +19,34 @@
 
 ---
 
-## Screenshots
+<details>
+<summary><b>Screenshots</b></summary>
+
+<br>
 
 ![Главный экран](docs/screenshots/hero.png)
 
-## Architecture
+</details>
+
+<details>
+<summary><b>Architecture</b></summary>
+
+<br>
 
 ```mermaid
-flowchart LR
-  User[Visitor] --> Site[Next.js static site]
-  Site --> AmoWorker[Cloudflare AmoCRM Worker]
+flowchart TD
+  User[Visitor] --> Site[Next.js site]
+  Site --> AmoWorker[AmoCRM Worker]
   AmoWorker --> AmoCRM[AmoCRM]
 
   Admin[Content editor] --> CMS[Sveltia CMS]
-  CMS --> OAuth[Cloudflare OAuth Worker]
-  CMS --> GitHub[GitHub content JSON]
+  CMS --> OAuth[OAuth Worker]
+  CMS --> GitHub[GitHub content]
   GitHub --> Actions[GitHub Actions]
   Actions --> Pages[GitHub Pages]
 ```
+
+</details>
 
 ---
 
@@ -53,7 +63,10 @@ flowchart LR
 - **Автодеплой на GitHub Pages** при каждом коммите в `main`
 - **SEO из коробки**: sitemap, robots.txt, Open Graph, JSON-LD
 
-### Для разработчиков
+<details>
+<summary><b>Для разработчиков</b></summary>
+
+<br>
 
 **Стек**
 
@@ -104,6 +117,8 @@ npm run build  # статическая сборка -> out/
 
 Секреты (токены AmoCRM, OAuth) хранятся только в Cloudflare Dashboard, не в репозитории.
 
+</details>
+
 ---
 
 ## English
@@ -119,7 +134,10 @@ npm run build  # статическая сборка -> out/
 - **Auto-deploy to GitHub Pages** on every commit to `main`
 - **SEO built in**: sitemap, robots.txt, Open Graph, JSON-LD
 
-### For developers
+<details>
+<summary><b>For developers</b></summary>
+
+<br>
 
 **Stack**
 
@@ -169,6 +187,8 @@ npm run build  # static build -> out/
 | GitHub OAuth | Sveltia CMS sign-in                            |
 
 Secrets (AmoCRM tokens and OAuth credentials) are stored only in the Cloudflare Dashboard, never in the repository.
+
+</details>
 
 ---
 
