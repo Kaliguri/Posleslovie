@@ -36,8 +36,6 @@
 ## Screenshots
 
 ![Главный экран](docs/screenshots/hero.png)
-![Форма заказа](docs/screenshots/checkout.png)
-![CMS](docs/screenshots/cms.png)
 
 ## Architecture
 
