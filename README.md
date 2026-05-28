@@ -19,7 +19,7 @@
 
 ---
 
-## 🇷🇺 Русский
+## Русский
 
 **Сайт-витрина для бренда натуральных бомбочек** — с онлайн-заказом, интеграцией CRM и управлением контентом без разработчика.
 
@@ -103,7 +103,7 @@ npm run build  # статическая сборка → out/
 
 ---
 
-## 🇬🇧 English
+## English
 
 **A brand site for natural bath bombs** — with an ordering flow, CRM integration, and no-code content management.
 
