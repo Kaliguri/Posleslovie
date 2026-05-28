@@ -146,13 +146,7 @@ src/
 | AmoCRM       | Форма заказа -> сделка с заметкой и вложением |
 | GitHub OAuth | Авторизация в Sveltia CMS                     |
 
-Секреты (токены AmoCRM, OAuth) хранятся только в Cloudflare Dashboard, не в репозитории.
-
-**Известные ограничения**
-
-- Состояние модалок управляется лёгкой шиной событий (`posleslovie:open-modal`) вместо router-based state.
-- Часть UI-блоков использует нативный `<img>` (допустимо для static export, постепенная оптимизация запланирована).
-- Lint-предупреждения в `cloudflare/` для анонимного default export не блокируют сборку.
+Секреты интеграций (AmoCRM, OAuth) размещаются в Cloudflare Dashboard и не хранятся в репозитории.
 
 </details>
 
@@ -254,13 +248,7 @@ src/
 | AmoCRM       | Checkout form -> deal with note and attachment |
 | GitHub OAuth | Sveltia CMS sign-in                            |
 
-Secrets (AmoCRM tokens and OAuth credentials) are stored only in the Cloudflare Dashboard, never in the repository.
-
-**Known limitations**
-
-- Modal state currently uses a lightweight custom event bus (`posleslovie:open-modal`) instead of router-based state.
-- Some UI blocks still use native `<img>` (acceptable for the current static-export scope, with a gradual optimization path).
-- `cloudflare/` worker lint warnings for anonymous default export are non-blocking.
+Integration secrets (AmoCRM and OAuth) are managed in the Cloudflare Dashboard and are not stored in the repository.
 
 </details>
 
