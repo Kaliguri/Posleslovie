@@ -111,6 +111,7 @@ export default function Home() {
         title={reviewsContent.title}
         reviews={reviewsContent.items}
         starRowImage={decorativeImages.stars}
+        withOverlay={globalOverlaysEnabled}
       />
       <AboutSection
         kicker={aboutContent.kicker}

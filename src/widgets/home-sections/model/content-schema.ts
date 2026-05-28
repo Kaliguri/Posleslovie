@@ -75,7 +75,9 @@ export const homeReviewsSchema = z.object({
   items: z.array(
     z.object({
       name: z.string().min(1),
+      mediaType: z.enum(["image", "video"]).catch("image"),
       image: z.string().min(1),
+      video: z.string().optional().default(""),
       text: z.string().min(1),
     }),
   ),

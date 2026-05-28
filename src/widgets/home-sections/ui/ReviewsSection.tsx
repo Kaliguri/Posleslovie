@@ -1,27 +1,34 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { ArrowIcon } from "@/shared/ui/ArrowIcon";
 import { useInfiniteCarousel } from "@/widgets/shared/use-infinite-carousel";
 
 import { SectionHeading, ZoomImage } from "./SharedSectionUi";
+import { HeroVideoModal } from "./HeroVideoModal";
 
 export function ReviewsSection({
   kicker,
   title,
   reviews,
   starRowImage,
+  withOverlay,
 }: Readonly<{
   kicker: string;
   title: string;
-  reviews: { name: string; image: string; text: string }[];
+  reviews: { name: string; mediaType: "image" | "video"; image: string; video: string; text: string }[];
   starRowImage: string;
+  withOverlay: boolean;
 }>) {
   const { orderedItems, offset, isTransitioning, transitionDuration, move } =
     useInfiniteCarousel(reviews);
 
   const touchRef = useRef<{ x: number; y: number } | null>(null);
+  const [activeVideoReview, setActiveVideoReview] = useState<{
+    name: string;
+    src: string;
+  } | null>(null);
 
   return (
     <section
@@ -64,12 +71,26 @@ export function ReviewsSection({
                 className="group flex min-h-[470px] w-full shrink-0 basis-full flex-col justify-between rounded-[18px] bg-white p-4 transition duration-300 hover:-translate-y-2 hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:min-h-[560px] sm:p-8 lg:min-h-[600px] lg:basis-[calc((100%_-_var(--carousel-gap)*2)/3)]"
               >
                 <div>
-                  <ZoomImage
-                    image={review.image}
-                    label=""
-                    className="h-[170px] rounded-[20px] sm:h-[220px]"
-                    zoom={false}
-                  />
+                  <div className="relative">
+                    <ZoomImage
+                      image={review.image}
+                      label=""
+                      className="h-[170px] rounded-[20px] sm:h-[220px]"
+                      zoom={false}
+                    />
+                    {review.mediaType === "video" && review.video ? (
+                      <button
+                        type="button"
+                        onClick={() => setActiveVideoReview({ name: review.name, src: review.video })}
+                        aria-label={`Открыть видео отзыва: ${review.name}`}
+                        className="group/review-video absolute inset-0 flex items-center justify-center rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
+                      >
+                        <span className="pointer-events-none flex h-14 w-14 items-center justify-center rounded-full bg-black/45 text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition group-hover/review-video:scale-110 sm:h-16 sm:w-16">
+                          <PlayIcon />
+                        </span>
+                      </button>
+                    ) : null}
+                  </div>
                   <div
                     role="img"
                     aria-label="Оценка: 5 из 5 звёзд"
@@ -90,6 +111,13 @@ export function ReviewsSection({
           <ArrowButton direction="right" onClick={() => move(1)} />
         </div>
       </div>
+      <HeroVideoModal
+        open={Boolean(activeVideoReview)}
+        src={activeVideoReview?.src ?? ""}
+        title={activeVideoReview ? `Видео-отзыв: ${activeVideoReview.name}` : ""}
+        withOverlay={withOverlay}
+        onClose={() => setActiveVideoReview(null)}
+      />
     </section>
   );
 }
@@ -109,5 +137,13 @@ function ArrowButton({
         <ArrowIcon />
       </span>
     </button>
+  );
+}
+
+function PlayIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <path d="M9 18V6l12 6-12 6Z" fill="currentColor" />
+    </svg>
   );
 }

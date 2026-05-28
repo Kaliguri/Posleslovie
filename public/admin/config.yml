@@ -414,16 +414,49 @@ collections:
             max: 10
             fields:
               - { name: name, label: Имя автора, widget: string }
+              - name: mediaType
+                label: Что показывать в отзыве
+                widget: select
+                default: image
+                options:
+                  - { label: Картинка, value: image }
+                  - { label: Видео, value: video }
+                hint: Выберите, показывать картинку или видео с превью.
               - {
                   name: image,
-                  label: Фото/иллюстрация,
+                  label: Картинка / превью видео,
                   widget: image,
                   hint: "Рекомендуемый размер: 400x400 px (квадрат).",
                 }
+              - name: video
+                label: Видео отзыва (mp4/webm)
+                widget: file
+                required: false
+                media_folder: public/images/videos
+                public_folder: /images/videos
+                hint: "Если выбран режим Видео, загрузите файл видео."
+                pattern:
+                  - "\\.(mp4|webm)$"
+                  - "Разрешены только видео MP4 или WEBM"
               - { name: text, label: Текст отзыва, widget: text }
 
+      - name: faq
+        label: "Блок #9. Ответы на вопросы (FAQ)"
+        file: content/home-faq.json
+        fields:
+          - { name: kicker, label: Надпись над заголовком, widget: string }
+          - { name: title, label: Заголовок блока, widget: string }
+          - name: items
+            label: Вопросы и ответы
+            widget: list
+            summary: "{{fields.question}}"
+            max: 20
+            fields:
+              - { name: question, label: Вопрос, widget: string }
+              - { name: answer, label: Ответ, widget: text }
+
       - name: cta
-        label: "Блок #9. Нижний баннер с кнопкой"
+        label: "Блок #10. Нижний баннер с кнопкой"
         file: content/home-cta.json
         fields:
           - { name: heading, label: Заголовок баннера, widget: string }

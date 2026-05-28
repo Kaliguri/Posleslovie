@@ -238,7 +238,9 @@ export const reviewsContent = {
   ...homeReviews,
   items: homeReviews.items.map((review) => ({
     ...review,
+    mediaType: (review.mediaType === "video" ? "video" : "image") as "image" | "video",
     image: assetPath(review.image),
+    video: review.video ? assetPath(review.video) : "",
   })),
 };
 
