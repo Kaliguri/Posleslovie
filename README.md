@@ -56,11 +56,12 @@ flowchart TD
 
 ### Highlights
 
-- Static Next.js export deployed to GitHub Pages with custom domain
-- Editable content via Sveltia CMS backed by JSON files in GitHub
-- Checkout flow with persisted form state, validation, logo upload and AmoCRM lead creation
+- Статический экспорт Next.js с деплоем на GitHub Pages и custom domain (`posleslovie.online`)
+- Редактируемый контент через Sveltia CMS (JSON-файлы в GitHub)
+- Checkout-сценарий с сохранением состояния формы, валидацией, загрузкой логотипа и созданием лида в AmoCRM
 - SEO-ready: sitemap, robots.txt, Open Graph, JSON-LD
-- CI pipeline: format, lint, typecheck, unit tests, build and deploy
+- Инфраструктура без платного хостинга (GitHub Pages + Cloudflare Workers)
+- CI-пайплайн: format, lint, typecheck, unit tests, build и deploy
 
 <details>
 <summary><b>Для разработчиков</b></summary>
@@ -168,6 +169,7 @@ src/
 - Editable content via Sveltia CMS backed by JSON files in GitHub
 - Checkout flow with persisted form state, validation, logo upload and AmoCRM lead creation
 - SEO-ready: sitemap, robots.txt, Open Graph, JSON-LD
+- Hosting stack without paid infrastructure (GitHub Pages + Cloudflare Workers)
 - CI pipeline: format, lint, typecheck, unit tests, build and deploy
 
 <details>
