@@ -1,9 +1,6 @@
 <div align="center">
 
-# Послесловие
-
-**Сайт-витрина для бренда натуральных бомбочек**
-*A brand site for natural bath bombs*
+# Послесловие · Posleslovie
 
 <br>
 
@@ -22,7 +19,11 @@
 
 ---
 
-## Что умеет
+## 🇷🇺 Русский
+
+**Сайт-витрина для бренда натуральных бомбочек** — с онлайн-заказом, интеграцией CRM и управлением контентом без разработчика.
+
+### Что умеет
 
 - **Адаптивный дизайн** — отлично смотрится на телефоне, планшете и большом экране
 - **Заказ в пару кликов** — форма для частных клиентов и корпоративных заказов: загрузка логотипа, автодополнение города, сохранение данных
@@ -32,9 +33,7 @@
 - **SEO из коробки** — sitemap, robots.txt, Open Graph (красивые превью в мессенджерах), JSON-LD для Google
 - **Обновляется само** — любой коммит в `main` запускает сборку и деплой автоматически
 
----
-
-## Страница
+### Страница
 
 | Секция | |
 |---|---|
@@ -47,14 +46,12 @@
 | Заказ | Модальное окно — личный и корпоративный |
 | Ещё | Доставка, партнёрам, контакты, юридические документы |
 
----
-
 <details>
 <summary><b>Для разработчиков</b></summary>
 
 <br>
 
-### Стек
+**Стек**
 
 | | |
 |---|---|
@@ -63,7 +60,7 @@
 | Хостинг | GitHub Pages + GitHub Actions |
 | Интеграции | Cloudflare Workers — AmoCRM, CMS OAuth |
 
-### Структура
+**Структура**
 
 ```
 ├── content/              # JSON-контент (редактируется через CMS)
@@ -71,19 +68,13 @@
 │   ├── site-settings.json
 │   ├── site-products.json
 │   └── legal-documents.json
-├── public/
-│   ├── admin/            # Sveltia CMS
-│   └── images/ videos/
-├── src/
-│   ├── app/              # Next.js App Router (page, layout, robots, sitemap)
-│   └── shared/           # Конфиги и UI-компоненты
-├── cloudflare/
-│   ├── posleslovie-amocrm-worker.js    # Checkout → AmoCRM
-│   └── posleslovie-cms-auth-worker.js  # GitHub OAuth для CMS
+├── public/admin/         # Sveltia CMS
+├── src/app/              # Next.js App Router (page, layout, robots, sitemap)
+├── cloudflare/           # Workers: AmoCRM, CMS OAuth
 └── .github/workflows/pages.yml
 ```
 
-### Локально
+**Локально**
 
 ```bash
 npm install
@@ -91,24 +82,15 @@ npm run dev    # http://localhost:3000
 npm run build  # статическая сборка → out/
 ```
 
-> Node.js 22+. Серверные API не используются — checkout и CMS-авторизация живут в Cloudflare Workers.
+> Node.js 22+. Checkout и CMS-авторизация работают через внешние Cloudflare Workers.
 
-### Деплой
-
-Push в `main` → GitHub Actions → `out/` на GitHub Pages.
-
+**Деплой:** push в `main` → GitHub Actions → `out/` на GitHub Pages.
 Настройка: **Settings → Pages → GitHub Actions**.
 
-### Редактирование контента
-
-1. [posleslovie.online/admin/](https://posleslovie.online/admin/)
-2. Войти через GitHub
-3. Отредактировать → **Publish**
-4. ~3 минуты до обновления
-
+**Контент:** [posleslovie.online/admin/](https://posleslovie.online/admin/) → GitHub → Edit → Publish (~3 мин).
 Подробнее: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
 
-### Интеграции
+**Интеграции**
 
 | Сервис | Назначение |
 |---|---|
@@ -116,6 +98,90 @@ Push в `main` → GitHub Actions → `out/` на GitHub Pages.
 | GitHub OAuth | Авторизация в Sveltia CMS |
 
 Секреты (токены AmoCRM, OAuth) — в Cloudflare Dashboard, не в репозитории.
+
+</details>
+
+---
+
+## 🇬🇧 English
+
+**A brand site for natural bath bombs** — with an ordering flow, CRM integration, and no-code content management.
+
+### What it does
+
+- **Responsive design** — looks great on any device
+- **Simple ordering** — personal and corporate checkout: logo upload, city autocomplete, form persistence
+- **Orders straight to CRM** — every submission creates an AmoCRM deal with a note, total, and attachments
+- **No-code content editing** — built-in CMS: edit text or photos in the browser, click Publish, live in ~3 min
+- **Fast & free hosting** — static site on GitHub Pages, no server needed
+- **SEO out of the box** — sitemap, robots.txt, Open Graph, JSON-LD for Google
+- **Self-deploying** — any commit to `main` triggers an automatic build and deploy
+
+### Page sections
+
+| Section | |
+|---|---|
+| Hero | Headline, brand pitch, production video |
+| Product | Cards with description and price |
+| Process | Three galleries: bombs, lavender, packaging |
+| Why us | Brand advantages |
+| About | Team story |
+| Reviews | Customer cards |
+| Checkout | Modal — personal and corporate tabs |
+| More | Delivery, partners, contacts, legal documents |
+
+<details>
+<summary><b>For developers</b></summary>
+
+<br>
+
+**Stack**
+
+| | |
+|---|---|
+| Frontend | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
+| Content | JSON in `content/`, Sveltia CMS |
+| Hosting | GitHub Pages + GitHub Actions |
+| Integrations | Cloudflare Workers — AmoCRM, CMS OAuth |
+
+**Structure**
+
+```
+├── content/              # JSON content (edited via CMS)
+│   ├── home-*.json       # Landing sections
+│   ├── site-settings.json
+│   ├── site-products.json
+│   └── legal-documents.json
+├── public/admin/         # Sveltia CMS
+├── src/app/              # Next.js App Router (page, layout, robots, sitemap)
+├── cloudflare/           # Workers: AmoCRM, CMS OAuth
+└── .github/workflows/pages.yml
+```
+
+**Local development**
+
+```bash
+npm install
+npm run dev    # http://localhost:3000
+npm run build  # static build → out/
+```
+
+> Node.js 22+. Checkout and CMS auth run on external Cloudflare Workers.
+
+**Deployment:** push to `main` → GitHub Actions → `out/` to GitHub Pages.
+Setup: **Settings → Pages → GitHub Actions**.
+
+**Content:** [posleslovie.online/admin/](https://posleslovie.online/admin/) → GitHub → Edit → Publish (~3 min).
+Details: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
+
+**Integrations**
+
+| Service | Purpose |
+|---|---|
+| AmoCRM | Checkout form → deal with note and attachment |
+| GitHub OAuth | Sveltia CMS sign-in |
+
+Secrets (AmoCRM tokens, OAuth credentials) live in the Cloudflare Dashboard only — never in the repo.
 
 </details>
 
