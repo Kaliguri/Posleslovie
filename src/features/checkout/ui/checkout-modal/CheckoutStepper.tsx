@@ -1,6 +1,9 @@
 import { ArrowIcon } from "@/shared/ui/ArrowIcon";
 
-export function CheckoutStepper({ step, onBack }: Readonly<{ step: 1 | 2 | 3; onBack: () => void }>) {
+export function CheckoutStepper({
+  step,
+  onBack,
+}: Readonly<{ step: 1 | 2 | 3; onBack: () => void }>) {
   return (
     <div className="mt-4 flex items-center justify-center sm:mt-5">
       <div className="relative w-full">

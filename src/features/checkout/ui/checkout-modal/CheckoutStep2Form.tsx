@@ -11,11 +11,7 @@ import type {
 import { assetPath } from "@/shared/lib/asset-path";
 import { CrossIcon } from "@/shared/ui/CrossIcon";
 
-import {
-  FieldErrorMessage,
-  FormErrorSummary,
-  FormFieldTextarea,
-} from "./FormParts";
+import { FieldErrorMessage, FormErrorSummary, FormFieldTextarea } from "./FormParts";
 
 export function CheckoutStep2Form({
   values,

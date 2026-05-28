@@ -136,7 +136,9 @@ function CheckoutCallCalendar({
             title="Previous month"
             disabled={disabled || !canGoPrev}
             onClick={() =>
-              setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))
+              setVisibleMonth(
+                (current) => new Date(current.getFullYear(), current.getMonth() - 1, 1),
+              )
             }
             className="flex h-9 w-9 items-center justify-center rounded-full text-[#0f172a] transition hover:bg-[#f3f3f3] disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -147,7 +149,9 @@ function CheckoutCallCalendar({
             title="Next month"
             disabled={disabled || !canGoNext}
             onClick={() =>
-              setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))
+              setVisibleMonth(
+                (current) => new Date(current.getFullYear(), current.getMonth() + 1, 1),
+              )
             }
             className="flex h-9 w-9 items-center justify-center rounded-full text-[#0f172a] transition hover:bg-[#f3f3f3] disabled:cursor-not-allowed disabled:opacity-40"
           >

@@ -28,12 +28,7 @@ export type CheckoutState = {
 
 export type CheckoutField = keyof CheckoutFormValues;
 export type CheckoutStepNumber = 1 | 2 | 3;
-export type CheckoutErrorField =
-  | CheckoutField
-  | "quantity"
-  | "consent"
-  | "callDate"
-  | "callTime";
+export type CheckoutErrorField = CheckoutField | "quantity" | "consent" | "callDate" | "callTime";
 export type CheckoutErrors = Partial<Record<CheckoutErrorField, string>>;
 export type CheckoutCallScheduling = {
   skipScheduling: boolean;

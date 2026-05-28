@@ -267,7 +267,8 @@ function CheckoutModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<CheckoutErrors>({});
   const [isConsentAccepted, setIsConsentAccepted] = useState(false);
-  const [callScheduling, setCallScheduling] = useState<CheckoutCallScheduling>(getDefaultCallScheduling);
+  const [callScheduling, setCallScheduling] =
+    useState<CheckoutCallScheduling>(getDefaultCallScheduling);
   const [logoFile, setLogoFile] = useState<CheckoutLogoFile | null>(null);
   const [logoFileError, setLogoFileError] = useState<string | null>(null);
   const { tab, quantity, formValues } = checkoutState;
