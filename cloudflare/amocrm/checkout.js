@@ -1,4 +1,5 @@
 import { amoRequest } from "./client.js";
+import { buildContactFields } from "./contact-fields.js";
 import { uploadLogoFileToAmoCRM } from "./files.js";
 import { buildOrderNote } from "./order-note.js";
 
@@ -13,20 +14,7 @@ function getLeadId(createdLeadResponse) {
 export async function createAmoCRMCheckout(payload, token, amoBaseUrl) {
   const { tab, quantity, total, formValues, logoFile } = payload;
   const isCompanyOrder = tab === "company";
-  const contactFields = [
-    formValues.phone
-      ? {
-          field_code: "PHONE",
-          values: [{ value: formValues.phone, enum_code: "WORK" }],
-        }
-      : null,
-    formValues.email
-      ? {
-          field_code: "EMAIL",
-          values: [{ value: formValues.email, enum_code: "WORK" }],
-        }
-      : null,
-  ].filter(Boolean);
+  const contactFields = await buildContactFields(formValues, token, amoBaseUrl);
 
   const createdLeadResponse = await amoRequest(
     "/api/v4/leads/complex",
