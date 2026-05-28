@@ -1477,9 +1477,9 @@ function HomeModal({
                 </button>
 
                 <div className="mx-auto flex w-full max-w-[560px] items-center justify-center px-11 sm:px-12">
-                  <div className="flex w-full max-w-[420px] items-center">
+                  <div className="flex items-center">
                     {[1, 2, 3].map((step, index) => (
-                      <div key={step} className="flex flex-1 items-center">
+                      <div key={step} className="flex items-center">
                         <div
                           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-extrabold sm:h-11 sm:w-11 sm:text-xl ${
                             step === checkoutStep ? "bg-[#e8c880] text-[#0f172a]" : "bg-[#0f172a] text-white"
@@ -1489,8 +1489,8 @@ function HomeModal({
                           {step}
                         </div>
                         {index < 2 ? (
-                          <div className="mx-3 flex flex-1 items-center sm:mx-4">
-                            <div className="h-[2px] w-full border-t-2 border-dashed border-[#d7d7d7]" />
+                          <div className="mx-3 flex items-center sm:mx-4">
+                            <div className="h-[2px] w-16 border-t-2 border-dashed border-[#d7d7d7] sm:w-20" />
                           </div>
                         ) : null}
                       </div>
