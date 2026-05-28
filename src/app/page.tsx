@@ -19,8 +19,14 @@ import homeCtaJson from "../../content/home-cta.json";
 
 type ModalType = "delivery" | "partners" | "contacts" | "checkout" | LegalDocumentSlug | null;
 type CheckoutField = keyof CheckoutFormValues;
-type CheckoutErrorField = CheckoutField | "quantity" | "consent";
+type CheckoutStepNumber = 1 | 2 | 3;
+type CheckoutErrorField = CheckoutField | "quantity" | "consent" | "callDate" | "callTime";
 type CheckoutErrors = Partial<Record<CheckoutErrorField, string>>;
+type CheckoutCallScheduling = {
+  skipScheduling: boolean;
+  date: string;
+  time: string;
+};
 type CheckoutLogoFile = {
   name: string;
   type: string;
@@ -52,6 +58,7 @@ type CheckoutState = {
 type AmoCRMCheckoutPayload = CheckoutState & {
   total: number;
   logoFile?: CheckoutLogoFile | null;
+  callScheduling?: CheckoutCallScheduling;
 };
 
 const assetPath = (path: string) => {
@@ -419,12 +426,100 @@ function hasErrors(errors: CheckoutErrors) {
   return Object.keys(errors).length > 0;
 }
 
+const RUSSIAN_MONTHS = [
+  "Январь",
+  "Февраль",
+  "Март",
+  "Апрель",
+  "Май",
+  "Июнь",
+  "Июль",
+  "Август",
+  "Сентябрь",
+  "Октябрь",
+  "Ноябрь",
+  "Декабрь",
+] as const;
+
+const RUSSIAN_WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const;
+
+const CALL_TIME_SLOTS = [
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+  "18:00",
+  "19:00",
+] as const;
+
+function toLocalDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseLocalDateKey(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function startOfLocalDay(date = new Date()) {
+  const next = new Date(date);
+  next.setHours(0, 0, 0, 0);
+  return next;
+}
+
+function getSelectableCallDateKeys() {
+  const today = startOfLocalDay();
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() + index);
+    return toLocalDateKey(date);
+  });
+}
+
+function getDefaultCallScheduling(): CheckoutCallScheduling {
+  const [firstDate] = getSelectableCallDateKeys();
+  return {
+    skipScheduling: false,
+    date: firstDate,
+    time: CALL_TIME_SLOTS[0],
+  };
+}
+
+function validateCallScheduling(scheduling: CheckoutCallScheduling) {
+  const errors: CheckoutErrors = {};
+
+  if (scheduling.skipScheduling) {
+    return errors;
+  }
+
+  const selectableDates = new Set(getSelectableCallDateKeys());
+
+  if (!scheduling.date || !selectableDates.has(scheduling.date)) {
+    errors.callDate = "Выберите дату созвона в ближайшие 7 дней.";
+  }
+
+  if (!scheduling.time || !CALL_TIME_SLOTS.includes(scheduling.time as (typeof CALL_TIME_SLOTS)[number])) {
+    errors.callTime = "Выберите удобное время звонка.";
+  }
+
+  return errors;
+}
+
 function prepareCheckoutPayload({
   tab,
   quantity,
   formValues,
   total,
   logoFile = null,
+  callScheduling,
 }: AmoCRMCheckoutPayload): AmoCRMCheckoutPayload {
   const trimmedValues = Object.fromEntries(
     Object.entries(formValues).map(([key, value]) => [key, value.trim()]),
@@ -435,6 +530,7 @@ function prepareCheckoutPayload({
     quantity,
     total,
     logoFile,
+    callScheduling,
     formValues: {
       ...trimmedValues,
       company: tab === "company" ? trimmedValues.company : "",
@@ -1298,7 +1394,7 @@ function HomeModal({
   withOverlay: boolean;
   onClose: () => void;
 }>) {
-  const [checkoutStep, setCheckoutStep] = useState<1 | 2>(1);
+  const [checkoutStep, setCheckoutStep] = useState<CheckoutStepNumber>(1);
 
   useEffect(() => {
     if (type !== "checkout") {
@@ -1353,45 +1449,53 @@ function HomeModal({
           >
             <CrossIcon />
           </button>
-          <div className="max-w-[760px] pr-12 sm:pr-16">
+          <div className="pr-12 sm:pr-16">
             <SectionKicker>{header.kicker}</SectionKicker>
             <h2 className="mt-2 text-[24px] font-extrabold leading-[1.12] sm:text-3xl lg:text-[40px]">
               {header.title}
             </h2>
-            <GoldRule />
           </div>
+          <GoldRule fullWidth />
           {isCheckout ? (
-            <div className="mt-4 flex items-center justify-center gap-2 sm:mt-5 sm:gap-4">
-              <div className="relative w-full max-w-[560px]">
+            <div className="mt-4 flex items-center justify-center sm:mt-5">
+              <div className="relative w-full">
                 <button
                   type="button"
-                  title="Back to step 1"
+                  title="Back to previous step"
                   onClick={() => {
-                    if (checkoutStep === 2) setCheckoutStep(1);
+                    if (checkoutStep === 3) setCheckoutStep(2);
+                    else if (checkoutStep === 2) setCheckoutStep(1);
                   }}
                   disabled={checkoutStep === 1}
                   className={`absolute left-0 top-1/2 flex h-9 w-9 -translate-y-1/2 rotate-180 items-center justify-center rounded-full transition sm:h-10 sm:w-10 ${
-                    checkoutStep === 2
+                    checkoutStep > 1
                       ? "bg-[#e8c880] text-[#0f172a] hover:bg-[#ffecbf]"
                       : "cursor-default bg-[#d7d7d7] text-[#9a9b9c]"
                   }`}
                 >
                   <ArrowIcon size={18} />
                 </button>
-                <div className="mx-auto flex max-w-[420px] items-center justify-between pl-11 sm:pl-12">
-                  {[1, 2, 3].map((step, index) => (
-                    <div key={step} className="contents">
-                      <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-extrabold sm:h-11 sm:w-11 sm:text-xl ${
-                          step === checkoutStep ? "bg-[#e8c880] text-[#0f172a]" : "bg-[#0f172a] text-white"
-                        }`}
-                        aria-current={step === checkoutStep ? "step" : undefined}
-                      >
-                        {step}
+
+                <div className="mx-auto flex w-full max-w-[560px] items-center justify-center px-11 sm:px-12">
+                  <div className="flex w-full max-w-[420px] items-center">
+                    {[1, 2, 3].map((step, index) => (
+                      <div key={step} className="flex flex-1 items-center">
+                        <div
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-extrabold sm:h-11 sm:w-11 sm:text-xl ${
+                            step === checkoutStep ? "bg-[#e8c880] text-[#0f172a]" : "bg-[#0f172a] text-white"
+                          }`}
+                          aria-current={step === checkoutStep ? "step" : undefined}
+                        >
+                          {step}
+                        </div>
+                        {index < 2 ? (
+                          <div className="mx-3 flex flex-1 items-center sm:mx-4">
+                            <div className="h-[2px] w-full border-t-2 border-dashed border-[#d7d7d7]" />
+                          </div>
+                        ) : null}
                       </div>
-                      {index < 2 ? <div className="h-[2px] flex-1 bg-[#d7d7d7]" /> : null}
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1483,8 +1587,8 @@ function CheckoutModal({
 }: Readonly<{
   checkoutProduct: CheckoutProduct;
   checkoutState: CheckoutState;
-  step: 1 | 2;
-  onStepChange: (step: 1 | 2) => void;
+  step: CheckoutStepNumber;
+  onStepChange: (step: CheckoutStepNumber) => void;
   onFieldChange: (field: CheckoutField, value: string) => void;
   onQuantityChange: (quantity: number) => void;
 }>) {
@@ -1492,6 +1596,7 @@ function CheckoutModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<CheckoutErrors>({});
   const [isConsentAccepted, setIsConsentAccepted] = useState(false);
+  const [callScheduling, setCallScheduling] = useState<CheckoutCallScheduling>(getDefaultCallScheduling);
   const [logoFile, setLogoFile] = useState<CheckoutLogoFile | null>(null);
   const [logoFileError, setLogoFileError] = useState<string | null>(null);
   const { tab, quantity, formValues } = checkoutState;
@@ -1581,11 +1686,11 @@ function CheckoutModal({
     }
   };
 
-  const handleSubmit = async () => {
+  const handleProceedToCall = () => {
     const nextErrors = validateCheckout(formValues, tab, quantity);
 
     if (!isConsentAccepted) {
-      nextErrors.consent = "Подтвердите согласие с условиями, чтобы оформить заказ.";
+      nextErrors.consent = "Подтвердите согласие с условиями, чтобы продолжить оформление.";
     }
 
     if (logoFileError) {
@@ -1604,11 +1709,70 @@ function CheckoutModal({
       return;
     }
 
+    setSubmitMessage(null);
+    setErrors((current) => {
+      const next = { ...current };
+      delete next.callDate;
+      delete next.callTime;
+      delete next.consent;
+      return next;
+    });
+    onStepChange(3);
+  };
+
+  const handleCallSchedulingChange = (patch: Partial<CheckoutCallScheduling>) => {
+    setCallScheduling((current) => ({ ...current, ...patch }));
+    setErrors((current) => {
+      const next = { ...current };
+      if (patch.date !== undefined) {
+        delete next.callDate;
+      }
+      if (patch.time !== undefined) {
+        delete next.callTime;
+      }
+      if (patch.skipScheduling !== undefined) {
+        delete next.callDate;
+        delete next.callTime;
+      }
+      return next;
+    });
+  };
+
+  const handleSubmit = async () => {
+    const nextErrors = {
+      ...validateCheckout(formValues, tab, quantity),
+      ...validateCallScheduling(callScheduling),
+    };
+
+    if (!isConsentAccepted) {
+      nextErrors.consent = "Подтвердите согласие с условиями, чтобы оформить заказ.";
+    }
+
+    if (logoFileError) {
+      setSubmitMessage(logoFileError);
+      return;
+    }
+
+    if (hasErrors(nextErrors)) {
+      setErrors(nextErrors);
+      setSubmitMessage("Проверьте выделенные поля и исправьте ошибки.");
+
+      if (hasErrors(getStep1Errors(nextErrors))) {
+        onStepChange(1);
+      } else if (nextErrors.consent) {
+        onStepChange(2);
+      }
+
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitMessage("Отправляем заявку в AmoCRM...");
 
     try {
-      await submitCheckoutToAmoCRM(prepareCheckoutPayload({ tab, quantity, formValues, total, logoFile }));
+      await submitCheckoutToAmoCRM(
+        prepareCheckoutPayload({ tab, quantity, formValues, total, logoFile, callScheduling }),
+      );
       setSubmitMessage("Ваша заявка отправлена в AmoCRM. Мы свяжемся с вами в ближайшее время.");
     } catch (error) {
       console.error(error);
@@ -1632,22 +1796,24 @@ function CheckoutModal({
               onFieldChange={handleFieldChange}
               onContinue={handleContinue}
             />
-          ) : (
+          ) : null}
+          {step === 2 ? (
             <CheckoutStep2Form
-              tab={tab}
               values={formValues}
               errors={errors}
               onFieldChange={handleFieldChange}
               logoFile={logoFile}
               logoFileError={logoFileError}
               onLogoFileChange={handleLogoFileChange}
-              isConsentAccepted={isConsentAccepted}
-              onConsentChange={handleConsentChange}
-              submitMessage={submitMessage}
-              isSubmitting={isSubmitting}
-              onSubmit={handleSubmit}
             />
-          )}
+          ) : null}
+          {step === 3 ? (
+            <CheckoutStep3Form
+              scheduling={callScheduling}
+              errors={errors}
+              onSchedulingChange={handleCallSchedulingChange}
+            />
+          ) : null}
         </div>
 
         <CheckoutOrderPanel
@@ -1657,6 +1823,26 @@ function CheckoutModal({
           error={errors.quantity}
           onQuantityChange={handleQuantityChange}
         />
+        {step === 2 ? (
+          <div className="lg:col-span-2">
+            <CheckoutStep2Actions
+              isConsentAccepted={isConsentAccepted}
+              onConsentChange={handleConsentChange}
+              consentError={errors.consent}
+              message={submitMessage}
+              onProceed={handleProceedToCall}
+            />
+          </div>
+        ) : null}
+        {step === 3 ? (
+          <div className="lg:col-span-2">
+            <CheckoutStep3Actions
+              isSubmitting={isSubmitting}
+              submitMessage={submitMessage}
+              onSubmit={handleSubmit}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -1806,31 +1992,19 @@ function CheckoutStep1Form({
 }
 
 function CheckoutStep2Form({
-  tab,
   values,
   errors,
   onFieldChange,
   logoFile,
   logoFileError,
   onLogoFileChange,
-  isConsentAccepted,
-  onConsentChange,
-  submitMessage,
-  isSubmitting,
-  onSubmit,
 }: Readonly<{
-  tab: "personal" | "company";
   values: CheckoutFormValues;
   errors: CheckoutErrors;
   onFieldChange: (field: CheckoutField, value: string) => void;
   logoFile: CheckoutLogoFile | null;
   logoFileError: string | null;
   onLogoFileChange: (file: File | null) => void;
-  isConsentAccepted: boolean;
-  onConsentChange: (isAccepted: boolean) => void;
-  submitMessage: string | null;
-  isSubmitting: boolean;
-  onSubmit: () => void;
 }>) {
   const [artworkModalSrc, setArtworkModalSrc] = useState<string | null>(null);
   const sealColors = [
@@ -1978,65 +2152,6 @@ function CheckoutStep2Form({
           onChange={(v) => onFieldChange("comment", v)}
         />
 
-        <label
-          className={`mt-2 flex gap-3 rounded-2xl border p-3.5 text-sm leading-[1.4] sm:p-4 ${
-            errors.consent ? "border-red-500 bg-red-50" : "border-transparent"
-          }`}
-        >
-          <input
-            type="checkbox"
-            checked={isConsentAccepted}
-            onChange={(event) => onConsentChange(event.target.checked)}
-            aria-invalid={Boolean(errors.consent)}
-            aria-required="true"
-            className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#0f172a]"
-          />
-          <span>
-            <span className="font-bold">
-              Согласие с условиями
-              <span className="ml-1 text-red-600" aria-label="обязательное поле">*</span>
-            </span>
-            <br />
-            Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
-            <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/personal-data-consent.pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-[#e8c880]"
-            >
-              персональных данных
-            </a>{" "}
-            и ознакомлены с{" "}
-            <a
-              href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/privacy.pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-[#e8c880]"
-            >
-              политикой конфиденциальности
-            </a>
-            .
-          </span>
-        </label>
-        {errors.consent ? <FieldErrorMessage message={errors.consent} /> : null}
-        <RequiredFieldsNote />
-
-        <button
-          type="button"
-          title="Submit order"
-          onClick={onSubmit}
-          disabled={isSubmitting}
-          className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] disabled:cursor-not-allowed disabled:opacity-70 sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
-        >
-          {isSubmitting ? "Отправляем..." : tab === "personal" ? "Оплатить" : "Оставить заявку"}
-          <ArrowIcon size={22} />
-        </button>
-
-        {submitMessage ? (
-          <div className="rounded-2xl border border-[#e8c880] bg-[#fff8e8] p-4 text-sm text-[#0f172a]">
-            {submitMessage}
-          </div>
-        ) : null}
       </div>
 
       {artworkModalSrc ? (
@@ -2067,6 +2182,298 @@ function CheckoutStep2Form({
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function CheckoutStep2Actions({
+  isConsentAccepted,
+  onConsentChange,
+  consentError,
+  message,
+  onProceed,
+}: Readonly<{
+  isConsentAccepted: boolean;
+  onConsentChange: (isAccepted: boolean) => void;
+  consentError?: string;
+  message: string | null;
+  onProceed: () => void;
+}>) {
+  return (
+    <div className="mt-2 grid gap-3 sm:mt-0">
+      <label
+        className={`flex items-start gap-3 rounded-2xl border p-3.5 text-sm leading-[1.45] sm:p-4 sm:text-base sm:leading-[1.5] ${
+          consentError ? "border-red-500 bg-red-50" : "border-transparent"
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={isConsentAccepted}
+          onChange={(event) => onConsentChange(event.target.checked)}
+          aria-invalid={Boolean(consentError)}
+          aria-required="true"
+          className="mt-1 h-4 w-4 shrink-0 rounded border-[#0f172a]"
+        />
+        <span className="min-w-0 flex-1 text-left">
+          <span className="font-bold">
+            Согласие с условиями
+            <span className="ml-1 text-red-600" aria-label="обязательное поле">
+              *
+            </span>
+          </span>{" "}
+          Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
+          <a
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/personal-data-consent.pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-[#e8c880]"
+          >
+            персональных данных
+          </a>{" "}
+          и ознакомлены с{" "}
+          <a
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/documents/privacy.pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-[#e8c880]"
+          >
+            политикой конфиденциальности
+          </a>
+          .
+        </span>
+      </label>
+      {consentError ? <FieldErrorMessage message={consentError} /> : null}
+      <div className="grid gap-3 lg:grid-cols-2 lg:gap-10">
+        <div>
+          <RequiredFieldsNote />
+          <button
+            type="button"
+            title="Schedule a call"
+            onClick={onProceed}
+            className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
+          >
+            Договориться о созвоне
+            <ArrowIcon size={22} />
+          </button>
+          {message ? (
+            <div className="mt-3 rounded-2xl border border-[#e8c880] bg-[#fff8e8] p-4 text-sm text-[#0f172a] sm:mt-4">
+              {message}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CheckoutStep3Form({
+  scheduling,
+  errors,
+  onSchedulingChange,
+}: Readonly<{
+  scheduling: CheckoutCallScheduling;
+  errors: CheckoutErrors;
+  onSchedulingChange: (patch: Partial<CheckoutCallScheduling>) => void;
+}>) {
+  const schedulingDisabled = scheduling.skipScheduling;
+
+  return (
+    <div className="text-center sm:text-left">
+      <h3 className="text-[21px] font-extrabold sm:text-2xl">Созвон с менеджером</h3>
+      <div className="mt-3 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-4" />
+      <div className="mt-5 grid gap-4 sm:mt-6">
+        <label className="flex items-start gap-3 text-left">
+          <input
+            type="checkbox"
+            checked={scheduling.skipScheduling}
+            onChange={(event) => onSchedulingChange({ skipScheduling: event.target.checked })}
+            className="mt-1 h-4 w-4 shrink-0 rounded border-[#0f172a]"
+          />
+          <span className="text-base font-bold text-[#0f172a]">Не назначать время звонка</span>
+        </label>
+
+        <div className={schedulingDisabled ? "pointer-events-none opacity-45" : ""}>
+          <div className="rounded bg-[#f8f8f8] px-3.5 py-3 sm:px-4">
+            <p className="text-base font-bold text-[#0f172a]">Время звонка</p>
+            <select
+              title="Call time"
+              value={scheduling.time}
+              disabled={schedulingDisabled}
+              onChange={(event) => onSchedulingChange({ time: event.target.value })}
+              aria-invalid={Boolean(errors.callTime)}
+              className="mt-2 w-full bg-transparent text-sm text-[#0f172a] outline-none disabled:cursor-not-allowed"
+            >
+              {CALL_TIME_SLOTS.map((slot) => (
+                <option key={slot} value={slot}>
+                  {slot}
+                </option>
+              ))}
+            </select>
+            {errors.callTime ? <FieldErrorMessage message={errors.callTime} /> : null}
+          </div>
+
+          <div className="mt-4">
+            <CheckoutCallCalendar
+              selectedDate={scheduling.date}
+              disabled={schedulingDisabled}
+              onSelectDate={(date) => onSchedulingChange({ date })}
+            />
+            {errors.callDate ? <FieldErrorMessage message={errors.callDate} /> : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CheckoutCallCalendar({
+  selectedDate,
+  disabled = false,
+  onSelectDate,
+}: Readonly<{
+  selectedDate: string;
+  disabled?: boolean;
+  onSelectDate: (dateKey: string) => void;
+}>) {
+  const selectableDateKeys = getSelectableCallDateKeys();
+  const selectableSet = new Set(selectableDateKeys);
+  const initialMonth = parseLocalDateKey(selectedDate || selectableDateKeys[0]);
+  const [visibleMonth, setVisibleMonth] = useState(
+    () => new Date(initialMonth.getFullYear(), initialMonth.getMonth(), 1),
+  );
+
+  const monthStart = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
+  const monthEnd = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 0);
+  const leadingEmptyDays = (monthStart.getDay() + 6) % 7;
+  const daysInMonth = monthEnd.getDate();
+
+  const calendarCells: Array<{ key: string; day: number; selectable: boolean } | null> = [
+    ...Array.from({ length: leadingEmptyDays }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, index) => {
+      const day = index + 1;
+      const date = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), day);
+      const key = toLocalDateKey(date);
+      return { key, day, selectable: selectableSet.has(key) };
+    }),
+  ];
+
+  while (calendarCells.length % 7 !== 0) {
+    calendarCells.push(null);
+  }
+
+  const minMonth = parseLocalDateKey(selectableDateKeys[0]);
+  const maxMonth = parseLocalDateKey(selectableDateKeys[selectableDateKeys.length - 1]);
+  const canGoPrev =
+    visibleMonth.getFullYear() > minMonth.getFullYear() ||
+    (visibleMonth.getFullYear() === minMonth.getFullYear() &&
+      visibleMonth.getMonth() > minMonth.getMonth());
+  const canGoNext =
+    visibleMonth.getFullYear() < maxMonth.getFullYear() ||
+    (visibleMonth.getFullYear() === maxMonth.getFullYear() &&
+      visibleMonth.getMonth() < maxMonth.getMonth());
+
+  return (
+    <div
+      className={`rounded-[28px] border border-[#ececec] bg-white p-4 shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:p-5 ${
+        disabled ? "opacity-60" : ""
+      }`}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-lg font-extrabold text-[#0f172a] sm:text-xl">
+          {RUSSIAN_MONTHS[visibleMonth.getMonth()]} {visibleMonth.getFullYear()}
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            title="Previous month"
+            disabled={disabled || !canGoPrev}
+            onClick={() =>
+              setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))
+            }
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[#0f172a] transition hover:bg-[#f3f3f3] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button
+            type="button"
+            title="Next month"
+            disabled={disabled || !canGoNext}
+            onClick={() =>
+              setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))
+            }
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[#0f172a] transition hover:bg-[#f3f3f3] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-7 gap-1 text-center text-sm font-semibold text-[#9a9b9c] sm:text-base">
+        {RUSSIAN_WEEKDAYS.map((weekday) => (
+          <span key={weekday} className="py-1">
+            {weekday}
+          </span>
+        ))}
+      </div>
+
+      <div className="mt-2 grid grid-cols-7 gap-1">
+        {calendarCells.map((cell, index) =>
+          cell ? (
+            <button
+              key={cell.key}
+              type="button"
+              title={`Select ${cell.key}`}
+              disabled={disabled || !cell.selectable}
+              onClick={() => onSelectDate(cell.key)}
+              className={`mx-auto flex h-10 w-10 items-center justify-center rounded-full text-base font-semibold transition sm:h-11 sm:w-11 ${
+                selectedDate === cell.key
+                  ? "bg-[#e8c880] text-[#0f172a]"
+                  : cell.selectable
+                    ? "text-[#0f172a] hover:bg-[#f3f3f3]"
+                    : "cursor-not-allowed text-[#c5c5c5]"
+              }`}
+            >
+              {cell.day}
+            </button>
+          ) : (
+            <span key={`empty-${index}`} aria-hidden="true" className="h-10 sm:h-11" />
+          ),
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CheckoutStep3Actions({
+  isSubmitting,
+  submitMessage,
+  onSubmit,
+}: Readonly<{
+  isSubmitting: boolean;
+  submitMessage: string | null;
+  onSubmit: () => void;
+}>) {
+  return (
+    <div className="mt-2 grid gap-3 sm:mt-0">
+      <div className="grid gap-3 lg:grid-cols-2 lg:gap-10">
+        <div>
+          <button
+            type="button"
+            title="Complete checkout"
+            onClick={onSubmit}
+            disabled={isSubmitting}
+            className="mt-3 flex w-full items-center justify-center gap-3 rounded-full bg-[#e8c880] px-5 py-3.5 text-base font-bold text-[#0f172a] transition hover:bg-[#ffecbf] disabled:cursor-not-allowed disabled:opacity-70 sm:mt-4 sm:gap-5 sm:px-6 sm:py-4 sm:text-xl"
+          >
+            {isSubmitting ? "Отправляем..." : "Завершить оформление"}
+            <ArrowIcon size={22} />
+          </button>
+          {submitMessage ? (
+            <div className="mt-3 rounded-2xl border border-[#e8c880] bg-[#fff8e8] p-4 text-sm text-[#0f172a] sm:mt-4">
+              {submitMessage}
+            </div>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }
@@ -2122,11 +2529,23 @@ function CheckoutOrderPanel({
         <p className="shrink-0 font-bold sm:self-start">{checkoutProduct.price} ₽</p>
       </div>
       <div className="mt-5 h-[3px] rounded-full bg-[#c5c5c5] sm:mt-6" />
-      <div className="mt-5 space-y-2 text-base sm:mt-6 sm:space-y-4 sm:text-xl">
-        <p className="font-light">Количество: {quantity} шт.</p>
-        <p className="font-light">Цена за 1 шт.: {checkoutProduct.price} руб.</p>
-        <p className="font-extrabold">Итоговая сумма: {total} руб.</p>
-      </div>
+      <dl className="mt-5 rounded-2xl bg-[#f8f8f8] p-4 text-base sm:mt-6 sm:p-5 sm:text-xl">
+        <div className="flex items-baseline justify-between gap-4">
+          <dt className="text-[#0f172a]/70">Количество</dt>
+          <dd className="font-semibold text-[#0f172a]">{quantity} шт.</dd>
+        </div>
+        <div className="mt-2 flex items-baseline justify-between gap-4 sm:mt-3">
+          <dt className="text-[#0f172a]/70">Цена за 1 шт.</dt>
+          <dd className="font-semibold text-[#0f172a]">{checkoutProduct.price} руб.</dd>
+        </div>
+        <div aria-hidden="true" className="my-3 h-px bg-[#0f172a]/10 sm:my-4" />
+        <div className="flex items-baseline justify-between gap-4">
+          <dt className="font-bold text-[#0f172a]">Итоговая сумма</dt>
+          <dd className="text-2xl font-extrabold leading-none text-[#0f172a] sm:text-3xl">
+            {total} ₽
+          </dd>
+        </div>
+      </dl>
     </div>
   );
 }
@@ -2479,11 +2898,11 @@ function SectionKicker({ children }: Readonly<{ children: React.ReactNode }>) {
   );
 }
 
-function GoldRule({ centered = false }: Readonly<{ centered?: boolean }>) {
+function GoldRule({ centered = false, fullWidth = false }: Readonly<{ centered?: boolean; fullWidth?: boolean }>) {
   return (
     <div
       aria-hidden="true"
-      className={`mt-4 flex w-full max-w-[700px] items-center sm:mt-6 ${
+      className={`mt-4 flex w-full items-center sm:mt-6 ${fullWidth ? "max-w-none" : "max-w-[700px]"} ${
         centered ? "mx-auto" : ""
       }`}
     >

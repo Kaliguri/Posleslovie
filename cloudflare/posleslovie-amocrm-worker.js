@@ -58,7 +58,23 @@ function resolveAmoCRMBaseUrl(env) {
   }
 }
 
-function buildOrderNote({ tab, quantity, total, formValues }) {
+function formatCallSchedulingNote(callScheduling) {
+  if (!callScheduling) {
+    return null;
+  }
+
+  if (callScheduling.skipScheduling) {
+    return "Не назначать время звонка: да";
+  }
+
+  if (callScheduling.date && callScheduling.time) {
+    return `Дата созвона: ${callScheduling.date}\nВремя созвона: ${callScheduling.time}`;
+  }
+
+  return null;
+}
+
+function buildOrderNote({ tab, quantity, total, formValues, callScheduling }) {
   const isCompanyOrder = tab === "company";
   const lines = [
     "Заказ с сайта Posleslovie",
@@ -98,6 +114,11 @@ function buildOrderNote({ tab, quantity, total, formValues }) {
   addLineIfValue(lines, "Цвет сургучной печати", formValues.sealColor);
   addLineIfValue(lines, "Художник", formValues.artist);
   addLineIfValue(lines, "Комментарий", formValues.comment);
+
+  const callSchedulingNote = formatCallSchedulingNote(callScheduling);
+  if (callSchedulingNote) {
+    lines.push("", "5. Созвон", callSchedulingNote);
+  }
 
   return lines.join("\n");
 }
