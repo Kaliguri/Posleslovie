@@ -29,12 +29,7 @@ import { CheckoutStepper } from "@/features/checkout/ui/checkout-modal/CheckoutS
 import { LeadForm } from "@/features/checkout/ui/checkout-modal/LeadForm";
 import { LegalDocumentModal } from "@/features/checkout/ui/checkout-modal/LegalDocumentModal";
 
-export type ModalType =
-  | "partners"
-  | "contacts"
-  | "checkout"
-  | LegalDocumentSlug
-  | null;
+export type ModalType = "partners" | "contacts" | "checkout" | LegalDocumentSlug | null;
 export type CheckoutProduct = { title: string; price: number; image: string };
 
 function readFileAsCheckoutLogo(file: File) {
@@ -218,7 +213,6 @@ function PartnersModal() {
   );
 }
 
-
 function ContactsModal() {
   return (
     <div className="max-w-[552px]">
@@ -230,7 +224,7 @@ function ContactsModal() {
         />
         <ContactItem label="Почта" value={siteConfig.email} href={`mailto:${siteConfig.email}`} />
         {siteConfig.address ? <ContactItem label="Адрес" value={siteConfig.address} /> : null}
-        {(siteConfig.inn || siteConfig.ogrnip) ? (
+        {siteConfig.inn || siteConfig.ogrnip ? (
           <div className="grid gap-3 sm:grid-cols-[234px_1fr]">
             {siteConfig.inn ? <ContactItem label="ИНН" value={siteConfig.inn} compact /> : null}
             {siteConfig.ogrnip ? (
@@ -411,7 +405,6 @@ function CheckoutModal({
             />
           ) : (
             <CheckoutStep2Form
-              tab={tab}
               values={formValues}
               errors={errors}
               onFieldChange={handleFieldChange}
@@ -438,7 +431,6 @@ function CheckoutModal({
     </div>
   );
 }
-
 
 function ContactItem({
   label,

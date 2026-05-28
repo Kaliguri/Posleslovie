@@ -20,7 +20,6 @@ import {
 } from "./FormParts";
 
 export function CheckoutStep2Form({
-  tab,
   values,
   errors,
   onFieldChange,
@@ -33,7 +32,6 @@ export function CheckoutStep2Form({
   isSubmitting,
   onSubmit,
 }: Readonly<{
-  tab: "personal" | "company";
   values: CheckoutState["formValues"];
   errors: CheckoutErrors;
   onFieldChange: (field: CheckoutField, value: string) => void;

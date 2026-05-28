@@ -22,7 +22,10 @@ test.describe("Smoke", () => {
 
   test("модал закрывается кнопкой «Закрыть»", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /оформить заказ/i }).first().click();
+    await page
+      .getByRole("button", { name: /оформить заказ/i })
+      .first()
+      .click();
     await expect(page.getByRole("dialog")).toBeVisible();
     await page.getByRole("button", { name: /закрыть/i }).click();
     await expect(page.getByRole("dialog")).not.toBeVisible();
@@ -30,7 +33,10 @@ test.describe("Smoke", () => {
 
   test("модал закрывается клавишей Escape", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /оформить заказ/i }).first().click();
+    await page
+      .getByRole("button", { name: /оформить заказ/i })
+      .first()
+      .click();
     await expect(page.getByRole("dialog")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).not.toBeVisible();

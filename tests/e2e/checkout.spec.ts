@@ -3,7 +3,10 @@ import { test, expect } from "@playwright/test";
 test.describe("Checkout modal", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /оформить заказ/i }).first().click();
+    await page
+      .getByRole("button", { name: /оформить заказ/i })
+      .first()
+      .click();
     await expect(page.getByRole("dialog")).toBeVisible();
   });
 
