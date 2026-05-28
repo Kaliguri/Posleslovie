@@ -20,7 +20,10 @@
       "slides": [
         { "image": "/images/photos/product-2.svg", "alt": "Лавандовая бомбочка для ванны" },
         { "image": "/images/photos/product-1.svg", "alt": "Натуральные масла и сухоцветы" },
-        { "image": "/images/photos/product-3.svg", "alt": "Временное изображение лавандового блока" }
+        {
+          "image": "/images/photos/product-3.svg",
+          "alt": "Временное изображение лавандового блока"
+        }
       ],
       "button": ""
     },

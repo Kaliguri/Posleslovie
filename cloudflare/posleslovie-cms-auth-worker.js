@@ -73,11 +73,11 @@ function isAllowedDomain(domain, allowedDomains) {
     return true;
   }
 
-  return allowedDomains.split(",").some((entry) =>
-    (domain ?? "").match(
-      new RegExp(`^${escapeRegExp(entry.trim()).replace("\\*", ".+")}$`),
-    ),
-  );
+  return allowedDomains
+    .split(",")
+    .some((entry) =>
+      (domain ?? "").match(new RegExp(`^${escapeRegExp(entry.trim()).replace("\\*", ".+")}$`)),
+    );
 }
 
 async function handleCmsAuth(request, env) {

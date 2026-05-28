@@ -12,3 +12,6 @@ coverage
 dist
 .turbo
 .cache
+test-results
+playwright-report
+tsconfig.tsbuildinfo

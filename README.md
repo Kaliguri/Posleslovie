@@ -1,191 +1,264 @@
-# Послесловие / Posleslovie
+<div align="center">
 
-**Промо-сайт бренда натуральных бомбочек для ванны** — лендинг с галереями, отзывами, оформлением заказа и CMS для редактирования контента без правок кода.
+# Послесловие · Posleslovie
 
-**Live:** [kaliguri.github.io/Posleslovie](https://kaliguri.github.io/Posleslovie/) · **CMS:** [/admin](https://kaliguri.github.io/Posleslovie/admin/)
+<br>
+
+[![Открыть сайт](https://img.shields.io/badge/Открыть%20сайт-posleslovie.online-4a7c59?style=for-the-badge&logo=googlechrome&logoColor=white)](https://posleslovie.online)
+[![Панель управления](https://img.shields.io/badge/Панель%20управления-%2Fadmin-6c757d?style=for-the-badge&logo=contentful&logoColor=white)](https://posleslovie.online/admin/)
+
+<br>
+
+[![Deploy](https://img.shields.io/github/actions/workflow/status/kaliguri/Posleslovie/pages.yml?branch=main&style=flat-square&label=Deploy&logo=githubactions&logoColor=white)](https://github.com/kaliguri/Posleslovie/actions)
+![Next.js](https://img.shields.io/badge/Next.js-black?logo=nextdotjs&style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white&style=flat-square)
+![Tailwind v4](https://img.shields.io/badge/Tailwind_v4-06B6D4?logo=tailwindcss&logoColor=white&style=flat-square)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare_Workers-F38020?logo=cloudflare&logoColor=white&style=flat-square)
+
+</div>
 
 ---
 
-## Содержание · Contents
+<details>
+<summary><b>Screenshots</b></summary>
 
-| | |
-|---|---|
-| [Русский](#-русский) | [English](#-english) |
+<br>
+
+![Главный экран](docs/screenshots/hero.png)
+
+</details>
+
+<details>
+<summary><b>Architecture</b></summary>
+
+<br>
+
+```mermaid
+flowchart TD
+  User[Visitor] --> Site[Next.js site]
+  Site --> AmoWorker[AmoCRM Worker]
+  AmoWorker --> AmoCRM[AmoCRM]
+
+  Admin[Content editor] --> CMS[Sveltia CMS]
+  CMS --> OAuth[OAuth Worker]
+  CMS --> GitHub[GitHub content]
+  GitHub --> Actions[GitHub Actions]
+  Actions --> Pages[GitHub Pages]
+```
+
+</details>
 
 ---
 
-## 🇷🇺 Русский
+## Русский
 
-### О проекте
+**Послесловие — production-ready сайт-лендинг для бренда натуральной косметики, который не требует платного хостинга:** инфраструктура на GitHub Pages + Cloudflare Workers, каталог, оформление заявки, CRM-интеграция и no-code редактирование контента без участия разработчика.
 
-«Послесловие» — одностраничный сайт-визитка для B2C- и B2B-заказов: показать продукт, передать настроение бренда и провести клиента до заявки. Контент (тексты, изображения, отзывы, юридические документы) хранится в JSON и редактируется через **Sveltia CMS**. Заказы уходят в **AmoCRM** через Cloudflare Worker.
+### Ключевые преимущества
 
-### Возможности
+- Без платного хостинга: прод-инфраструктура на GitHub Pages + Cloudflare Workers
+- Статический экспорт Next.js с деплоем на GitHub Pages и custom domain (`posleslovie.online`)
+- Редактируемый контент через Sveltia CMS (JSON-файлы в GitHub)
+- Checkout-сценарий с сохранением состояния формы, валидацией, загрузкой логотипа и созданием лида в AmoCRM
+- SEO-ready: sitemap, robots.txt, Open Graph, JSON-LD
+- CI-пайплайн: format, lint, typecheck, unit tests, build и deploy
 
-- **Главная страница** — hero, карточки продукта, секции процесса с галереями, «Почему мы», «О нас», отзывы, финальный CTA
-- **Модальные окна** — доставка, партнёрам, контакты, юридические документы
-- **Оформление заказа** — вкладки «Для себя» / «Для компании», валидация, автодополнение городов, загрузка логотипа (B2B)
-- **AmoCRM** — заявки создаются как сделки с заметками и вложениями
-- **Sveltia CMS** — редактирование контента через GitHub, автодеплой после публикации
-- **Адаптивная вёрстка** — mobile-first, дизайн по [макету в Figma](https://www.figma.com/design/WmOedCtt1kVyO6xx1FfEW2/%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D1%81%D0%BB%D0%BE%D0%B2%D0%B8%D0%B5)
+<details>
+<summary><b>Для разработчиков</b></summary>
 
-### Стек
+<br>
 
-| Слой | Технологии |
-|------|------------|
-| Frontend | Next.js (static export), React, TypeScript, Tailwind CSS |
-| Контент | JSON в `content/`, Sveltia CMS в `public/admin/` |
-| Хостинг | GitHub Pages + GitHub Actions |
-| Интеграции | Cloudflare Workers (AmoCRM, OAuth для CMS) |
+**Стек**
 
-### Структура репозитория
+|            |                                                             |
+| ---------- | ----------------------------------------------------------- |
+| Frontend   | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
+| Контент    | JSON в `content/`, Sveltia CMS                              |
+| Хостинг    | GitHub Pages + GitHub Actions                               |
+| Интеграции | Cloudflare Workers (AmoCRM, CMS OAuth)                      |
 
+**Структура**
+
+```text
+├── content/              # JSON-контент (редактируется через CMS)
+│   ├── home-*.json       # Секции лендинга
+│   ├── site-settings.json
+│   ├── site-products.json
+│   └── legal-documents.json
+├── public/admin/         # Sveltia CMS
+├── src/app/              # Next.js App Router (page, layout, robots, sitemap)
+├── cloudflare/           # Workers: AmoCRM, CMS OAuth
+└── .github/workflows/pages.yml
 ```
-├── content/              # JSON-контент сайта (редактируется через CMS)
-├── public/
-│   ├── admin/            # Sveltia CMS (config.yml, index.html)
-│   ├── images/           # Статические изображения
-│   └── docs/             # PDF юридических документов
-├── src/
-│   ├── app/              # Next.js App Router (layout, page, стили)
-│   └── shared/           # UI-компоненты и конфигурация
-├── cloudflare/           # Workers: AmoCRM checkout, CMS OAuth
-├── .github/workflows/    # CI/CD → GitHub Pages
-└── docs/                 # Документация (CMS, WordPress-архив и др.)
-```
 
-### Локальная разработка
-
-**Требования:** Node.js 20+
+**Локальный запуск**
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run lint
-npm run build    # результат в out/
+npm run dev    # http://localhost:3000
+npm run check  # format + lint + typecheck
+npm run build  # статическая сборка -> out/
 ```
 
-Сборка — **static export**. Серверные API Next.js на GitHub Pages не работают; checkout и CMS-auth вынесены во внешние Workers.
+**Карта архитектуры (current boundaries)**
 
-### Редактирование контента (CMS)
+```text
+src/
+├── app/                      # entry, page composition, metadata
+├── widgets/
+│   └── home-sections/
+│       ├── ui/               # section-level UI modules (Hero, Process, WhyUs, ...)
+│       └── model/            # content mapping + runtime schemas
+├── features/
+│   └── checkout/
+│       ├── model/            # state, validation, payload contracts, API
+│       └── ui/
+│           ├── CheckoutModal.tsx         # thin orchestrator
+│           └── checkout-modal/*          # stepper/forms/panels/legal/lead
+└── shared/
+    ├── ui/                   # reusable primitives
+    ├── lib/                  # pure helpers (assetPath, city, phone, structured data)
+    └── config/               # typed config backed by content JSON
+```
 
-1. Откройте [редактор](https://kaliguri.github.io/Posleslovie/admin/)
-2. Войдите через GitHub
-3. Измените секции → **Publish**
-4. Через ~3–5 минут сайт обновится после деплоя Actions
+**Демонстрация проекта**
 
-Подробная настройка OAuth: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
+1. `npm install`
+2. `npm run dev` и открыть [http://localhost:3000](http://localhost:3000)
+3. Ключевые сценарии:
+   - CTA на Hero -> открывается модал оформления заказа
+   - Мобильное меню -> кнопка оформления заказа
+   - Модал «Для партнеров» -> форма отправки заявки
+4. Перед демо клиенту:
+   - `npm run check:full`
 
-### Деплой
+> Требуется Node.js 22+. Checkout и CMS-авторизация работают через внешние Cloudflare Workers.
 
-Push в ветку `main` запускает workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml):
+**Деплой:** push в `main` -> GitHub Actions -> `out/` на GitHub Pages.  
+**Настройка Pages:** `Settings -> Pages -> GitHub Actions`.
 
-1. `npm ci` → `npm run build`
-2. Публикация `out/` на GitHub Pages
+**Контент:** [posleslovie.online/admin/](https://posleslovie.online/admin/) -> GitHub -> Edit -> Publish (~3 мин).
 
-В репозитории: **Settings → Pages → Build and deployment → GitHub Actions**.
+**Интеграции**
 
-### Интеграции
+| Сервис       | Назначение                                    |
+| ------------ | --------------------------------------------- |
+| AmoCRM       | Форма заказа -> сделка с заметкой и вложением |
+| GitHub OAuth | Авторизация в Sveltia CMS                     |
 
-| Сервис | Назначение | Код |
-|--------|------------|-----|
-| AmoCRM | Приём заявок с формы заказа | `cloudflare/posleslovie-amocrm-worker.js` |
-| GitHub OAuth | Вход в Sveltia CMS | `cloudflare/posleslovie-cms-auth-worker.js` |
+Секреты интеграций (AmoCRM, OAuth) размещаются в Cloudflare Dashboard.
 
-Секреты (токены AmoCRM, OAuth client secret) хранятся только в Cloudflare Dashboard, не в репозитории.
-
-### Дизайн
-
-UI сверяется с Figma. Изображения для production — в `public/images/` со стабильными путями `/images/...`, не через временные MCP-URL.
+</details>
 
 ---
 
-## 🇬🇧 English
+## English
 
-### About
+**Posleslovie is a production-ready landing website for a natural cosmetics brand that runs without paid hosting:** GitHub Pages + Cloudflare Workers infrastructure, product catalog, checkout lead capture, CRM integration, and no-code content editing without developer involvement.
 
-**Posleslovie** is a single-page promotional site for natural bath bombs, serving both B2C and B2B customers. It showcases the product, captures leads, and routes orders to **AmoCRM**. Content is stored as JSON and editable via **Sveltia CMS** without touching source code.
+### Highlights
 
-### Features
+- No paid hosting required: production infrastructure runs on GitHub Pages + Cloudflare Workers
+- Static Next.js export deployed to GitHub Pages with custom domain
+- Editable content via Sveltia CMS backed by JSON files in GitHub
+- Checkout flow with persisted form state, validation, logo upload and AmoCRM lead creation
+- SEO-ready: sitemap, robots.txt, Open Graph, JSON-LD
+- CI pipeline: format, lint, typecheck, unit tests, build and deploy
 
-- **Landing page** — hero, product cards, process sections with galleries, “Why us”, about, reviews, final CTA
-- **Modals** — delivery info, partners, contacts, legal documents
-- **Checkout flow** — personal / company tabs, validation, city autocomplete, logo upload (B2B)
-- **AmoCRM integration** — orders create leads with notes and attachments
-- **Sveltia CMS** — content editing via GitHub with auto-deploy on publish
-- **Responsive layout** — mobile-first, based on the [Figma design](https://www.figma.com/design/WmOedCtt1kVyO6xx1FfEW2/%D0%9F%D0%BE%D1%81%D0%BB%D0%B5%D1%81%D0%BB%D0%BE%D0%B2%D0%B8%D0%B5)
+<details>
+<summary><b>For developers</b></summary>
 
-### Tech stack
+<br>
 
-| Layer | Technologies |
-|-------|--------------|
-| Frontend | Next.js (static export), React, TypeScript, Tailwind CSS |
-| Content | JSON in `content/`, Sveltia CMS in `public/admin/` |
-| Hosting | GitHub Pages + GitHub Actions |
-| Integrations | Cloudflare Workers (AmoCRM, CMS OAuth) |
+**Stack**
 
-### Repository layout
+|              |                                                             |
+| ------------ | ----------------------------------------------------------- |
+| Frontend     | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
+| Content      | JSON in `content/`, Sveltia CMS                             |
+| Hosting      | GitHub Pages + GitHub Actions                               |
+| Integrations | Cloudflare Workers (AmoCRM, CMS OAuth)                      |
 
+**Structure**
+
+```text
+├── content/              # JSON content (edited via CMS)
+│   ├── home-*.json       # Landing sections
+│   ├── site-settings.json
+│   ├── site-products.json
+│   └── legal-documents.json
+├── public/admin/         # Sveltia CMS
+├── src/app/              # Next.js App Router (page, layout, robots, sitemap)
+├── cloudflare/           # Workers: AmoCRM, CMS OAuth
+└── .github/workflows/pages.yml
 ```
-├── content/              # Site content JSON (edited via CMS)
-├── public/
-│   ├── admin/            # Sveltia CMS (config.yml, index.html)
-│   ├── images/           # Static images
-│   └── docs/             # Legal PDFs
-├── src/
-│   ├── app/              # Next.js App Router (layout, page, styles)
-│   └── shared/           # UI components and config
-├── cloudflare/           # Workers: AmoCRM checkout, CMS OAuth
-├── .github/workflows/    # CI/CD → GitHub Pages
-└── docs/                 # Documentation (CMS setup, WordPress archive, etc.)
-```
 
-### Local development
-
-**Requirements:** Node.js 20+
+**Local development**
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run lint
-npm run build    # output in out/
+npm run dev    # http://localhost:3000
+npm run check  # format + lint + typecheck
+npm run build  # static build -> out/
 ```
 
-The site uses **static export**. Next.js server routes are not available on GitHub Pages; checkout and CMS auth run on external Cloudflare Workers.
+**Architecture map (current boundaries)**
 
-### Content editing (CMS)
+```text
+src/
+├── app/                      # entry, page composition, metadata
+├── widgets/
+│   └── home-sections/
+│       ├── ui/               # section-level UI modules (Hero, Process, WhyUs, ...)
+│       └── model/            # content mapping + runtime schemas
+├── features/
+│   └── checkout/
+│       ├── model/            # state, validation, payload contracts, API
+│       └── ui/
+│           ├── CheckoutModal.tsx         # thin orchestrator
+│           └── checkout-modal/*          # stepper/forms/panels/legal/lead
+└── shared/
+    ├── ui/                   # reusable primitives
+    ├── lib/                  # pure helpers (assetPath, city, phone, structured data)
+    └── config/               # typed config backed by content JSON
+```
 
-1. Open the [admin panel](https://kaliguri.github.io/Posleslovie/admin/)
-2. Sign in with GitHub
-3. Edit sections → **Publish**
-4. The site updates in ~3–5 minutes after the Actions deploy
+**How to demo project**
 
-OAuth setup guide: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
+1. `npm install`
+2. `npm run dev` and open [http://localhost:3000](http://localhost:3000)
+3. Show key scenarios:
+   - hero CTA -> checkout modal opens
+   - mobile menu -> checkout action
+   - partners modal -> lead submit flow
+4. Before client demo run:
+   - `npm run check:full`
 
-### Deployment
+> Node.js 22+ is required. Checkout and CMS auth are handled by external Cloudflare Workers.
 
-Pushing to `main` triggers [`.github/workflows/pages.yml`](.github/workflows/pages.yml):
+**Deployment:** push to `main` -> GitHub Actions -> `out/` to GitHub Pages.  
+**Pages setup:** `Settings -> Pages -> GitHub Actions`.
 
-1. `npm ci` → `npm run build`
-2. Deploy `out/` to GitHub Pages
+**Content:** [posleslovie.online/admin/](https://posleslovie.online/admin/) -> GitHub -> Edit -> Publish (~3 min).
 
-In the repo: **Settings → Pages → Build and deployment → GitHub Actions**.
+**Integrations**
 
-### Integrations
+| Service      | Purpose                                        |
+| ------------ | ---------------------------------------------- |
+| AmoCRM       | Checkout form -> deal with note and attachment |
+| GitHub OAuth | Sveltia CMS sign-in                            |
 
-| Service | Purpose | Code |
-|---------|---------|------|
-| AmoCRM | Checkout form submissions | `cloudflare/posleslovie-amocrm-worker.js` |
-| GitHub OAuth | Sveltia CMS sign-in | `cloudflare/posleslovie-cms-auth-worker.js` |
+Integration secrets (AmoCRM and OAuth) are managed in the Cloudflare Dashboard.
 
-Secrets (AmoCRM tokens, OAuth client secret) live in the Cloudflare Dashboard only — never in the repo.
-
-### Design
-
-UI follows the Figma source of truth. Production images live in `public/images/` with stable `/images/...` paths.
+</details>
 
 ---
 
-## Лицензия · License
+## License
 
-Private project. All rights reserved.
+> Status: production/demo portfolio repository. Public for code review; not intended as a reusable template.
+
+This is a public portfolio repository for a private/commercial project.  
+The code is provided for review only. Reuse, redistribution and commercial use are not allowed without permission.
+
+See [`LICENSE.md`](LICENSE.md) for details.

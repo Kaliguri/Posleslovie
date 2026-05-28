@@ -1,0 +1,9 @@
+export { HeroSection } from "@/widgets/home-sections/ui/HeroSection";
+export { HeroVideoModal } from "@/widgets/home-sections/ui/HeroVideoModal";
+export { ProcessSection } from "@/widgets/home-sections/ui/ProcessSection";
+export { WhyUsSection } from "@/widgets/home-sections/ui/WhyUsSection";
+export { AboutSection } from "@/widgets/home-sections/ui/AboutSection";
+export { ReviewsSection } from "@/widgets/home-sections/ui/ReviewsSection";
+export { CtaSection } from "@/widgets/home-sections/ui/CtaSection";
+export { FeatureCardsSection } from "@/widgets/home-sections/ui/FeatureCardsSection";
+export { ScrollTopButton } from "@/widgets/home-sections/ui/ScrollTopButton";

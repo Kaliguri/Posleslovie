@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { siteConfig } from "@/shared/config/site";
+import { assetPath } from "@/shared/lib/asset-path";
 import siteBehaviorJson from "../../../content/site-behavior.json";
 
 const navigationItems = [
@@ -18,10 +19,6 @@ const socialIconPaths: Record<(typeof socialOrder)[number], string> = {
   VK: "/images/social/vk-round.svg",
   TG: "/images/social/tg-round.svg",
   MAX: "/images/social/max-round.svg",
-};
-const assetPath = (path: string) => {
-  const normalized = path && !path.startsWith("/") ? `/${path}` : path;
-  return `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${normalized}`;
 };
 const globalOverlaysEnabled = Boolean(siteBehaviorJson.enableGlobalOverlays);
 
@@ -81,7 +78,7 @@ export function SiteHeader() {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const openHomeModal = (type: "delivery" | "partners" | "contacts" | "checkout") => {
+  const openHomeModal = (type: "partners" | "contacts" | "checkout") => {
     window.dispatchEvent(new CustomEvent("posleslovie:open-modal", { detail: type }));
   };
 
@@ -107,9 +104,15 @@ export function SiteHeader() {
       >
         <span className="sr-only">{isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}</span>
         <span className="flex w-5 flex-col gap-1.5" aria-hidden="true">
-          <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "translate-y-2 rotate-45" : ""}`} />
-          <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "opacity-0" : ""}`} />
-          <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
+          <span
+            className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "translate-y-2 rotate-45" : ""}`}
+          />
+          <span
+            className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "opacity-0" : ""}`}
+          />
+          <span
+            className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`}
+          />
         </span>
       </button>
 
@@ -270,11 +273,7 @@ function SocialIconButton({
       aria-label={label}
       className="flex h-9 w-9 items-center justify-center rounded-full transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
-      <img
-        src={assetPath(icon)}
-        alt={label}
-        className="h-9 w-9 rounded-full object-cover"
-      />
+      <img src={assetPath(icon)} alt={label} className="h-9 w-9 rounded-full object-cover" />
     </a>
   );
 }

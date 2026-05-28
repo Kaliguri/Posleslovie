@@ -19,10 +19,32 @@ collections:
         label: 01. Бренд и контакты
         file: content/site-settings.json
         fields:
-          - { name: name, label: Название сайта, widget: string, hint: Отображается в метаданных и служебных местах сайта. }
-          - { name: description, label: Краткое описание сайта, widget: text, hint: Используется в описании сайта для поисковых систем (SEO). }
-          - { name: phone, label: Телефон, widget: string, hint: "Формат +7XXXXXXXXXX или +7 (XXX) XXX-XX-XX.", pattern: ["^\\+7[\\d\\s()\\-]{10,}$", "Введите телефон в формате +7..."] }
-          - { name: email, label: Email, widget: string, hint: "Основной контактный email.", pattern: ["^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", "Введите корректный email"] }
+          - {
+              name: name,
+              label: Название сайта,
+              widget: string,
+              hint: Отображается в метаданных и служебных местах сайта.,
+            }
+          - {
+              name: description,
+              label: Краткое описание сайта,
+              widget: text,
+              hint: Используется в описании сайта для поисковых систем (SEO).,
+            }
+          - {
+              name: phone,
+              label: Телефон,
+              widget: string,
+              hint: "Формат +7XXXXXXXXXX или +7 (XXX) XXX-XX-XX.",
+              pattern: ["^\\+7[\\d\\s()\\-]{10,}$", "Введите телефон в формате +7..."],
+            }
+          - {
+              name: email,
+              label: Email,
+              widget: string,
+              hint: "Основной контактный email.",
+              pattern: ["^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", "Введите корректный email"],
+            }
           - name: socials
             label: Социальные сети
             widget: list
@@ -35,7 +57,12 @@ collections:
                 label: Название
                 widget: select
                 options: ["VK", "TG", "MAX"]
-              - { name: href, label: Ссылка, widget: string, pattern: ["^https?://", "Ссылка должна начинаться с http:// или https://"] }
+              - {
+                  name: href,
+                  label: Ссылка,
+                  widget: string,
+                  pattern: ["^https?://", "Ссылка должна начинаться с http:// или https://"],
+                }
               - name: icon
                 label: Иконка
                 widget: image
@@ -65,7 +92,12 @@ collections:
                   - "\\.pdf$"
                   - "Разрешены только PDF-файлы"
               - { name: title, widget: hidden }
-              - { name: shortTitle, label: Короткое название, widget: string, hint: "Отображается в футере в списке документов." }
+              - {
+                  name: shortTitle,
+                  label: Короткое название,
+                  widget: string,
+                  hint: "Отображается в футере в списке документов.",
+                }
 
       - name: products
         label: 03. Товары
@@ -79,14 +111,31 @@ collections:
             fields:
               - { name: title, label: Название товара, widget: string }
               - { name: price, label: Стоимость (₽), widget: number, value_type: int, min: 0 }
-              - { name: image, label: Фото товара, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
+              - {
+                  name: image,
+                  label: Фото товара,
+                  widget: image,
+                  hint: "Рекомендуемый размер: 1200x1200 px (квадрат).",
+                }
 
       - name: site_behavior
         label: 04. Настройки
         file: content/site-behavior.json
         fields:
-          - { name: enableScrollAnimations, label: Включить анимацию блоков при прокрутке, widget: boolean, default: true, hint: "Если выключить, секции будут появляться без анимации." }
-          - { name: enableGlobalOverlays, label: Включить затемняющие слои на сайте, widget: boolean, default: false, hint: "Глобально управляет затемнением фоновых изображений и затемнением подложек меню/модалок." }
+          - {
+              name: enableScrollAnimations,
+              label: Включить анимацию блоков при прокрутке,
+              widget: boolean,
+              default: true,
+              hint: "Если выключить, секции будут появляться без анимации.",
+            }
+          - {
+              name: enableGlobalOverlays,
+              label: Включить затемняющие слои на сайте,
+              widget: boolean,
+              default: false,
+              hint: "Глобально управляет затемнением фоновых изображений и затемнением подложек меню/модалок.",
+            }
 
       - name: cms_quick_start
         label: 98. Как пользоваться CMS - быстрый старт
@@ -94,8 +143,18 @@ collections:
         editor:
           preview: false
         fields:
-          - { name: title, label: Заголовок, widget: string, hint: "Служебное поле. Лучше не менять." }
-          - { name: body, label: Быстрый старт, widget: markdown, hint: "Краткая инструкция для ежедневной работы клиента." }
+          - {
+              name: title,
+              label: Заголовок,
+              widget: string,
+              hint: "Служебное поле. Лучше не менять.",
+            }
+          - {
+              name: body,
+              label: Быстрый старт,
+              widget: markdown,
+              hint: "Краткая инструкция для ежедневной работы клиента.",
+            }
 
       - name: cms_full_guide
         label: 99. Как пользоваться CMS - полный гайд
@@ -103,8 +162,18 @@ collections:
         editor:
           preview: false
         fields:
-          - { name: title, label: Заголовок, widget: string, hint: "Служебное поле. Лучше не менять." }
-          - { name: body, label: Полный гайд, widget: markdown, hint: "Подробная инструкция и решения частых ошибок." }
+          - {
+              name: title,
+              label: Заголовок,
+              widget: string,
+              hint: "Служебное поле. Лучше не менять.",
+            }
+          - {
+              name: body,
+              label: Полный гайд,
+              widget: markdown,
+              hint: "Подробная инструкция и решения частых ошибок.",
+            }
 
   - name: home
     label: Главная страница (сверху вниз)
@@ -127,7 +196,12 @@ collections:
               - { label: Изображение, value: image }
               - { label: Видео, value: video }
             hint: Выберите, что показывать на обложке - изображение или видео.
-          - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1920x1080 px." }
+          - {
+              name: backgroundImage,
+              label: Фоновое изображение,
+              widget: image,
+              hint: "Рекомендуемый размер: 1920x1080 px.",
+            }
           - name: backgroundVideo
             label: Фоновое видео (mp4/webm)
             widget: file
@@ -152,7 +226,12 @@ collections:
             fields:
               - { name: title, label: Название, widget: string }
               - { name: description, label: Описание, widget: text }
-              - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
+              - {
+                  name: icon,
+                  label: Иконка,
+                  widget: image,
+                  hint: "Рекомендуемый размер: 128x128 px (квадрат).",
+                }
 
       - name: process_bombs
         label: "Блок #3. Как мы делаем бомбочки"
@@ -161,16 +240,39 @@ collections:
           - { name: eyebrow, label: Надпись над заголовком, widget: string }
           - { name: title, label: Заголовок блока, widget: string }
           - { name: description, label: Описание, widget: text }
-          - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false, hint: "Включите, чтобы поменять местами блок текста и блок фото." }
+          - {
+              name: reverse,
+              label: Зеркальная компоновка,
+              widget: boolean,
+              default: false,
+              hint: "Включите, чтобы поменять местами блок текста и блок фото.",
+            }
           - name: slides
             label: Изображения блока
             widget: list
             summary: "{{fields.alt}}"
             max: 12
             fields:
-              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
-              - { name: alt, label: Описание изображения (alt), widget: string, required: true, hint: "Коротко опишите, что изображено на фото." }
-          - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
+              - {
+                  name: image,
+                  label: Изображение,
+                  widget: image,
+                  hint: "Рекомендуемый размер: 1200x1200 px (квадрат).",
+                }
+              - {
+                  name: alt,
+                  label: Описание изображения (alt),
+                  widget: string,
+                  required: true,
+                  hint: "Коротко опишите, что изображено на фото.",
+                }
+          - {
+              name: button,
+              label: Текст кнопки (оставьте пустым,
+              чтобы скрыть),
+              widget: string,
+              required: false,
+            }
 
       - name: process_lavender
         label: "Блок #4. Собираем лаванду вручную"
@@ -179,16 +281,39 @@ collections:
           - { name: eyebrow, label: Надпись над заголовком, widget: string }
           - { name: title, label: Заголовок блока, widget: string }
           - { name: description, label: Описание, widget: text }
-          - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false, hint: "Включите, чтобы поменять местами блок текста и блок фото." }
+          - {
+              name: reverse,
+              label: Зеркальная компоновка,
+              widget: boolean,
+              default: false,
+              hint: "Включите, чтобы поменять местами блок текста и блок фото.",
+            }
           - name: slides
             label: Изображения блока
             widget: list
             summary: "{{fields.alt}}"
             max: 12
             fields:
-              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
-              - { name: alt, label: Описание изображения (alt), widget: string, required: true, hint: "Коротко опишите, что изображено на фото." }
-          - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
+              - {
+                  name: image,
+                  label: Изображение,
+                  widget: image,
+                  hint: "Рекомендуемый размер: 1200x1200 px (квадрат).",
+                }
+              - {
+                  name: alt,
+                  label: Описание изображения (alt),
+                  widget: string,
+                  required: true,
+                  hint: "Коротко опишите, что изображено на фото.",
+                }
+          - {
+              name: button,
+              label: Текст кнопки (оставьте пустым,
+              чтобы скрыть),
+              widget: string,
+              required: false,
+            }
 
       - name: process_packs
         label: "Блок #5. Упаковываем с любовью"
@@ -197,16 +322,39 @@ collections:
           - { name: eyebrow, label: Надпись над заголовком, widget: string }
           - { name: title, label: Заголовок блока, widget: string }
           - { name: description, label: Описание, widget: text }
-          - { name: reverse, label: Зеркальная компоновка, widget: boolean, default: false, hint: "Включите, чтобы поменять местами блок текста и блок фото." }
+          - {
+              name: reverse,
+              label: Зеркальная компоновка,
+              widget: boolean,
+              default: false,
+              hint: "Включите, чтобы поменять местами блок текста и блок фото.",
+            }
           - name: slides
             label: Изображения блока
             widget: list
             summary: "{{fields.alt}}"
             max: 12
             fields:
-              - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 1200x1200 px (квадрат)." }
-              - { name: alt, label: Описание изображения (alt), widget: string, required: true, hint: "Коротко опишите, что изображено на фото." }
-          - { name: button, label: Текст кнопки (оставьте пустым, чтобы скрыть), widget: string, required: false }
+              - {
+                  name: image,
+                  label: Изображение,
+                  widget: image,
+                  hint: "Рекомендуемый размер: 1200x1200 px (квадрат).",
+                }
+              - {
+                  name: alt,
+                  label: Описание изображения (alt),
+                  widget: string,
+                  required: true,
+                  hint: "Коротко опишите, что изображено на фото.",
+                }
+          - {
+              name: button,
+              label: Текст кнопки (оставьте пустым,
+              чтобы скрыть),
+              widget: string,
+              required: false,
+            }
 
       - name: why_us
         label: "Блок #6. Почему выбирают нас"
@@ -214,7 +362,12 @@ collections:
         fields:
           - { name: kicker, label: Надпись над заголовком, widget: string }
           - { name: title, label: Заголовок блока, widget: string }
-          - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1600x900 px." }
+          - {
+              name: backgroundImage,
+              label: Фоновое изображение,
+              widget: image,
+              hint: "Рекомендуемый размер: 1600x900 px.",
+            }
           - name: reasons
             label: Карточки причин
             widget: list
@@ -223,7 +376,12 @@ collections:
             fields:
               - { name: title, label: Заголовок, widget: string }
               - { name: description, label: Описание, widget: text }
-              - { name: icon, label: Иконка, widget: image, hint: "Рекомендуемый размер: 128x128 px (квадрат)." }
+              - {
+                  name: icon,
+                  label: Иконка,
+                  widget: image,
+                  hint: "Рекомендуемый размер: 128x128 px (квадрат).",
+                }
 
       - name: about
         label: "Блок #7. О нас"
@@ -236,7 +394,12 @@ collections:
             widget: list
             max: 8
             field: { name: text, label: Текст, widget: text }
-          - { name: image, label: Изображение, widget: image, hint: "Рекомендуемый размер: 900x1200 px (вертикальное)." }
+          - {
+              name: image,
+              label: Изображение,
+              widget: image,
+              hint: "Рекомендуемый размер: 900x1200 px (вертикальное).",
+            }
 
       - name: reviews
         label: "Блок #8. Отзывы клиентов"
@@ -251,7 +414,12 @@ collections:
             max: 10
             fields:
               - { name: name, label: Имя автора, widget: string }
-              - { name: image, label: Фото/иллюстрация, widget: image, hint: "Рекомендуемый размер: 400x400 px (квадрат)." }
+              - {
+                  name: image,
+                  label: Фото/иллюстрация,
+                  widget: image,
+                  hint: "Рекомендуемый размер: 400x400 px (квадрат).",
+                }
               - { name: text, label: Текст отзыва, widget: text }
 
       - name: cta
@@ -261,4 +429,9 @@ collections:
           - { name: heading, label: Заголовок баннера, widget: string }
           - { name: text, label: Текст под заголовком, widget: text }
           - { name: buttonLabel, label: Текст кнопки баннера, widget: string }
-          - { name: backgroundImage, label: Фоновое изображение, widget: image, hint: "Рекомендуемый размер: 1920x1080 px." }
+          - {
+              name: backgroundImage,
+              label: Фоновое изображение,
+              widget: image,
+              hint: "Рекомендуемый размер: 1920x1080 px.",
+            }
