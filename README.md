@@ -41,7 +41,7 @@
 
 ```mermaid
 flowchart LR
-  User --> Site[Next.js static site]
+  User[Visitor] --> Site[Next.js static site]
   Site --> AmoWorker[Cloudflare AmoCRM Worker]
   AmoWorker --> AmoCRM[AmoCRM]
 
@@ -85,6 +85,7 @@ flowchart LR
 ```bash
 npm install
 npm run dev    # http://localhost:3000
+npm run check  # format + lint + typecheck
 npm run build  # статическая сборка → out/
 ```
 
@@ -156,6 +157,7 @@ npm run build  # статическая сборка → out/
 ```bash
 npm install
 npm run dev    # http://localhost:3000
+npm run check  # format + lint + typecheck
 npm run build  # static build → out/
 ```
 
@@ -180,8 +182,9 @@ Secrets (AmoCRM tokens, OAuth credentials) live in the Cloudflare Dashboard only
 
 ---
 
-<div align="center">
+## License
 
-_Private project · All rights reserved_
+This is a public portfolio repository for a private/commercial project.  
+The code is provided for review only. Reuse, redistribution and commercial use are not allowed without permission.
 
-</div>
+See [`LICENSE.md`](LICENSE.md) for details.
