@@ -19,20 +19,6 @@
 
 ---
 
-## Русский
-
-**Сайт-витрина для бренда натуральных бомбочек** — с онлайн-заказом, интеграцией CRM и управлением контентом без разработчика.
-
-### Что умеет
-
-- **Адаптивный дизайн** — отлично смотрится на телефоне, планшете и большом экране
-- **Заказ в пару кликов** — форма для частных клиентов и корпоративных заказов: загрузка логотипа, автодополнение города, сохранение данных
-- **Заявки прямо в CRM** — каждая форма создаёт сделку в AmoCRM с запиской, суммой и вложениями. Ничего не теряется
-- **Контент без программиста** — встроенная CMS: открыл браузер, поправил текст или фото, нажал «Опубликовать» — изменения живые через ~3 минуты
-- **Быстрый и бесплатный хостинг** — статический сайт на GitHub Pages, без своего сервера
-- **SEO из коробки** — sitemap, robots.txt, Open Graph (красивые превью в мессенджерах), JSON-LD для Google
-- **Обновляется само** — любой коммит в `main` запускает сборку и деплой автоматически
-
 ## Screenshots
 
 ![Главный экран](docs/screenshots/hero.png)
@@ -52,10 +38,22 @@ flowchart LR
   Actions --> Pages[GitHub Pages]
 ```
 
-<details>
-<summary><b>Для разработчиков</b></summary>
+---
 
-<br>
+## Русский
+
+**Сайт-витрина для бренда натуральных бомбочек** с онлайн-заказом, интеграцией CRM и управлением контентом без разработчика.
+
+### Что умеет
+
+- **Адаптивный дизайн** для телефона, планшета и десктопа
+- **Заказ в пару кликов** для частных и корпоративных клиентов (загрузка логотипа, автодополнение города, сохранение данных формы)
+- **Интеграция с AmoCRM**: каждая заявка создаёт сделку с заметкой, суммой и вложениями
+- **No-code редактирование контента** через Sveltia CMS (публикация в прод примерно за 3 минуты)
+- **Автодеплой на GitHub Pages** при каждом коммите в `main`
+- **SEO из коробки**: sitemap, robots.txt, Open Graph, JSON-LD
+
+### Для разработчиков
 
 **Стек**
 
@@ -64,11 +62,11 @@ flowchart LR
 | Frontend   | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
 | Контент    | JSON в `content/`, Sveltia CMS                              |
 | Хостинг    | GitHub Pages + GitHub Actions                               |
-| Интеграции | Cloudflare Workers — AmoCRM, CMS OAuth                      |
+| Интеграции | Cloudflare Workers (AmoCRM, CMS OAuth)                      |
 
 **Структура**
 
-```
+```text
 ├── content/              # JSON-контент (редактируется через CMS)
 │   ├── home-*.json       # Секции лендинга
 │   ├── site-settings.json
@@ -80,54 +78,48 @@ flowchart LR
 └── .github/workflows/pages.yml
 ```
 
-**Локально**
+**Локальный запуск**
 
 ```bash
 npm install
 npm run dev    # http://localhost:3000
 npm run check  # format + lint + typecheck
-npm run build  # статическая сборка → out/
+npm run build  # статическая сборка -> out/
 ```
 
-> Node.js 22+. Checkout и CMS-авторизация работают через внешние Cloudflare Workers.
+> Требуется Node.js 22+. Checkout и CMS-авторизация работают через внешние Cloudflare Workers.
 
-**Деплой:** push в `main` → GitHub Actions → `out/` на GitHub Pages.
-Настройка: **Settings → Pages → GitHub Actions**.
+**Деплой:** push в `main` -> GitHub Actions -> `out/` на GitHub Pages.  
+**Настройка Pages:** `Settings -> Pages -> GitHub Actions`.
 
-**Контент:** [posleslovie.online/admin/](https://posleslovie.online/admin/) → GitHub → Edit → Publish (~3 мин).
-Подробнее: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
+**Контент:** [posleslovie.online/admin/](https://posleslovie.online/admin/) -> GitHub -> Edit -> Publish (~3 мин).  
+**Документация:** [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md).
 
 **Интеграции**
 
-| Сервис       | Назначение                                   |
-| ------------ | -------------------------------------------- |
-| AmoCRM       | Форма заказа → сделка с заметкой и вложением |
-| GitHub OAuth | Авторизация в Sveltia CMS                    |
+| Сервис       | Назначение                                    |
+| ------------ | --------------------------------------------- |
+| AmoCRM       | Форма заказа -> сделка с заметкой и вложением |
+| GitHub OAuth | Авторизация в Sveltia CMS                     |
 
-Секреты (токены AmoCRM, OAuth) — в Cloudflare Dashboard, не в репозитории.
-
-</details>
+Секреты (токены AmoCRM, OAuth) хранятся только в Cloudflare Dashboard, не в репозитории.
 
 ---
 
 ## English
 
-**A brand site for natural bath bombs** — with an ordering flow, CRM integration, and no-code content management.
+**A brand website for natural bath bombs** with online ordering, CRM integration, and no-code content management.
 
 ### What it does
 
-- **Responsive design** — looks great on any device
-- **Simple ordering** — personal and corporate checkout: logo upload, city autocomplete, form persistence
-- **Orders straight to CRM** — every submission creates an AmoCRM deal with a note, total, and attachments
-- **No-code content editing** — built-in CMS: edit text or photos in the browser, click Publish, live in ~3 min
-- **Fast & free hosting** — static site on GitHub Pages, no server needed
-- **SEO out of the box** — sitemap, robots.txt, Open Graph, JSON-LD for Google
-- **Self-deploying** — any commit to `main` triggers an automatic build and deploy
+- **Responsive design** for mobile, tablet, and desktop
+- **Fast checkout flow** for personal and corporate orders (logo upload, city autocomplete, persisted form data)
+- **AmoCRM integration**: each submission creates a deal with note, total, and attachments
+- **No-code content editing** via Sveltia CMS (live in production in about 3 minutes)
+- **Auto-deploy to GitHub Pages** on every commit to `main`
+- **SEO built in**: sitemap, robots.txt, Open Graph, JSON-LD
 
-<details>
-<summary><b>For developers</b></summary>
-
-<br>
+### For developers
 
 **Stack**
 
@@ -136,11 +128,11 @@ npm run build  # статическая сборка → out/
 | Frontend     | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
 | Content      | JSON in `content/`, Sveltia CMS                             |
 | Hosting      | GitHub Pages + GitHub Actions                               |
-| Integrations | Cloudflare Workers — AmoCRM, CMS OAuth                      |
+| Integrations | Cloudflare Workers (AmoCRM, CMS OAuth)                      |
 
 **Structure**
 
-```
+```text
 ├── content/              # JSON content (edited via CMS)
 │   ├── home-*.json       # Landing sections
 │   ├── site-settings.json
@@ -158,27 +150,25 @@ npm run build  # статическая сборка → out/
 npm install
 npm run dev    # http://localhost:3000
 npm run check  # format + lint + typecheck
-npm run build  # static build → out/
+npm run build  # static build -> out/
 ```
 
-> Node.js 22+. Checkout and CMS auth run on external Cloudflare Workers.
+> Node.js 22+ is required. Checkout and CMS auth are handled by external Cloudflare Workers.
 
-**Deployment:** push to `main` → GitHub Actions → `out/` to GitHub Pages.
-Setup: **Settings → Pages → GitHub Actions**.
+**Deployment:** push to `main` -> GitHub Actions -> `out/` to GitHub Pages.  
+**Pages setup:** `Settings -> Pages -> GitHub Actions`.
 
-**Content:** [posleslovie.online/admin/](https://posleslovie.online/admin/) → GitHub → Edit → Publish (~3 min).
-Details: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
+**Content:** [posleslovie.online/admin/](https://posleslovie.online/admin/) -> GitHub -> Edit -> Publish (~3 min).  
+**Docs:** [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md).
 
 **Integrations**
 
-| Service      | Purpose                                       |
-| ------------ | --------------------------------------------- |
-| AmoCRM       | Checkout form → deal with note and attachment |
-| GitHub OAuth | Sveltia CMS sign-in                           |
+| Service      | Purpose                                        |
+| ------------ | ---------------------------------------------- |
+| AmoCRM       | Checkout form -> deal with note and attachment |
+| GitHub OAuth | Sveltia CMS sign-in                            |
 
-Secrets (AmoCRM tokens, OAuth credentials) live in the Cloudflare Dashboard only — never in the repo.
-
-</details>
+Secrets (AmoCRM tokens and OAuth credentials) are stored only in the Cloudflare Dashboard, never in the repository.
 
 ---
 
