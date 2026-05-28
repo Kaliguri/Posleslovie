@@ -146,7 +146,7 @@ src/
 | AmoCRM       | Форма заказа -> сделка с заметкой и вложением |
 | GitHub OAuth | Авторизация в Sveltia CMS                     |
 
-Секреты интеграций (AmoCRM, OAuth) размещаются в Cloudflare Dashboard и не хранятся в репозитории.
+Секреты интеграций (AmoCRM, OAuth) размещаются в Cloudflare Dashboard.
 
 </details>
 
@@ -248,7 +248,7 @@ src/
 | AmoCRM       | Checkout form -> deal with note and attachment |
 | GitHub OAuth | Sveltia CMS sign-in                            |
 
-Integration secrets (AmoCRM and OAuth) are managed in the Cloudflare Dashboard and are not stored in the repository.
+Integration secrets (AmoCRM and OAuth) are managed in the Cloudflare Dashboard.
 
 </details>
 
