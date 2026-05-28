@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState, type InputHTMLAttributes } fr
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
 import { russianCities } from "@/shared/config/russian-cities";
 import { siteConfig } from "@/shared/config/site";
+import { seoConfig, toAbsoluteUrl } from "@/shared/config/seo";
 import siteBehaviorJson from "../../content/site-behavior.json";
 import siteProductsJson from "../../content/site-products.json";
 import homeHeroJson from "../../content/home-hero.json";
@@ -668,8 +669,63 @@ export default function Home() {
     };
   }, []);
 
+  const organizationStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: siteConfig.name,
+    url: toAbsoluteUrl("/"),
+    logo: toAbsoluteUrl("/images/photos/hero.jpg"),
+    email: siteConfig.email,
+    telephone: siteConfig.phone,
+    sameAs: siteConfig.socials.map((social) => social.href),
+  };
+
+  const websiteStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: seoConfig.title,
+    url: toAbsoluteUrl("/"),
+    description: seoConfig.description,
+    inLanguage: "ru-RU",
+  };
+
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: primaryCheckoutProduct.title,
+    description: seoConfig.description,
+    image: [toAbsoluteUrl(primaryCheckoutProduct.image)],
+    brand: {
+      "@type": "Brand",
+      name: siteConfig.name,
+    },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "RUB",
+      price: primaryCheckoutProduct.price,
+      availability: "https://schema.org/InStock",
+      url: toAbsoluteUrl("/"),
+      seller: {
+        "@type": "Organization",
+        name: siteConfig.name,
+      },
+    },
+  };
+
   return (
-    <div className="bg-[#f8f8f8] text-[#0f172a]">
+    <div className="overflow-x-hidden bg-[#f8f8f8] text-[#0f172a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationStructuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+      />
       <HeroSection
         onOrder={() => setModal("checkout")}
         onOpenHowWeMakeVideo={() => setIsHeroVideoOpen(true)}
