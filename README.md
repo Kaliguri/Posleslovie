@@ -33,19 +33,6 @@
 - **SEO из коробки** — sitemap, robots.txt, Open Graph (красивые превью в мессенджерах), JSON-LD для Google
 - **Обновляется само** — любой коммит в `main` запускает сборку и деплой автоматически
 
-### Страница
-
-| Секция | |
-|---|---|
-| Hero | Заголовок, питч, видео о производстве |
-| Продукт | Карточки с описанием и ценой |
-| Процесс | Три фотогалереи: бомбочки, лаванда, упаковка |
-| Почему мы | Ключевые преимущества |
-| О нас | История команды |
-| Отзывы | Карточки клиентов |
-| Заказ | Модальное окно — личный и корпоративный |
-| Ещё | Доставка, партнёрам, контакты, юридические документы |
-
 <details>
 <summary><b>Для разработчиков</b></summary>
 
@@ -116,19 +103,6 @@ npm run build  # статическая сборка → out/
 - **Fast & free hosting** — static site on GitHub Pages, no server needed
 - **SEO out of the box** — sitemap, robots.txt, Open Graph, JSON-LD for Google
 - **Self-deploying** — any commit to `main` triggers an automatic build and deploy
-
-### Page sections
-
-| Section | |
-|---|---|
-| Hero | Headline, brand pitch, production video |
-| Product | Cards with description and price |
-| Process | Three galleries: bombs, lavender, packaging |
-| Why us | Brand advantages |
-| About | Team story |
-| Reviews | Customer cards |
-| Checkout | Modal — personal and corporate tabs |
-| More | Delivery, partners, contacts, legal documents |
 
 <details>
 <summary><b>For developers</b></summary>
