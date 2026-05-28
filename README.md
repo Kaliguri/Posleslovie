@@ -52,15 +52,15 @@ flowchart TD
 
 ## Русский
 
-**Послесловие — production-ready сайт-витрина для бренда натуральной косметики:** каталог, оформление заявки, CRM-интеграция и no-code редактирование контента без участия разработчика.
+**Послесловие — production-ready сайт-лендинг для бренда натуральной косметики, который не требует платного хостинга:** инфраструктура на GitHub Pages + Cloudflare Workers, каталог, оформление заявки, CRM-интеграция и no-code редактирование контента без участия разработчика.
 
 ### Highlights
 
+- Без платного хостинга: прод-инфраструктура на GitHub Pages + Cloudflare Workers
 - Статический экспорт Next.js с деплоем на GitHub Pages и custom domain (`posleslovie.online`)
 - Редактируемый контент через Sveltia CMS (JSON-файлы в GitHub)
 - Checkout-сценарий с сохранением состояния формы, валидацией, загрузкой логотипа и созданием лида в AmoCRM
 - SEO-ready: sitemap, robots.txt, Open Graph, JSON-LD
-- Инфраструктура без платного хостинга (GitHub Pages + Cloudflare Workers)
 - CI-пайплайн: format, lint, typecheck, unit tests, build и deploy
 
 <details>
@@ -161,15 +161,15 @@ src/
 
 ## English
 
-**Posleslovie is a production-ready showcase website for a natural cosmetics brand:** product catalog, checkout lead capture, CRM integration, and no-code content editing without developer involvement.
+**Posleslovie is a production-ready landing website for a natural cosmetics brand that runs without paid hosting:** GitHub Pages + Cloudflare Workers infrastructure, product catalog, checkout lead capture, CRM integration, and no-code content editing without developer involvement.
 
 ### Highlights
 
+- No paid hosting required: production infrastructure runs on GitHub Pages + Cloudflare Workers
 - Static Next.js export deployed to GitHub Pages with custom domain
 - Editable content via Sveltia CMS backed by JSON files in GitHub
 - Checkout flow with persisted form state, validation, logo upload and AmoCRM lead creation
 - SEO-ready: sitemap, robots.txt, Open Graph, JSON-LD
-- Hosting stack without paid infrastructure (GitHub Pages + Cloudflare Workers)
 - CI pipeline: format, lint, typecheck, unit tests, build and deploy
 
 <details>
