@@ -29,7 +29,13 @@ export const checkoutProducts = siteProductsJson.items.map((item) => ({
 
 export const primaryCheckoutProduct = checkoutProducts[0] ?? fallbackCheckoutProduct;
 
-export const heroContent = {
+type HeroContent = Omit<typeof homeHeroJson, "backgroundMediaType"> & {
+  backgroundMediaType: "video" | "image";
+  backgroundImage: string;
+  backgroundVideo: string;
+};
+
+export const heroContent: HeroContent = {
   ...homeHeroJson,
   backgroundMediaType: homeHeroJson.backgroundMediaType === "video" ? "video" : "image",
   backgroundImage: assetPath(homeHeroJson.backgroundImage),
@@ -44,15 +50,17 @@ export const featureCardsSection = {
   })),
 };
 
-export const processSections = [homeProcessBombsJson, homeProcessLavenderJson, homeProcessPacksJson].map(
-  (section) => ({
-    ...section,
-    slides: section.slides.map((slide) => ({
-      ...slide,
-      image: assetPath(slide.image),
-    })),
-  }),
-);
+export const processSections = [
+  homeProcessBombsJson,
+  homeProcessLavenderJson,
+  homeProcessPacksJson,
+].map((section) => ({
+  ...section,
+  slides: section.slides.map((slide) => ({
+    ...slide,
+    image: assetPath(slide.image),
+  })),
+}));
 
 export const whyUsContent = {
   ...homeWhyUsJson,

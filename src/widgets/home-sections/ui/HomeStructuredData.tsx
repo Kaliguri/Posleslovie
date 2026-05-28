@@ -6,7 +6,9 @@ type CheckoutProduct = {
   image: string;
 };
 
-export function HomeStructuredData({ primaryCheckoutProduct }: Readonly<{ primaryCheckoutProduct: CheckoutProduct }>) {
+export function HomeStructuredData({
+  primaryCheckoutProduct,
+}: Readonly<{ primaryCheckoutProduct: CheckoutProduct }>) {
   const { organizationStructuredData, websiteStructuredData, productStructuredData } =
     buildHomeStructuredData(primaryCheckoutProduct);
 
