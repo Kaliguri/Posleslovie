@@ -52,16 +52,15 @@ flowchart TD
 
 ## Русский
 
-**Сайт-витрина для бренда натуральных бомбочек** с онлайн-заказом, интеграцией CRM и управлением контентом без разработчика.
+**Послесловие — production-ready сайт-витрина для бренда натуральной косметики:** каталог, оформление заявки, CRM-интеграция и no-code редактирование контента без участия разработчика.
 
-### Что умеет
+### Highlights
 
-- **Адаптивный дизайн** для телефона, планшета и десктопа
-- **Заказ в пару кликов** для частных и корпоративных клиентов (загрузка логотипа, автодополнение города, сохранение данных формы)
-- **Интеграция с AmoCRM**: каждая заявка создаёт сделку с заметкой, суммой и вложениями
-- **No-code редактирование контента** через Sveltia CMS (публикация в прод примерно за 3 минуты)
-- **Автодеплой на GitHub Pages** при каждом коммите в `main`
-- **SEO из коробки**: sitemap, robots.txt, Open Graph, JSON-LD
+- Static Next.js export deployed to GitHub Pages with custom domain
+- Editable content via Sveltia CMS backed by JSON files in GitHub
+- Checkout flow with persisted form state, validation, logo upload and AmoCRM lead creation
+- SEO-ready: sitemap, robots.txt, Open Graph, JSON-LD
+- CI pipeline: format, lint, typecheck, unit tests, build and deploy
 
 <details>
 <summary><b>Для разработчиков</b></summary>
@@ -161,16 +160,15 @@ src/
 
 ## English
 
-**A brand website for natural bath bombs** with online ordering, CRM integration, and no-code content management.
+**Posleslovie is a production-ready showcase website for a natural cosmetics brand:** product catalog, checkout lead capture, CRM integration, and no-code content editing without developer involvement.
 
-### What it does
+### Highlights
 
-- **Responsive design** for mobile, tablet, and desktop
-- **Fast checkout flow** for personal and corporate orders (logo upload, city autocomplete, persisted form data)
-- **AmoCRM integration**: each submission creates a deal with note, total, and attachments
-- **No-code content editing** via Sveltia CMS (live in production in about 3 minutes)
-- **Auto-deploy to GitHub Pages** on every commit to `main`
-- **SEO built in**: sitemap, robots.txt, Open Graph, JSON-LD
+- Static Next.js export deployed to GitHub Pages with custom domain
+- Editable content via Sveltia CMS backed by JSON files in GitHub
+- Checkout flow with persisted form state, validation, logo upload and AmoCRM lead creation
+- SEO-ready: sitemap, robots.txt, Open Graph, JSON-LD
+- CI pipeline: format, lint, typecheck, unit tests, build and deploy
 
 <details>
 <summary><b>For developers</b></summary>
@@ -269,6 +267,8 @@ Secrets (AmoCRM tokens and OAuth credentials) are stored only in the Cloudflare 
 ---
 
 ## License
+
+> Status: production/demo portfolio repository. Public for code review; not intended as a reusable template.
 
 This is a public portfolio repository for a private/commercial project.  
 The code is provided for review only. Reuse, redistribution and commercial use are not allowed without permission.
