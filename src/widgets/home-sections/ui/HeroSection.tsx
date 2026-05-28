@@ -34,7 +34,7 @@ export function HeroSection({
   const [isVideoReady, setIsVideoReady] = useState(!showVideo);
 
   return (
-    <section className="relative min-h-[560px] overflow-hidden bg-brand-navy sm:min-h-[720px] lg:min-h-[1080px]">
+    <section className="relative min-h-[100dvh] overflow-hidden bg-brand-navy lg:min-h-[1080px]">
       <img
         src={backgroundImage}
         alt=""
@@ -63,24 +63,26 @@ export function HeroSection({
         </video>
       ) : null}
       {withOverlay ? <div className="absolute inset-0 bg-black/55 sm:bg-black/25" /> : null}
-      <div className="relative mx-auto flex max-w-[1720px] justify-center px-5 pb-14 pt-28 text-center sm:px-5 sm:pt-48 lg:justify-start lg:px-[100px] lg:pt-[331px] lg:text-left">
-        <div className="max-w-[1000px] lg:max-w-[1000px]">
-          <h1 className="text-display font-normal text-white [font-family:var(--font-educational)]">
-            {heading === "Послесловие к вашему дню" ? (
-              <>
-                Послесловие к
-                <br />
-                вашему дню
-              </>
-            ) : (
-              heading
-            )}
-          </h1>
-          <p className="text-body-lg mx-auto mt-4 max-w-[320px] font-medium leading-[1.5] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] lg:mx-0 lg:max-w-[860px]">
-            <span className="block">{leadLine1}</span>
-            <span className="block">{leadLine2}</span>
-          </p>
-          <div className="mt-8 flex flex-col items-center gap-12 sm:mt-16 sm:flex-row sm:justify-center lg:items-start lg:justify-start">
+      <div className="relative mx-auto flex min-h-[100dvh] max-w-[1720px] flex-col px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-28 text-center sm:px-5 sm:pt-48 lg:min-h-[1080px] lg:justify-start lg:px-[100px] lg:pb-14 lg:pt-[331px] lg:text-left">
+        <div className="mx-auto flex w-full max-w-[1000px] flex-1 flex-col lg:mx-0 lg:block lg:flex-none">
+          <div className="flex flex-1 flex-col justify-center pt-4 sm:pt-6 lg:block lg:flex-none lg:pt-0">
+            <h1 className="text-display max-lg:text-[clamp(3.75rem,22vh,7.5rem)] max-lg:leading-[0.92] sm:max-lg:text-[clamp(4rem,20vh,8.25rem)] font-normal text-white [font-family:var(--font-educational)]">
+              {heading === "Послесловие к вашему дню" ? (
+                <>
+                  Послесловие к
+                  <br />
+                  вашему дню
+                </>
+              ) : (
+                heading
+              )}
+            </h1>
+            <p className="text-body-lg mx-auto mt-4 max-w-[320px] font-medium leading-[1.5] text-[#dfdfdf] sm:mt-6 sm:max-w-[560px] lg:mx-0 lg:max-w-[860px]">
+              <span className="block">{leadLine1}</span>
+              <span className="block">{leadLine2}</span>
+            </p>
+          </div>
+          <div className="mt-auto mb-[100px] flex flex-col items-center gap-6 sm:mb-[125px] sm:flex-row sm:justify-center sm:gap-8 lg:mb-0 lg:mt-16 lg:items-start lg:justify-start">
             <DesignButton size="xl" variant="filled" onClick={onOrder}>
               {ctaLabel}
             </DesignButton>
