@@ -38,7 +38,9 @@ async function getAmoCRMDriveUrl(token, amoBaseUrl) {
   const driveUrl = account?.drive_url ?? account?._links?.drive_url?.href;
 
   if (!driveUrl) {
-    throw new Error("AmoCRM drive_url was not found. Check Files Access scope for the integration.");
+    throw new Error(
+      "AmoCRM drive_url was not found. Check Files Access scope for the integration.",
+    );
   }
 
   return driveUrl.replace(/\/$/, "");

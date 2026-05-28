@@ -1111,5 +1111,5 @@ export const russianCities: readonly string[] = [
   "Ярцево",
   "Ясногорск",
   "Ясный",
-  "Яхрома"
+  "Яхрома",
 ];

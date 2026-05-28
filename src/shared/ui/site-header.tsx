@@ -107,9 +107,15 @@ export function SiteHeader() {
       >
         <span className="sr-only">{isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}</span>
         <span className="flex w-5 flex-col gap-1.5" aria-hidden="true">
-          <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "translate-y-2 rotate-45" : ""}`} />
-          <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "opacity-0" : ""}`} />
-          <span className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} />
+          <span
+            className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "translate-y-2 rotate-45" : ""}`}
+          />
+          <span
+            className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "opacity-0" : ""}`}
+          />
+          <span
+            className={`h-0.5 rounded-full bg-current transition ${isMobileMenuOpen ? "-translate-y-2 -rotate-45" : ""}`}
+          />
         </span>
       </button>
 
@@ -270,11 +276,7 @@ function SocialIconButton({
       aria-label={label}
       className="flex h-9 w-9 items-center justify-center rounded-full transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
-      <img
-        src={assetPath(icon)}
-        alt={label}
-        className="h-9 w-9 rounded-full object-cover"
-      />
+      <img src={assetPath(icon)} alt={label} className="h-9 w-9 rounded-full object-cover" />
     </a>
   );
 }

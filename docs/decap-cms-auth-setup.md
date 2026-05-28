@@ -24,11 +24,11 @@ npx wrangler deploy -c wrangler.cms-auth.toml
 
 В Cloudflare Dashboard → Workers → `posleslovie-cms-auth` → **Settings → Variables** добавь:
 
-| Переменная | Значение |
-|---|---|
-| `GITHUB_CLIENT_ID` | Client ID из шага 1 |
-| `GITHUB_CLIENT_SECRET` | Client Secret (Encrypt) |
-| `ALLOWED_DOMAINS` | `posleslovie.online,www.posleslovie.online,kaliguri.github.io` |
+| Переменная             | Значение                                                       |
+| ---------------------- | -------------------------------------------------------------- |
+| `GITHUB_CLIENT_ID`     | Client ID из шага 1                                            |
+| `GITHUB_CLIENT_SECRET` | Client Secret (Encrypt)                                        |
+| `ALLOWED_DOMAINS`      | `posleslovie.online,www.posleslovie.online,kaliguri.github.io` |
 
 ## Шаг 3 — Деплой сайта
 

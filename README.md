@@ -40,12 +40,12 @@
 
 **Стек**
 
-| | |
-|---|---|
-| Frontend | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
-| Контент | JSON в `content/`, Sveltia CMS |
-| Хостинг | GitHub Pages + GitHub Actions |
-| Интеграции | Cloudflare Workers — AmoCRM, CMS OAuth |
+|            |                                                             |
+| ---------- | ----------------------------------------------------------- |
+| Frontend   | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
+| Контент    | JSON в `content/`, Sveltia CMS                              |
+| Хостинг    | GitHub Pages + GitHub Actions                               |
+| Интеграции | Cloudflare Workers — AmoCRM, CMS OAuth                      |
 
 **Структура**
 
@@ -79,10 +79,10 @@ npm run build  # статическая сборка → out/
 
 **Интеграции**
 
-| Сервис | Назначение |
-|---|---|
-| AmoCRM | Форма заказа → сделка с заметкой и вложением |
-| GitHub OAuth | Авторизация в Sveltia CMS |
+| Сервис       | Назначение                                   |
+| ------------ | -------------------------------------------- |
+| AmoCRM       | Форма заказа → сделка с заметкой и вложением |
+| GitHub OAuth | Авторизация в Sveltia CMS                    |
 
 Секреты (токены AmoCRM, OAuth) — в Cloudflare Dashboard, не в репозитории.
 
@@ -111,12 +111,12 @@ npm run build  # статическая сборка → out/
 
 **Stack**
 
-| | |
-|---|---|
-| Frontend | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
-| Content | JSON in `content/`, Sveltia CMS |
-| Hosting | GitHub Pages + GitHub Actions |
-| Integrations | Cloudflare Workers — AmoCRM, CMS OAuth |
+|              |                                                             |
+| ------------ | ----------------------------------------------------------- |
+| Frontend     | Next.js (static export), React, TypeScript, Tailwind CSS v4 |
+| Content      | JSON in `content/`, Sveltia CMS                             |
+| Hosting      | GitHub Pages + GitHub Actions                               |
+| Integrations | Cloudflare Workers — AmoCRM, CMS OAuth                      |
 
 **Structure**
 
@@ -150,10 +150,10 @@ Details: [`docs/decap-cms-auth-setup.md`](docs/decap-cms-auth-setup.md)
 
 **Integrations**
 
-| Service | Purpose |
-|---|---|
-| AmoCRM | Checkout form → deal with note and attachment |
-| GitHub OAuth | Sveltia CMS sign-in |
+| Service      | Purpose                                       |
+| ------------ | --------------------------------------------- |
+| AmoCRM       | Checkout form → deal with note and attachment |
+| GitHub OAuth | Sveltia CMS sign-in                           |
 
 Secrets (AmoCRM tokens, OAuth credentials) live in the Cloudflare Dashboard only — never in the repo.
 
@@ -163,6 +163,6 @@ Secrets (AmoCRM tokens, OAuth credentials) live in the Cloudflare Dashboard only
 
 <div align="center">
 
-*Private project · All rights reserved*
+_Private project · All rights reserved_
 
 </div>
