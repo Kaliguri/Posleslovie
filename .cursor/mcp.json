@@ -9,6 +9,10 @@
       "env": {
         "FIGMA_API_KEY": "${env:FIGMA_API_KEY}"
       }
+    },
+    "playwright": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@playwright/mcp@latest", "--headless"]
     }
   }
 }

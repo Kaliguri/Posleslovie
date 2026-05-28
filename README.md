@@ -33,6 +33,27 @@
 - **SEO из коробки** — sitemap, robots.txt, Open Graph (красивые превью в мессенджерах), JSON-LD для Google
 - **Обновляется само** — любой коммит в `main` запускает сборку и деплой автоматически
 
+## Screenshots
+
+![Главный экран](docs/screenshots/hero.png)
+![Форма заказа](docs/screenshots/checkout.png)
+![CMS](docs/screenshots/cms.png)
+
+## Architecture
+
+```mermaid
+flowchart LR
+  User --> Site[Next.js static site]
+  Site --> AmoWorker[Cloudflare AmoCRM Worker]
+  AmoWorker --> AmoCRM[AmoCRM]
+
+  Admin[Content editor] --> CMS[Sveltia CMS]
+  CMS --> OAuth[Cloudflare OAuth Worker]
+  CMS --> GitHub[GitHub content JSON]
+  GitHub --> Actions[GitHub Actions]
+  Actions --> Pages[GitHub Pages]
+```
+
 <details>
 <summary><b>Для разработчиков</b></summary>
 
