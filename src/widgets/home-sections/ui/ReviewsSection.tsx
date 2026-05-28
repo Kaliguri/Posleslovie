@@ -17,7 +17,13 @@ export function ReviewsSection({
 }: Readonly<{
   kicker: string;
   title: string;
-  reviews: { name: string; mediaType: "image" | "video"; image: string; video: string; text: string }[];
+  reviews: {
+    name: string;
+    mediaType: "image" | "video";
+    image: string;
+    video: string;
+    text: string;
+  }[];
   starRowImage: string;
   withOverlay: boolean;
 }>) {
@@ -81,7 +87,9 @@ export function ReviewsSection({
                     {review.mediaType === "video" && review.video ? (
                       <button
                         type="button"
-                        onClick={() => setActiveVideoReview({ name: review.name, src: review.video })}
+                        onClick={() =>
+                          setActiveVideoReview({ name: review.name, src: review.video })
+                        }
                         aria-label={`Открыть видео отзыва: ${review.name}`}
                         className="group/review-video absolute inset-0 flex items-center justify-center rounded-[20px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2"
                       >

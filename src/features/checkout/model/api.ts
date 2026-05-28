@@ -22,7 +22,10 @@ async function parseWorkerError(response: Response) {
   }
 }
 
-async function postToAmoWorker(payload: AmoCRMCheckoutPayload | AmoCRMLeadPayload, requestType: string) {
+async function postToAmoWorker(
+  payload: AmoCRMCheckoutPayload | AmoCRMLeadPayload,
+  requestType: string,
+) {
   const amoCRMWorkerUrl = getAmoCRMWorkerUrl();
   let response: Response;
 
