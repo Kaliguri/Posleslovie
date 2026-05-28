@@ -54,7 +54,7 @@ flowchart TD
 
 **Послесловие — production-ready сайт-лендинг для бренда натуральной косметики, который не требует платного хостинга:** инфраструктура на GitHub Pages + Cloudflare Workers, каталог, оформление заявки, CRM-интеграция и no-code редактирование контента без участия разработчика.
 
-### Highlights
+### Ключевые преимущества
 
 - Без платного хостинга: прод-инфраструктура на GitHub Pages + Cloudflare Workers
 - Статический экспорт Next.js с деплоем на GitHub Pages и custom domain (`posleslovie.online`)
