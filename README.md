@@ -10,8 +10,6 @@
   <a href="#english"><b>English</b></a>
   &nbsp;·&nbsp;
   <a href="#русский"><b>Русский</b></a>
-  &nbsp;·&nbsp;
-  <a href="#top"><b>[↑ Back to top / Наверх]</b></a>
 </p>
 
 # Posleslovie · Послесловие
@@ -46,7 +44,7 @@
 ---
 
 <details>
-<summary><b>📸 Screenshots</b></summary>
+<summary><b>Screenshots</b></summary>
 
 <br>
 
@@ -102,6 +100,8 @@
 
 ## English
 
+<a href="#top"><b>[↑ Back to top]</b></a>
+
 **Posleslovie is a production landing site for a natural-cosmetics gift brand (handmade bath bombs and gift sets).** The whole thing runs without paid hosting — a static Next.js export on GitHub Pages, with Cloudflare Workers handling the few dynamic pieces. The brand owner edits every section of the page through a no-code CMS, and customer checkout requests flow straight into the CRM, all without a developer in the loop.
 
 > **What this project demonstrates:** building a real, client-facing site on $0 production infrastructure (GitHub Pages + Cloudflare Workers), with schema-validated CMS content, SEO and structured data, a multi-step checkout integrated with a CRM, and a CI pipeline that gates every deploy.
@@ -120,6 +120,8 @@
 ---
 
 ## Русский
+
+<a href="#top"><b>[↑ Наверх]</b></a>
 
 > Продакшен-лендинг для бренда натуральной косметики — работает на бесплатном хостинге и редактируется без разработчика.
 
