@@ -12,8 +12,7 @@ function getLeadId(createdLeadResponse) {
 }
 
 export async function createAmoCRMCheckout(payload, token, amoBaseUrl) {
-  const { tab, quantity, total, formValues, logoFile } = payload;
-  const isCompanyOrder = tab === "company";
+  const { quantity, total, formValues, logoFile } = payload;
   const contactFields = await buildContactFields(formValues, token, amoBaseUrl);
 
   const createdLeadResponse = await amoRequest(
@@ -21,9 +20,7 @@ export async function createAmoCRMCheckout(payload, token, amoBaseUrl) {
     token,
     [
       {
-        name: `${isCompanyOrder ? "B2B" : "B2C"} заказ с сайта: Бомбочка для ванны x${quantity}${
-          isCompanyOrder && formValues.company ? `, ${formValues.company}` : ""
-        }`,
+        name: `Заказ с сайта: Бомбочка для ванны x${quantity}`,
         price: total,
         _embedded: {
           contacts: [

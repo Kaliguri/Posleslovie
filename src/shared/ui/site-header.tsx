@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { siteConfig } from "@/shared/config/site";
 import { assetPath } from "@/shared/lib/asset-path";
+import { emitOpenModal } from "@/shared/lib/modal-bus";
 import siteBehaviorJson from "../../../content/site-behavior.json";
 
 const navigationItems = [
@@ -78,15 +79,11 @@ export function SiteHeader() {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const openHomeModal = (type: "partners" | "contacts" | "checkout") => {
-    window.dispatchEvent(new CustomEvent("posleslovie:open-modal", { detail: type }));
-  };
-
   const handleNavigation = (item: (typeof navigationItems)[number]) => {
     if (item.type === "section") {
       scrollToSection(item.target);
     } else {
-      openHomeModal(item.target);
+      emitOpenModal(item.target);
     }
 
     setIsMobileMenuOpen(false);
@@ -184,7 +181,7 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => {
-                openHomeModal("checkout");
+                emitOpenModal("checkout");
                 setIsMobileMenuOpen(false);
               }}
               className="mt-4 rounded-full bg-[#e8c880] px-6 py-4 text-center text-xl font-bold text-[#0f172a] transition hover:bg-[#ffecbf] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"

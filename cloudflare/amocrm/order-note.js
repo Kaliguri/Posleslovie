@@ -31,13 +31,11 @@ function formatCallSchedulingNote(callScheduling) {
   return null;
 }
 
-export function buildOrderNote({ tab, quantity, total, formValues, callScheduling }) {
-  const isCompanyOrder = tab === "company";
+export function buildOrderNote({ quantity, total, formValues, callScheduling }) {
   const lines = [
     "Заказ с сайта Posleslovie",
     "",
     "1. Детали заказа",
-    `Тип заказа: ${isCompanyOrder ? "Для компании" : "Для себя"}`,
     "Товар: Бомбочка для ванны",
     `Количество: ${quantity} шт.`,
     `Цена за 1 шт.: ${PRODUCT_PRICE} руб.`,
@@ -57,15 +55,8 @@ export function buildOrderNote({ tab, quantity, total, formValues, callSchedulin
     addLineIfValue(lines, "Ник (TG)", formValues.contactHandle);
   }
 
-  if (isCompanyOrder) {
-    lines.push("", "3. Компания");
-    addLineIfValue(lines, "Компания", formValues.company);
-    addLineIfValue(lines, "ИНН", formValues.inn);
-    addLineIfValue(lines, "ОГРН", formValues.ogrn);
-  } else {
-    lines.push("", "3. Доставка");
-    addLineIfValue(lines, "Город доставки", formValues.city);
-  }
+  lines.push("", "3. Доставка");
+  addLineIfValue(lines, "Город доставки", formValues.city);
 
   lines.push("", "4. Пожелания");
   addLineIfValue(lines, "Цвет сургучной печати", formValues.sealColor);

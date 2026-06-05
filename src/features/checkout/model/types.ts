@@ -9,9 +9,6 @@ export type CheckoutFormValues = {
   name: string;
   phone: string;
   email: string;
-  company: string;
-  inn: string;
-  ogrn: string;
   contactMethod: string;
   contactHandle: string;
   city: string;
@@ -22,7 +19,6 @@ export type CheckoutFormValues = {
 
 export type CheckoutState = {
   quantity: number;
-  tab: "personal" | "company";
   formValues: CheckoutFormValues;
 };
 
@@ -60,14 +56,10 @@ export const maxLogoFileSize = 3 * 1024 * 1024;
 
 export const initialCheckoutState: CheckoutState = {
   quantity: 3,
-  tab: "personal",
   formValues: {
     name: "",
     phone: "+7 ",
     email: "",
-    company: "",
-    inn: "",
-    ogrn: "",
     contactMethod: "tg",
     contactHandle: "",
     city: "",

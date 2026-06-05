@@ -50,6 +50,34 @@ collections:
               hint: "Основной контактный email.",
               pattern: ["^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", "Введите корректный email"],
             }
+          - {
+              name: ownerName,
+              label: ИП (ФИО),
+              widget: string,
+              required: false,
+              hint: "Например: Серебренникова Полина Кирилловна. Показывается в блоке «Контакты». Оставьте пустым, чтобы скрыть.",
+            }
+          - {
+              name: address,
+              label: Адрес,
+              widget: string,
+              required: false,
+              hint: "Юридический/почтовый адрес. Показывается в блоке «Контакты». Оставьте пустым, чтобы скрыть.",
+            }
+          - {
+              name: inn,
+              label: ИНН,
+              widget: string,
+              required: false,
+              hint: "ИНН. Показывается в блоке «Контакты». Оставьте пустым, чтобы скрыть.",
+            }
+          - {
+              name: ogrnip,
+              label: ОГРНИП,
+              widget: string,
+              required: false,
+              hint: "ОГРНИП. Показывается в блоке «Контакты». Оставьте пустым, чтобы скрыть.",
+            }
           - name: socials
             label: Социальные сети
             widget: list

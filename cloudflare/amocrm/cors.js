@@ -1,8 +1,13 @@
-import { ALLOWED_ORIGIN } from "./constants.js";
+import { ALLOWED_ORIGIN, ALLOWED_ORIGINS } from "./constants.js";
+
+function resolveAllowedOrigin(origin) {
+  return ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGIN;
+}
 
 export function corsHeaders(origin) {
   return {
-    "Access-Control-Allow-Origin": origin === ALLOWED_ORIGIN ? origin : ALLOWED_ORIGIN,
+    "Access-Control-Allow-Origin": resolveAllowedOrigin(origin),
+    Vary: "Origin",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
+import type { OpenModalType } from "@/shared/lib/modal-bus";
 import { siteConfig } from "@/shared/config/site";
 import { formatRussianPhoneInput } from "@/shared/lib/phone";
 import { CrossIcon } from "@/shared/ui/CrossIcon";
@@ -38,7 +39,7 @@ import { CheckoutThankYou } from "@/features/checkout/ui/checkout-modal/Checkout
 import { LeadForm } from "@/features/checkout/ui/checkout-modal/LeadForm";
 import { LegalDocumentModal } from "@/features/checkout/ui/checkout-modal/LegalDocumentModal";
 
-export type ModalType = "partners" | "contacts" | "checkout" | LegalDocumentSlug | null;
+export type ModalType = OpenModalType | null;
 export type CheckoutProduct = { title: string; price: number; image: string };
 
 function readFileAsCheckoutLogo(file: File) {
@@ -101,7 +102,6 @@ export function HomeModal({
   checkoutState,
   onCheckoutFieldChange,
   onCheckoutQuantityChange,
-  onCheckoutTabChange,
   withOverlay,
   onClose,
 }: Readonly<{
@@ -110,7 +110,6 @@ export function HomeModal({
   checkoutState: CheckoutState;
   onCheckoutFieldChange: (field: CheckoutField, value: string) => void;
   onCheckoutQuantityChange: (quantity: number) => void;
-  onCheckoutTabChange: (tab: "personal" | "company") => void;
   withOverlay: boolean;
   onClose: () => void;
 }>) {
@@ -201,7 +200,6 @@ export function HomeModal({
               onStepChange={setCheckoutStep}
               onFieldChange={onCheckoutFieldChange}
               onQuantityChange={onCheckoutQuantityChange}
-              onTabChange={onCheckoutTabChange}
               onClose={onClose}
               onCheckoutComplete={() => setIsCheckoutComplete(true)}
             />
@@ -261,7 +259,6 @@ function CheckoutModal({
   onStepChange,
   onFieldChange,
   onQuantityChange,
-  onTabChange,
   onClose,
   onCheckoutComplete,
 }: Readonly<{
@@ -271,7 +268,6 @@ function CheckoutModal({
   onStepChange: (step: CheckoutStepNumber) => void;
   onFieldChange: (field: CheckoutField, value: string) => void;
   onQuantityChange: (quantity: number) => void;
-  onTabChange: (tab: "personal" | "company") => void;
   onClose: () => void;
   onCheckoutComplete: () => void;
 }>) {
@@ -284,16 +280,8 @@ function CheckoutModal({
     useState<CheckoutCallScheduling>(getDefaultCallScheduling);
   const [logoFile, setLogoFile] = useState<CheckoutLogoFile | null>(null);
   const [logoFileError, setLogoFileError] = useState<string | null>(null);
-  const { tab, quantity, formValues } = checkoutState;
+  const { quantity, formValues } = checkoutState;
   const total = quantity * checkoutProduct.price;
-
-  useEffect(() => {
-    queueMicrotask(() => {
-      setErrors({});
-      setSubmitMessage(null);
-      setIsCheckoutComplete(false);
-    });
-  }, [tab]);
 
   const handleFieldChange = (field: CheckoutField, value: string) => {
     onFieldChange(field, field === "phone" ? formatRussianPhoneInput(value) : value);
@@ -363,7 +351,7 @@ function CheckoutModal({
   };
 
   const handleContinue = () => {
-    const nextErrors = getStep1Errors(validateCheckout(formValues, tab, quantity));
+    const nextErrors = getStep1Errors(validateCheckout(formValues, quantity));
     setErrors(nextErrors);
     setSubmitMessage(null);
 
@@ -373,7 +361,7 @@ function CheckoutModal({
   };
 
   const handleProceedToCall = () => {
-    const nextErrors = validateCheckout(formValues, tab, quantity);
+    const nextErrors = validateCheckout(formValues, quantity);
 
     if (!isConsentAccepted) {
       nextErrors.consent = "Подтвердите согласие с условиями, чтобы продолжить оформление.";
@@ -426,7 +414,7 @@ function CheckoutModal({
 
   const handleSubmit = async () => {
     const nextErrors = {
-      ...validateCheckout(formValues, tab, quantity),
+      ...validateCheckout(formValues, quantity),
       ...validateCallScheduling(callScheduling),
     };
 
@@ -458,7 +446,6 @@ function CheckoutModal({
     try {
       await submitCheckoutToAmoCRM(
         prepareCheckoutPayload({
-          tab,
           quantity,
           formValues,
           total,

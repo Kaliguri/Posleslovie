@@ -4,7 +4,7 @@ import { initialCheckoutState } from "./types";
 import { prepareCheckoutPayload, validateCheckout } from "./validation";
 
 describe("checkout validation", () => {
-  it("returns no errors for valid personal checkout", () => {
+  it("returns no errors for valid checkout", () => {
     const values = {
       ...initialCheckoutState.formValues,
       name: "Полина",
@@ -13,25 +13,24 @@ describe("checkout validation", () => {
       city: "Москва",
     };
 
-    expect(validateCheckout(values, "personal", 2)).toEqual({});
+    expect(validateCheckout(values, 2)).toEqual({});
   });
 
-  it("returns company error when company tab and company name empty", () => {
+  it("requires a delivery city", () => {
     const values = {
       ...initialCheckoutState.formValues,
       name: "Полина",
       phone: "+7 (978) 673-47-01",
       email: "test@example.ru",
-      company: "",
+      city: "",
     };
 
-    const result = validateCheckout(values, "company", 2);
-    expect(result.company).toBeTruthy();
+    const result = validateCheckout(values, 2);
+    expect(result.city).toBeTruthy();
   });
 
-  it("trims and clears irrelevant fields in payload", () => {
+  it("trims values and normalizes the city in payload", () => {
     const payload = prepareCheckoutPayload({
-      tab: "personal",
       quantity: 3,
       total: 3000,
       logoFile: null,
@@ -41,13 +40,11 @@ describe("checkout validation", () => {
         phone: "+7 (978) 673-47-01",
         email: " test@example.ru ",
         city: "москва",
-        company: " Should be removed ",
       },
     });
 
     expect(payload.formValues.name).toBe("Полина");
     expect(payload.formValues.email).toBe("test@example.ru");
-    expect(payload.formValues.company).toBe("");
     expect(payload.formValues.city).toBe("Москва");
   });
 });

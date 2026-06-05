@@ -27,8 +27,12 @@ export function ReviewsSection({
   starRowImage: string;
   withOverlay: boolean;
 }>) {
+  const reviewItems = reviews.map((review, index) => ({
+    ...review,
+    key: `${index}-${review.name}`,
+  }));
   const { orderedItems, offset, isTransitioning, transitionDuration, move } =
-    useInfiniteCarousel(reviews);
+    useInfiniteCarousel(reviewItems);
 
   const touchRef = useRef<{ x: number; y: number } | null>(null);
   const [activeVideoReview, setActiveVideoReview] = useState<{
@@ -73,7 +77,7 @@ export function ReviewsSection({
           >
             {orderedItems.map((review) => (
               <article
-                key={review.name}
+                key={review.key}
                 className="group flex min-h-[470px] w-full shrink-0 basis-full flex-col justify-between rounded-[18px] bg-white p-4 transition duration-300 hover:-translate-y-2 hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:min-h-[560px] sm:p-8 lg:min-h-[600px] lg:basis-[calc((100%_-_var(--carousel-gap)*2)/3)]"
               >
                 <div>

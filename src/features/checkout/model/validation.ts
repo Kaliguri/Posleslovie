@@ -17,11 +17,7 @@ function isValidTelegramHandle(value: string) {
   return /^@[a-zA-Z0-9_]{5,32}$/.test(value.trim());
 }
 
-export function validateCheckout(
-  values: CheckoutFormValues,
-  tab: "personal" | "company",
-  quantity: number,
-) {
+export function validateCheckout(values: CheckoutFormValues, quantity: number) {
   const errors: CheckoutErrors = {};
 
   if (!Number.isFinite(quantity) || quantity < 1) {
@@ -44,10 +40,6 @@ export function validateCheckout(
     errors.email = "Введите корректный email, например name@example.ru.";
   }
 
-  if (tab === "company" && !values.company.trim()) {
-    errors.company = "Укажите название компании.";
-  }
-
   if (
     values.contactMethod === "tg" &&
     values.contactHandle.trim() &&
@@ -56,9 +48,9 @@ export function validateCheckout(
     errors.contactHandle = "Введите @ и 5-32 символа: латиница, цифры или _.";
   }
 
-  if (tab === "personal" && !values.city.trim()) {
+  if (!values.city.trim()) {
     errors.city = "Укажите город доставки.";
-  } else if (tab === "personal" && !getRussianCityName(values.city)) {
+  } else if (!getRussianCityName(values.city)) {
     errors.city = "Выберите город из списка подсказок.";
   }
 
@@ -70,7 +62,6 @@ export function getStep1Errors(errors: CheckoutErrors) {
     "name",
     "phone",
     "email",
-    "company",
     "contactHandle",
     "city",
     "quantity",
@@ -178,7 +169,6 @@ export function validateCallScheduling(scheduling: CheckoutCallScheduling) {
 }
 
 export function prepareCheckoutPayload({
-  tab,
   quantity,
   formValues,
   total,
@@ -190,18 +180,13 @@ export function prepareCheckoutPayload({
   ) as CheckoutFormValues;
 
   return {
-    tab,
     quantity,
     total,
     logoFile,
     callScheduling,
     formValues: {
       ...trimmedValues,
-      company: tab === "company" ? trimmedValues.company : "",
-      inn: tab === "company" ? trimmedValues.inn : "",
-      ogrn: tab === "company" ? trimmedValues.ogrn : "",
-      city:
-        tab === "personal" ? (getRussianCityName(trimmedValues.city) ?? trimmedValues.city) : "",
+      city: getRussianCityName(trimmedValues.city) ?? trimmedValues.city,
       contactHandle:
         trimmedValues.contactMethod === "tg" || trimmedValues.contactMethod === "max"
           ? trimmedValues.contactHandle
