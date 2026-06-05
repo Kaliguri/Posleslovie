@@ -19,6 +19,11 @@ collections:
         label: 01. Бренд и контакты
         file: content/site-settings.json
         fields:
+          - name: favicon
+            label: Иконка сайта (favicon)
+            widget: image
+            required: false
+            hint: "Иконка во вкладке браузера. Рекомендуется квадрат 512x512 px, формат PNG или SVG. Если поле пустое, иконка не используется."
           - {
               name: name,
               label: Название сайта,
@@ -210,8 +215,8 @@ collections:
             public_folder: /images/videos
             hint: "Рекомендуемый размер: 1920x1080 px (16:9). Видео будет зациклено и запущено без звука."
             pattern:
-              - "\\.(mp4|webm)$"
-              - "Разрешены только видео MP4 или WEBM"
+              - "^$|\\.(mp4|webm)$"
+              - "Оставьте пустым или загрузите видео MP4 / WEBM"
 
       - name: feature_cards
         label: "Блок #2. Карточки преимуществ"
@@ -436,8 +441,8 @@ collections:
                 public_folder: /images/videos
                 hint: "Если выбран режим Видео, загрузите файл видео."
                 pattern:
-                  - "\\.(mp4|webm)$"
-                  - "Разрешены только видео MP4 или WEBM"
+                  - "^$|\\.(mp4|webm)$"
+                  - "Оставьте пустым или загрузите видео MP4 / WEBM"
               - { name: text, label: Текст отзыва, widget: text }
 
       - name: faq

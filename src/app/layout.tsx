@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 
 import { siteConfig } from "@/shared/config/site";
 import { seoConfig, siteUrl, toAbsoluteUrl } from "@/shared/config/seo";
+import { assetPath } from "@/shared/lib/asset-path";
 import { SiteFooter } from "@/shared/ui/site-footer";
 import { SiteHeader } from "@/shared/ui/site-header";
 
@@ -31,12 +32,15 @@ const educationalGothic = localFont({
   variable: "--font-educational",
 });
 
+const faviconUrl = siteConfig.favicon ? assetPath(siteConfig.favicon) : null;
+
 export const metadata: Metadata = {
   title: {
     default: seoConfig.title,
     template: `%s | ${seoConfig.title}`,
   },
   description: seoConfig.description,
+  icons: faviconUrl ? { icon: [{ url: faviconUrl }] } : undefined,
   keywords: seoConfig.keywords,
   metadataBase: new URL(siteUrl),
   alternates: {
