@@ -15,12 +15,25 @@ Sveltia CMS на GitHub Pages не может авторизоваться в Gi
 
 ## Шаг 2 — Деплой OAuth worker на Cloudflare
 
-Из папки `cloudflare/`:
+Воркеры катятся автоматически: любой пуш в `main`, затрагивающий `cloudflare/**`,
+запускает [`deploy-workers.yml`](../.github/workflows/deploy-workers.yml) и
+выкатывает оба воркера. Для этого один раз нужно завести два секрета GitHub Actions
+(**Settings → Secrets and variables → Actions**):
+
+| Секрет                  | Где взять                                                     |
+| ----------------------- | ------------------------------------------------------------ |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare → My Profile → API Tokens → шаблон "Edit Workers" |
+| `CLOUDFLARE_ACCOUNT_ID` | дашборд Workers (справа) или `npx wrangler whoami`           |
+
+Ручной деплой (если нужен локально), из папки `cloudflare/`:
 
 ```bash
 npx wrangler login
 npx wrangler deploy -c wrangler.cms-auth.toml
 ```
+
+> `wrangler deploy` **не стирает** переменные/секреты воркера, заданные в дашборде —
+> код и секреты живут независимо.
 
 В Cloudflare Dashboard → Workers → `posleslovie-cms-auth` → **Settings → Variables** добавь:
 
@@ -60,6 +73,28 @@ gh workflow run pages.yml
 - Добавь клиента как **Collaborator** в репозиторий с правами `Write`:  
   GitHub repo → **Settings** → **Collaborators** → **Add people**
 - Клиенту нужен свой GitHub-аккаунт для входа в CMS
+
+## Как сменить секрет (например, токен AmoCRM)
+
+Секреты **намеренно не хранятся в репозитории** (он публичный) и не редактируются
+через CMS — CMS коммитит всё в открытый Git. Секреты лежат в зашифрованном
+хранилище Cloudflare, и менять их можно прямо в дашборде, без участия разработчика:
+
+1. Зайти в Cloudflare → **Workers & Pages** → выбрать воркер
+   (`posleslovie-amocrm` для токена AmoCRM, `posleslovie-cms-auth` для OAuth).
+2. **Settings → Variables and Secrets**.
+3. Напротив нужной переменной нажать **Edit**, вставить новое значение,
+   убедиться что стоит **Encrypt**, и **Save**.
+
+Изменение применяется сразу, передеплой не нужен. Какой секрет где:
+
+| Воркер               | Секрет                 | Когда менять                          |
+| -------------------- | ---------------------- | ------------------------------------- |
+| `posleslovie-amocrm` | `AmoToken`             | когда токен AmoCRM протух/отозван      |
+| `posleslovie-cms-auth` | `GITHUB_CLIENT_SECRET` | почти никогда (только если пересоздан OAuth App) |
+
+> Чтобы клиент мог делать это сам, выдай ему доступ к аккаунту Cloudflare
+> (или добавь его member'ом с правами на Workers).
 
 ## Как обновлять оферту и другие договоры (PDF)
 
