@@ -1,4 +1,3 @@
-export const DEFAULT_AMO_CRM_BASE_URL = "https://kailgurika.amocrm.ru";
 export const ALLOWED_ORIGIN = "https://posleslovie.online";
 export const ALLOWED_ORIGINS = [ALLOWED_ORIGIN, "https://www.posleslovie.online"];
 export const PRODUCT_PRICE = 999;

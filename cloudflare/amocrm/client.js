@@ -1,5 +1,3 @@
-import { DEFAULT_AMO_CRM_BASE_URL } from "./constants.js";
-
 export function parseJsonResponse(text, context) {
   if (!text) {
     return null;
@@ -13,7 +11,7 @@ export function parseJsonResponse(text, context) {
 }
 
 export async function amoRequest(path, token, body, options = {}) {
-  const baseUrl = options.baseUrl ?? options.defaultBaseUrl ?? DEFAULT_AMO_CRM_BASE_URL;
+  const baseUrl = options.baseUrl ?? options.defaultBaseUrl;
   const response = await fetch(`${baseUrl}${path}`, {
     method: options.method ?? "POST",
     headers: {
@@ -37,7 +35,7 @@ export function resolveAmoCRMBaseUrl(env) {
   const configuredValue = env.AmoBaseUrl?.trim();
 
   if (!configuredValue) {
-    return DEFAULT_AMO_CRM_BASE_URL;
+    throw new Error("AmoBaseUrl is not configured.");
   }
 
   const withProtocol = /^https?:\/\//i.test(configuredValue)

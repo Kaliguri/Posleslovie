@@ -111,6 +111,10 @@ export default {
       return jsonResponse({ error: "AmoToken secret is not configured" }, 500, origin);
     }
 
+    if (!env.AmoBaseUrl) {
+      return jsonResponse({ error: "AmoBaseUrl is not configured" }, 500, origin);
+    }
+
     try {
       const amoBaseUrl = resolveAmoCRMBaseUrl(env);
       const payload = await request.json();
