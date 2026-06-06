@@ -12,6 +12,11 @@ type FaqItem = {
   answer: string;
 };
 
+function offerValidUntil() {
+  // Google requires a future priceValidUntil on offers; default to the end of next year.
+  return `${new Date().getFullYear() + 1}-12-31`;
+}
+
 export function buildHomeStructuredData(
   primaryCheckoutProduct: CheckoutProduct,
   faqItems: ReadonlyArray<FaqItem> = [],
@@ -21,7 +26,8 @@ export function buildHomeStructuredData(
     "@type": "Organization",
     name: siteConfig.name,
     url: toAbsoluteUrl("/"),
-    logo: toAbsoluteUrl("/images/photos/hero.jpg"),
+    // Prefer a real brand logo when configured; fall back to the hero image otherwise.
+    logo: toAbsoluteUrl(siteConfig.favicon || "/images/photos/hero.jpg"),
     email: siteConfig.email,
     telephone: siteConfig.phone,
     sameAs: siteConfig.socials.map((social) => social.href),
@@ -50,6 +56,7 @@ export function buildHomeStructuredData(
       "@type": "Offer",
       priceCurrency: "RUB",
       price: primaryCheckoutProduct.price,
+      priceValidUntil: offerValidUntil(),
       availability: "https://schema.org/InStock",
       url: toAbsoluteUrl("/"),
       seller: {

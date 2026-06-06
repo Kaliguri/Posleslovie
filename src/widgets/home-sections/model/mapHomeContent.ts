@@ -1,3 +1,4 @@
+import { env } from "@/shared/config/env";
 import { assetPath } from "@/shared/lib/asset-path";
 import homeAboutJson from "../../../../content/home-about.json";
 import homeCtaJson from "../../../../content/home-cta.json";
@@ -152,7 +153,7 @@ export const scrollAnimationsEnabled = Boolean(siteBehavior.enableScrollAnimatio
 
 const fallbackCheckoutProduct = {
   title: "Бомбочка для ванны",
-  price: Number(process.env.NEXT_PUBLIC_PRODUCT_PRICE ?? "999"),
+  price: env.productPrice ?? 999,
   image: assetPath("/images/photos/bombs-2.jpg"),
 };
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
+import { useFocusTrap } from "@/shared/hooks/use-focus-trap";
 import { CrossIcon } from "@/shared/ui/CrossIcon";
 
 export function HeroVideoModal({
@@ -17,6 +18,10 @@ export function HeroVideoModal({
   withOverlay: boolean;
   onClose: () => void;
 }>) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(open, dialogRef);
+
   useEffect(() => {
     if (!open) {
       return;
@@ -46,10 +51,12 @@ export function HeroVideoModal({
       }}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative w-full max-w-[1400px] overflow-hidden rounded-[22px] bg-[#0b1321] shadow-2xl sm:rounded-[36px] lg:rounded-[50px]"
+        tabIndex={-1}
+        className="relative w-full max-w-[1400px] overflow-hidden rounded-[22px] bg-[#0b1321] shadow-2xl outline-none sm:rounded-[36px] lg:rounded-[50px]"
       >
         <button
           type="button"

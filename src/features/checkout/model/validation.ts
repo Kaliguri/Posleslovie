@@ -194,6 +194,7 @@ export function prepareCheckoutPayload({
   unitPrice,
   logoFile = null,
   callScheduling,
+  turnstileToken,
 }: AmoCRMCheckoutPayload): AmoCRMCheckoutPayload {
   const trimmedValues = Object.fromEntries(
     Object.entries(formValues).map(([key, value]) => [key, value.trim()]),
@@ -205,6 +206,7 @@ export function prepareCheckoutPayload({
     unitPrice,
     logoFile,
     callScheduling,
+    turnstileToken,
     formValues: {
       ...trimmedValues,
       city: getRussianCityName(trimmedValues.city) ?? trimmedValues.city,

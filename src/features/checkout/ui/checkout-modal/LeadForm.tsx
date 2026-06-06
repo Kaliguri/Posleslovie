@@ -3,9 +3,12 @@
 import { useState } from "react";
 
 import { submitLeadToAmoCRM } from "@/features/checkout/model/api";
+import { env } from "@/shared/config/env";
 import { formatRussianPhoneInput } from "@/shared/lib/phone";
 import { reachGoal } from "@/shared/lib/metrica";
+import { reportError } from "@/shared/lib/report-error";
 import { ArrowIcon } from "@/shared/ui/ArrowIcon";
+import { Turnstile } from "@/shared/ui/Turnstile";
 
 type LeadFormValues = {
   name: string;
@@ -33,6 +36,7 @@ export function LeadForm({
   });
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const updateField = (field: keyof LeadFormValues, value: string) => {
     setFormValues((current) => ({ ...current, [field]: value }));
@@ -45,6 +49,10 @@ export function LeadForm({
         event.preventDefault();
         if (!formValues.name.trim() || !formValues.phone.trim() || !formValues.email.trim()) {
           setSubmitMessage("Заполните имя, телефон и email.");
+          return;
+        }
+        if (env.turnstileEnabled && !turnstileToken) {
+          setSubmitMessage("Подтвердите, что вы не робот.");
           return;
         }
         setIsSubmitting(true);
@@ -61,11 +69,12 @@ export function LeadForm({
               contactHandle: formValues.contactHandle.trim(),
               comment: formValues.comment.trim(),
             },
+            turnstileToken,
           });
           reachGoal("lead");
           setSubmitMessage("Заявка отправлена. Мы свяжемся с вами в ближайшее время.");
         } catch (error) {
-          console.error(error);
+          reportError(error, { feature: "lead-submit" });
           setSubmitMessage("Не удалось отправить заявку. Попробуйте позже.");
         } finally {
           setIsSubmitting(false);
@@ -129,6 +138,7 @@ export function LeadForm({
           </span>
         </label>
       )}
+      <Turnstile onVerify={setTurnstileToken} />
       <button
         type="submit"
         disabled={isSubmitting}

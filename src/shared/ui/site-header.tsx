@@ -270,6 +270,7 @@ function SocialIconButton({
       aria-label={label}
       className="flex h-9 w-9 items-center justify-center rounded-full transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
+      {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size social icon, next/image adds no value */}
       <img src={assetPath(icon)} alt={label} className="h-9 w-9 rounded-full object-cover" />
     </a>
   );

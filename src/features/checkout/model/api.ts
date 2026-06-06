@@ -1,11 +1,12 @@
+import { env } from "@/shared/config/env";
+
 import type { AmoCRMCheckoutPayload, AmoCRMLeadPayload } from "./types";
 
 function getAmoCRMWorkerUrl() {
-  const configuredUrl = process.env.NEXT_PUBLIC_AMOCRM_WORKER_URL?.trim();
-  if (!configuredUrl) {
+  if (!env.amoCRMWorkerUrl) {
     throw new Error("NEXT_PUBLIC_AMOCRM_WORKER_URL is not configured.");
   }
-  return configuredUrl;
+  return env.amoCRMWorkerUrl;
 }
 
 async function parseWorkerError(response: Response) {

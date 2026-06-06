@@ -5,9 +5,9 @@ import localFont from "next/font/local";
 import { siteConfig } from "@/shared/config/site";
 import { seoConfig, siteUrl, toAbsoluteUrl } from "@/shared/config/seo";
 import { assetPath } from "@/shared/lib/asset-path";
+import { CookieConsent } from "@/shared/ui/cookie-consent";
 import { SiteFooter } from "@/shared/ui/site-footer";
 import { SiteHeader } from "@/shared/ui/site-header";
-import { YandexMetrica } from "@/shared/ui/yandex-metrica";
 
 import "./globals.css";
 
@@ -100,7 +100,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter />
         </div>
-        <YandexMetrica />
+        <CookieConsent />
       </body>
     </html>
   );

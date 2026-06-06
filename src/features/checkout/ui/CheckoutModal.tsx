@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { env } from "@/shared/config/env";
+import { useFocusTrap } from "@/shared/hooks/use-focus-trap";
 import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-documents";
 import type { OpenModalType } from "@/shared/lib/modal-bus";
 import { siteConfig } from "@/shared/config/site";
+import { Turnstile } from "@/shared/ui/Turnstile";
 import { formatRussianPhoneInput } from "@/shared/lib/phone";
 import { CrossIcon } from "@/shared/ui/CrossIcon";
 import { GoldRule } from "@/shared/ui/GoldRule";
 import { SectionKicker } from "@/shared/ui/SectionKicker";
 import { submitCheckoutToAmoCRM } from "@/features/checkout/model/api";
 import { pushPurchase, reachGoal } from "@/shared/lib/metrica";
+import { reportError } from "@/shared/lib/report-error";
 import {
   maxLogoFileSize,
   type CheckoutCallScheduling,
@@ -118,6 +122,9 @@ export function HomeModal({
 }>) {
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStepNumber>(1);
   const [isCheckoutComplete, setIsCheckoutComplete] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(Boolean(type), dialogRef);
 
   useEffect(() => {
     if (type !== "checkout") {
@@ -162,9 +169,11 @@ export function HomeModal({
       }}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        className="relative flex max-h-[calc(100dvh-16px)] w-full max-w-[920px] flex-col overflow-hidden rounded-[22px] bg-white pb-3 shadow-2xl sm:max-h-[92vh] sm:rounded-[36px] sm:pb-8 lg:rounded-[50px] lg:pb-12"
+        tabIndex={-1}
+        className="relative flex max-h-[calc(100dvh-16px)] w-full max-w-[920px] flex-col overflow-hidden rounded-[22px] bg-white pb-3 shadow-2xl outline-none sm:max-h-[92vh] sm:rounded-[36px] sm:pb-8 lg:rounded-[50px] lg:pb-12"
       >
         <div className="sticky top-0 z-20 bg-white px-4 pb-4 pt-5 shadow-[0_12px_30px_rgba(15,23,42,0.08)] sm:px-6 sm:pb-6 sm:pt-8 lg:px-12 lg:pt-12">
           <button
@@ -285,6 +294,7 @@ function CheckoutModal({
     useState<CheckoutCallScheduling>(getDefaultCallScheduling);
   const [logoFile, setLogoFile] = useState<CheckoutLogoFile | null>(null);
   const [logoFileError, setLogoFileError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
   const { quantity, formValues } = checkoutState;
   const total = quantity * checkoutProduct.price;
 
@@ -410,6 +420,11 @@ function CheckoutModal({
       return;
     }
 
+    if (env.turnstileEnabled && !turnstileToken) {
+      setSubmitMessage("Подтвердите, что вы не робот.");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitMessage("Отправляем заявку в AmoCRM...");
 
@@ -422,6 +437,7 @@ function CheckoutModal({
           unitPrice: checkoutProduct.price,
           logoFile,
           callScheduling,
+          turnstileToken,
         }),
       );
       reachGoal("checkout");
@@ -432,7 +448,7 @@ function CheckoutModal({
       onCheckoutComplete();
       setSubmitMessage(null);
     } catch (error) {
-      console.error(error);
+      reportError(error, { feature: "checkout-submit" });
       setSubmitMessage(
         "Не удалось отправить заявку в AmoCRM. Проверьте токен, CORS и доступы интеграции.",
       );
@@ -498,7 +514,8 @@ function CheckoutModal({
           </div>
         ) : null}
         {step === 3 ? (
-          <div className="order-3 lg:col-span-2">
+          <div className="order-3 grid gap-3 lg:col-span-2">
+            <Turnstile onVerify={setTurnstileToken} />
             <CheckoutStep3Actions
               isSubmitting={isSubmitting}
               submitMessage={submitMessage}

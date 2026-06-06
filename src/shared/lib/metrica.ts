@@ -1,5 +1,6 @@
-const counterId = process.env.NEXT_PUBLIC_YANDEX_METRICA_ID?.trim();
-const counterIdNumber = counterId && /^\d+$/.test(counterId) ? Number(counterId) : null;
+import { env } from "@/shared/config/env";
+
+const counterIdNumber = env.yandexMetricaId ? Number(env.yandexMetricaId) : null;
 
 type EcommerceProduct = {
   id?: string;

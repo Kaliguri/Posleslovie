@@ -4,6 +4,7 @@ import { resolveAmoCRMBaseUrl } from "./amocrm/client.js";
 import { createAmoCRMCheckout } from "./amocrm/checkout.js";
 import { createAmoCRMLead } from "./amocrm/lead.js";
 import { validateCheckoutPayload, validateLeadPayload } from "./amocrm/validate.js";
+import { verifyTurnstile } from "./amocrm/turnstile.js";
 
 export default {
   async fetch(request, env) {
@@ -31,6 +32,18 @@ export default {
     try {
       const amoBaseUrl = resolveAmoCRMBaseUrl(env);
       const payload = await request.json();
+
+      // Bot protection: only enforced when a Turnstile secret is configured.
+      if (env.TurnstileSecret) {
+        const isHuman = await verifyTurnstile(
+          payload?.turnstileToken,
+          env.TurnstileSecret,
+          request.headers.get("CF-Connecting-IP"),
+        );
+        if (!isHuman) {
+          return jsonResponse({ error: "Turnstile verification failed" }, 403, origin);
+        }
+      }
 
       if (payload?.mode === "lead") {
         const leadError = validateLeadPayload(payload);

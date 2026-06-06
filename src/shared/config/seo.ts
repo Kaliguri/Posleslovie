@@ -1,3 +1,4 @@
+import { env } from "@/shared/config/env";
 import { siteConfig } from "@/shared/config/site";
 
 const fallbackSiteUrl = "https://posleslovie.online";
@@ -17,8 +18,8 @@ function normalizeUrl(value?: string) {
   }
 }
 
-export const siteUrl = normalizeUrl(process.env.NEXT_PUBLIC_SITE_URL);
-export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+export const siteUrl = normalizeUrl(env.siteUrl);
+export const basePath = env.basePath;
 
 export function withBasePath(path: string) {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;

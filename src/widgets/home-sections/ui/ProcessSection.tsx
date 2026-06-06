@@ -196,6 +196,7 @@ function TapeImageCarousel({
 
 function DecorativeObject({ image, className }: Readonly<{ image: string; className: string }>) {
   return (
+    // eslint-disable-next-line @next/next/no-img-element -- decorative, position-driven sizing; next/image fill does not fit
     <img
       src={image}
       alt=""
