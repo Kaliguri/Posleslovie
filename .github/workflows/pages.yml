@@ -21,6 +21,7 @@ jobs:
     env:
       CUSTOM_DOMAIN: posleslovie.online
       NEXT_PUBLIC_AMOCRM_WORKER_URL: https://posleslovie-amocrm.kailgurika.workers.dev/
+      NEXT_PUBLIC_YANDEX_METRICA_ID: "109695414"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
