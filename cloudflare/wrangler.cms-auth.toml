@@ -1,3 +1,8 @@
 name = "posleslovie-cms-auth"
 main = "posleslovie-cms-auth-worker.js"
 compatibility_date = "2024-01-01"
+
+# Keep dashboard-managed variables/secrets on deploy.
+# Without this, `wrangler deploy` wipes plaintext vars set in the dashboard
+# (encrypted secrets survive regardless). The client manages these via the UI.
+keep_vars = true
