@@ -69,6 +69,9 @@ export const metadata: Metadata = {
     description: seoConfig.description,
     images: [toAbsoluteUrl(seoConfig.ogImage)],
   },
+  verification: {
+    yandex: "87ba27786fd06337",
+  },
   robots: {
     index: true,
     follow: true,

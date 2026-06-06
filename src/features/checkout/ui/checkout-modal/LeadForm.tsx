@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { submitLeadToAmoCRM } from "@/features/checkout/model/api";
 import { formatRussianPhoneInput } from "@/shared/lib/phone";
+import { reachGoal } from "@/shared/lib/metrica";
 import { ArrowIcon } from "@/shared/ui/ArrowIcon";
 
 type LeadFormValues = {
@@ -61,6 +62,7 @@ export function LeadForm({
               comment: formValues.comment.trim(),
             },
           });
+          reachGoal("lead");
           setSubmitMessage("Заявка отправлена. Мы свяжемся с вами в ближайшее время.");
         } catch (error) {
           console.error(error);

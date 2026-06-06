@@ -10,6 +10,7 @@ import { CrossIcon } from "@/shared/ui/CrossIcon";
 import { GoldRule } from "@/shared/ui/GoldRule";
 import { SectionKicker } from "@/shared/ui/SectionKicker";
 import { submitCheckoutToAmoCRM } from "@/features/checkout/model/api";
+import { pushPurchase, reachGoal } from "@/shared/lib/metrica";
 import {
   maxLogoFileSize,
   type CheckoutCallScheduling,
@@ -453,6 +454,11 @@ function CheckoutModal({
           callScheduling,
         }),
       );
+      reachGoal("checkout");
+      pushPurchase({
+        id: String(Date.now()),
+        products: [{ name: checkoutProduct.title, price: checkoutProduct.price, quantity }],
+      });
       setIsCheckoutComplete(true);
       onCheckoutComplete();
       setSubmitMessage(null);
