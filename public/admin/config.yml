@@ -310,8 +310,7 @@ collections:
                 }
           - {
               name: button,
-              label: Текст кнопки (оставьте пустым,
-              чтобы скрыть),
+              label: "Текст кнопки (оставьте пустым, чтобы скрыть)",
               widget: string,
               required: false,
             }
@@ -351,8 +350,7 @@ collections:
                 }
           - {
               name: button,
-              label: Текст кнопки (оставьте пустым,
-              чтобы скрыть),
+              label: "Текст кнопки (оставьте пустым, чтобы скрыть)",
               widget: string,
               required: false,
             }
@@ -392,8 +390,7 @@ collections:
                 }
           - {
               name: button,
-              label: Текст кнопки (оставьте пустым,
-              чтобы скрыть),
+              label: "Текст кнопки (оставьте пустым, чтобы скрыть)",
               widget: string,
               required: false,
             }
