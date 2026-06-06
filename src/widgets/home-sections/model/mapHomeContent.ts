@@ -3,12 +3,10 @@ import homeAboutJson from "../../../../content/home-about.json";
 import homeCtaJson from "../../../../content/home-cta.json";
 import homeFaqJson from "../../../../content/home-faq.json";
 import homeFeatureCardsJson from "../../../../content/home-feature-cards.json";
-import homeGalleriesJson from "../../../../content/home-galleries.json";
 import homeHeroJson from "../../../../content/home-hero.json";
 import homeProcessBombsJson from "../../../../content/home-process-bombs.json";
 import homeProcessLavenderJson from "../../../../content/home-process-lavender.json";
 import homeProcessPacksJson from "../../../../content/home-process-packs.json";
-import homeProcessSectionsJson from "../../../../content/home-process-sections.json";
 import homeReviewsJson from "../../../../content/home-reviews.json";
 import homeWhyUsJson from "../../../../content/home-why-us.json";
 import siteBehaviorJson from "../../../../content/site-behavior.json";
@@ -18,10 +16,8 @@ import {
   homeCtaSchema,
   homeFaqSchema,
   homeFeatureCardsSchema,
-  homeGalleriesSchema,
   homeHeroSchema,
   homeProcessSectionSchema,
-  homeProcessSectionsSchema,
   homeReviewsSchema,
   homeWhyUsSchema,
   siteBehaviorSchema,
@@ -141,18 +137,6 @@ const siteProducts = parseWithFallback(
   "site-products.json",
   () => siteProductsSchema.parse(siteProductsJson),
   () => siteProductsSchema.parse({ items: [] }),
-);
-
-// Validate currently unused content files to keep CMS contracts in sync.
-parseWithFallback(
-  "home-galleries.json",
-  () => homeGalleriesSchema.parse(homeGalleriesJson),
-  () => homeGalleriesSchema.parse({ galleries: [] }),
-);
-parseWithFallback(
-  "home-process-sections.json",
-  () => homeProcessSectionsSchema.parse(homeProcessSectionsJson),
-  () => homeProcessSectionsSchema.parse({ sections: [] }),
 );
 
 export const globalOverlaysEnabled = Boolean(siteBehavior.enableGlobalOverlays);

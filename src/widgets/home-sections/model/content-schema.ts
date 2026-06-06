@@ -104,19 +104,3 @@ export const siteProductsSchema = z.object({
     }),
   ),
 });
-
-export const homeGalleriesSchema = z.object({
-  galleries: z
-    .array(
-      z.object({
-        id: z.string().min(1),
-        title: z.string().min(1),
-        slides: z.array(processSlideSchema).min(1),
-      }),
-    )
-    .default([]),
-});
-
-export const homeProcessSectionsSchema = z.object({
-  sections: z.array(homeProcessSectionSchema).default([]),
-});
