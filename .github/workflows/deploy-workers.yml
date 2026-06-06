@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Deploy AmoCRM worker
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -25,7 +25,7 @@ jobs:
           command: deploy -c wrangler.amocrm.toml
 
       - name: Deploy CMS auth worker
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
