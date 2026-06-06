@@ -7,7 +7,15 @@ type CheckoutProduct = {
   image: string;
 };
 
-export function buildHomeStructuredData(primaryCheckoutProduct: CheckoutProduct) {
+type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+export function buildHomeStructuredData(
+  primaryCheckoutProduct: CheckoutProduct,
+  faqItems: ReadonlyArray<FaqItem> = [],
+) {
   const organizationStructuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -51,9 +59,26 @@ export function buildHomeStructuredData(primaryCheckoutProduct: CheckoutProduct)
     },
   };
 
+  const faqStructuredData =
+    faqItems.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqItems.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        }
+      : null;
+
   return {
     organizationStructuredData,
     websiteStructuredData,
     productStructuredData,
+    faqStructuredData,
   };
 }

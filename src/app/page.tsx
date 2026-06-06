@@ -61,23 +61,17 @@ export default function Home() {
 
   return (
     <div className="bg-[#f8f8f8] text-[#0f172a]">
-      <HomeStructuredData primaryCheckoutProduct={primaryCheckoutProduct} />
+      <HomeStructuredData
+        primaryCheckoutProduct={primaryCheckoutProduct}
+        faqItems={faqContent.items}
+      />
       <HeroSection
+        {...heroContent}
         onOrder={() => setModal("checkout")}
         onOpenHowWeMakeVideo={() => setIsHeroVideoOpen(true)}
-        heading={heroContent.heading}
-        leadLine1={heroContent.leadLine1}
-        leadLine2={heroContent.leadLine2}
-        ctaLabel={heroContent.ctaLabel}
-        backgroundMediaType={heroContent.backgroundMediaType}
-        backgroundImage={heroContent.backgroundImage}
-        backgroundVideo={heroContent.backgroundVideo}
         withOverlay={globalOverlaysEnabled}
       />
-      <FeatureCardsSection
-        sectionTitle={featureCardsSection.sectionTitle}
-        cards={featureCardsSection.cards}
-      />
+      <FeatureCardsSection {...featureCardsSection} />
 
       <div className="space-y-3 lg:space-y-0">
         {processSections.map((section, index) => (
@@ -92,13 +86,7 @@ export default function Home() {
         ))}
       </div>
 
-      <WhyUsSection
-        kicker={whyUsContent.kicker}
-        title={whyUsContent.title}
-        backgroundImage={whyUsContent.backgroundImage}
-        useBackgroundOverlay={globalOverlaysEnabled}
-        reasons={whyUsContent.reasons}
-      />
+      <WhyUsSection {...whyUsContent} useBackgroundOverlay={globalOverlaysEnabled} />
       <ReviewsSection
         kicker={reviewsContent.kicker}
         title={reviewsContent.title}
@@ -106,22 +94,11 @@ export default function Home() {
         starRowImage={decorativeImages.stars}
         withOverlay={globalOverlaysEnabled}
       />
-      <AboutSection
-        kicker={aboutContent.kicker}
-        title={aboutContent.title}
-        paragraphs={aboutContent.paragraphs}
-        image={aboutContent.image}
-      />
+      <AboutSection {...aboutContent} />
 
-      <FaqSection kicker={faqContent.kicker} title={faqContent.title} items={faqContent.items} />
+      <FaqSection {...faqContent} />
 
-      <CtaSection
-        onOrder={() => setModal("checkout")}
-        heading={ctaContent.heading}
-        text={ctaContent.text}
-        buttonLabel={ctaContent.buttonLabel}
-        backgroundImage={ctaContent.backgroundImage}
-      />
+      <CtaSection {...ctaContent} onOrder={() => setModal("checkout")} />
 
       <ScrollTopButton visible={showScrollTop} />
       <HomeModal

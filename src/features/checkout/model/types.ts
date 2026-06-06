@@ -34,6 +34,8 @@ export type CheckoutCallScheduling = {
 
 export type AmoCRMCheckoutPayload = CheckoutState & {
   total: number;
+  /** Unit price sourced from the CMS at build time, so the worker reports the same price as the site. */
+  unitPrice?: number;
   logoFile?: CheckoutLogoFile | null;
   callScheduling?: CheckoutCallScheduling;
 };

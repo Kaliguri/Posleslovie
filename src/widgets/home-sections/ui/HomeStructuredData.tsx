@@ -6,11 +6,21 @@ type CheckoutProduct = {
   image: string;
 };
 
+type FaqItem = {
+  question: string;
+  answer: string;
+};
+
 export function HomeStructuredData({
   primaryCheckoutProduct,
-}: Readonly<{ primaryCheckoutProduct: CheckoutProduct }>) {
-  const { organizationStructuredData, websiteStructuredData, productStructuredData } =
-    buildHomeStructuredData(primaryCheckoutProduct);
+  faqItems = [],
+}: Readonly<{ primaryCheckoutProduct: CheckoutProduct; faqItems?: ReadonlyArray<FaqItem> }>) {
+  const {
+    organizationStructuredData,
+    websiteStructuredData,
+    productStructuredData,
+    faqStructuredData,
+  } = buildHomeStructuredData(primaryCheckoutProduct, faqItems);
 
   return (
     <>
@@ -26,6 +36,12 @@ export function HomeStructuredData({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
       />
+      {faqStructuredData ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+        />
+      ) : null}
     </>
   );
 }

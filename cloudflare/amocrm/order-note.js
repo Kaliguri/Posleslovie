@@ -31,14 +31,17 @@ function formatCallSchedulingNote(callScheduling) {
   return null;
 }
 
-export function buildOrderNote({ quantity, total, formValues, callScheduling }) {
+export function buildOrderNote({ quantity, total, unitPrice, formValues, callScheduling }) {
+  // Prefer the unit price the site sent (sourced from the CMS) so the CRM note matches
+  // what the customer actually saw; fall back to the constant only for legacy payloads.
+  const resolvedUnitPrice = Number.isFinite(unitPrice) && unitPrice > 0 ? unitPrice : PRODUCT_PRICE;
   const lines = [
     "Заказ с сайта Posleslovie",
     "",
     "1. Детали заказа",
     "Товар: Бомбочка для ванны",
     `Количество: ${quantity} шт.`,
-    `Цена за 1 шт.: ${PRODUCT_PRICE} руб.`,
+    `Цена за 1 шт.: ${resolvedUnitPrice} руб.`,
     `Сумма: ${total} руб.`,
     "",
     "2. Контакты",

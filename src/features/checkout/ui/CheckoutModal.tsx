@@ -14,6 +14,7 @@ import { pushPurchase, reachGoal } from "@/shared/lib/metrica";
 import {
   maxLogoFileSize,
   type CheckoutCallScheduling,
+  type CheckoutErrorField,
   type CheckoutErrors,
   type CheckoutField,
   type CheckoutLogoFile,
@@ -21,6 +22,7 @@ import {
   type CheckoutState,
 } from "@/features/checkout/model/types";
 import {
+  clearErrorFields,
   getDefaultCallScheduling,
   getStep1Errors,
   hasErrors,
@@ -202,6 +204,7 @@ export function HomeModal({
               onFieldChange={onCheckoutFieldChange}
               onQuantityChange={onCheckoutQuantityChange}
               onClose={onClose}
+              isComplete={isCheckoutComplete}
               onCheckoutComplete={() => setIsCheckoutComplete(true)}
             />
           ) : null}
@@ -261,6 +264,7 @@ function CheckoutModal({
   onFieldChange,
   onQuantityChange,
   onClose,
+  isComplete,
   onCheckoutComplete,
 }: Readonly<{
   checkoutProduct: CheckoutProduct;
@@ -270,11 +274,11 @@ function CheckoutModal({
   onFieldChange: (field: CheckoutField, value: string) => void;
   onQuantityChange: (quantity: number) => void;
   onClose: () => void;
+  isComplete: boolean;
   onCheckoutComplete: () => void;
 }>) {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isCheckoutComplete, setIsCheckoutComplete] = useState(false);
   const [errors, setErrors] = useState<CheckoutErrors>({});
   const [isConsentAccepted, setIsConsentAccepted] = useState(false);
   const [callScheduling, setCallScheduling] =
@@ -286,31 +290,14 @@ function CheckoutModal({
 
   const handleFieldChange = (field: CheckoutField, value: string) => {
     onFieldChange(field, field === "phone" ? formatRussianPhoneInput(value) : value);
-    setErrors((current) => {
-      if (!current[field] && !(field === "contactMethod" && current.contactHandle)) {
-        return current;
-      }
-
-      const next = { ...current };
-      delete next[field];
-      if (field === "contactMethod") {
-        delete next.contactHandle;
-      }
-      return next;
-    });
+    setErrors((current) =>
+      clearErrorFields(current, field === "contactMethod" ? [field, "contactHandle"] : [field]),
+    );
   };
 
   const handleConsentChange = (isAccepted: boolean) => {
     setIsConsentAccepted(isAccepted);
-    setErrors((current) => {
-      if (!current.consent) {
-        return current;
-      }
-
-      const next = { ...current };
-      delete next.consent;
-      return next;
-    });
+    setErrors((current) => clearErrorFields(current, ["consent"]));
   };
 
   const handleLogoFileChange = async (file: File | null) => {
@@ -340,15 +327,7 @@ function CheckoutModal({
 
   const handleQuantityChange = (nextQuantity: number) => {
     onQuantityChange(nextQuantity);
-    setErrors((current) => {
-      if (!current.quantity) {
-        return current;
-      }
-
-      const next = { ...current };
-      delete next.quantity;
-      return next;
-    });
+    setErrors((current) => clearErrorFields(current, ["quantity"]));
   };
 
   const handleContinue = () => {
@@ -385,31 +364,21 @@ function CheckoutModal({
     }
 
     setSubmitMessage(null);
-    setErrors((current) => {
-      const next = { ...current };
-      delete next.callDate;
-      delete next.callTime;
-      delete next.consent;
-      return next;
-    });
+    setErrors((current) => clearErrorFields(current, ["callDate", "callTime", "consent"]));
     onStepChange(3);
   };
 
   const handleCallSchedulingChange = (patch: Partial<CheckoutCallScheduling>) => {
     setCallScheduling((current) => ({ ...current, ...patch }));
     setErrors((current) => {
-      const next = { ...current };
-      if (patch.date !== undefined) {
-        delete next.callDate;
+      const fieldsToClear: CheckoutErrorField[] = [];
+      if (patch.date !== undefined || patch.skipScheduling !== undefined) {
+        fieldsToClear.push("callDate");
       }
-      if (patch.time !== undefined) {
-        delete next.callTime;
+      if (patch.time !== undefined || patch.skipScheduling !== undefined) {
+        fieldsToClear.push("callTime");
       }
-      if (patch.skipScheduling !== undefined) {
-        delete next.callDate;
-        delete next.callTime;
-      }
-      return next;
+      return clearErrorFields(current, fieldsToClear);
     });
   };
 
@@ -450,6 +419,7 @@ function CheckoutModal({
           quantity,
           formValues,
           total,
+          unitPrice: checkoutProduct.price,
           logoFile,
           callScheduling,
         }),
@@ -459,7 +429,6 @@ function CheckoutModal({
         id: String(Date.now()),
         products: [{ name: checkoutProduct.title, price: checkoutProduct.price, quantity }],
       });
-      setIsCheckoutComplete(true);
       onCheckoutComplete();
       setSubmitMessage(null);
     } catch (error) {
@@ -472,7 +441,7 @@ function CheckoutModal({
     }
   };
 
-  if (isCheckoutComplete) {
+  if (isComplete) {
     return <CheckoutThankYou total={total} onClose={onClose} />;
   }
 

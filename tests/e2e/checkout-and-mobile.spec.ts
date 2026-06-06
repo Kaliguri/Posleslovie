@@ -20,6 +20,27 @@ test("opens mobile menu and checkout action", async ({ page }) => {
 });
 
 test("opens partners modal and submits lead form", async ({ page }) => {
+  // Intercept the AmoCRM worker call so the test is deterministic and never creates a real CRM lead.
+  // Match only the worker host (it lives on a Cloudflare *.workers.dev domain) to avoid racing with
+  // page/asset requests. The call is cross-origin, so we answer the CORS preflight (OPTIONS) and
+  // include CORS headers on the POST response, otherwise the browser blocks it.
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+  await page.route(/amocrm-worker\.e2e/, async (route) => {
+    if (route.request().method() === "OPTIONS") {
+      await route.fulfill({ status: 204, headers: corsHeaders });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      body: JSON.stringify({ ok: true }),
+    });
+  });
+
   await page.goto("/");
   await page.getByRole("button", { name: "Для партнеров" }).first().click();
   await expect(page.getByRole("dialog")).toBeVisible();
@@ -30,5 +51,5 @@ test("opens partners modal and submits lead form", async ({ page }) => {
   await page.getByLabel("Email").fill("partner@example.ru");
   await page.getByRole("button", { name: "Стать партнером" }).click();
 
-  await expect(page.getByText("Отправляем заявку...")).toBeVisible();
+  await expect(page.getByText(/заявка отправлена/i)).toBeVisible();
 });

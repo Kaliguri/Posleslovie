@@ -80,6 +80,25 @@ export function hasErrors(errors: CheckoutErrors) {
   return Object.keys(errors).length > 0;
 }
 
+/**
+ * Return a copy of `errors` without the given fields. Returns the same reference when none of the
+ * fields carry an error, so it is safe to call from a `setState` updater without forcing a re-render.
+ */
+export function clearErrorFields(
+  errors: CheckoutErrors,
+  fields: ReadonlyArray<CheckoutErrorField>,
+): CheckoutErrors {
+  if (!fields.some((field) => errors[field])) {
+    return errors;
+  }
+
+  const next = { ...errors };
+  for (const field of fields) {
+    delete next[field];
+  }
+  return next;
+}
+
 export const RUSSIAN_MONTHS = [
   "Январь",
   "Февраль",
@@ -172,6 +191,7 @@ export function prepareCheckoutPayload({
   quantity,
   formValues,
   total,
+  unitPrice,
   logoFile = null,
   callScheduling,
 }: AmoCRMCheckoutPayload): AmoCRMCheckoutPayload {
@@ -182,6 +202,7 @@ export function prepareCheckoutPayload({
   return {
     quantity,
     total,
+    unitPrice,
     logoFile,
     callScheduling,
     formValues: {
