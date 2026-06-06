@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 import { usePrefersReducedMedia } from "@/shared/hooks/use-prefers-reduced-media";
@@ -35,14 +36,14 @@ export function HeroSection({
 
   return (
     <section className="relative min-h-[100dvh] overflow-hidden bg-brand-navy lg:min-h-[1080px]">
-      <img
+      <Image
         src={backgroundImage}
         alt=""
         aria-hidden="true"
-        loading="eager"
-        fetchPriority="high"
-        decoding="async"
-        className="absolute inset-0 h-full w-full scale-[1.06] object-cover object-[52%_center] sm:scale-[1.04] sm:object-center"
+        fill
+        priority
+        sizes="100vw"
+        className="scale-[1.06] object-cover object-[52%_center] sm:scale-[1.04] sm:object-center"
       />
       {showVideo ? (
         <video
@@ -91,6 +92,7 @@ export function HeroSection({
               onClick={onOpenHowWeMakeVideo}
               className="btn-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size decorative icon, next/image adds no value */}
               <img
                 src={assetPath("/images/icons/how-we-make-play.png")}
                 alt=""

@@ -38,6 +38,8 @@ export type AmoCRMCheckoutPayload = CheckoutState & {
   unitPrice?: number;
   logoFile?: CheckoutLogoFile | null;
   callScheduling?: CheckoutCallScheduling;
+  /** Cloudflare Turnstile token; present only when bot protection is configured. */
+  turnstileToken?: string;
 };
 
 export type AmoCRMLeadPayload = {
@@ -51,6 +53,8 @@ export type AmoCRMLeadPayload = {
     contactMethod?: string;
     comment?: string;
   };
+  /** Cloudflare Turnstile token; present only when bot protection is configured. */
+  turnstileToken?: string;
 };
 
 export const checkoutStorageKey = "posleslovie:checkout-state";

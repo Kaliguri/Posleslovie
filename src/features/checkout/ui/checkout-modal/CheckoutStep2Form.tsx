@@ -212,6 +212,7 @@ export function CheckoutStep2Form({
           }}
         >
           <div className="relative inline-block max-w-full">
+            {/* eslint-disable-next-line @next/next/no-img-element -- intrinsic-sized preview (w-auto), next/image needs fixed dims */}
             <img
               src={artworkModalSrc}
               alt=""
