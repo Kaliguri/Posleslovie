@@ -24,120 +24,128 @@ import {
   siteProductsSchema,
 } from "./content-schema";
 
-function parseWithFallback<T>(sourceName: string, parse: () => T, fallback: () => T): T {
+type ParsingSchema = { parse: (data: unknown) => unknown };
+
+/**
+ * Parse a single CMS content source against its schema, falling back to a safe default when the
+ * JSON is malformed (e.g. a non-developer broke a field in the CMS). Keeping the source name,
+ * schema, raw JSON and fallback together makes each entry a one-liner instead of a try/catch block.
+ */
+function loadContent<S extends ParsingSchema>(
+  sourceName: string,
+  schema: S,
+  json: unknown,
+  fallbackInput: unknown,
+): ReturnType<S["parse"]> {
   try {
-    return parse();
+    return schema.parse(json) as ReturnType<S["parse"]>;
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error(`[content-schema] failed to parse ${sourceName}`, error);
     }
-    return fallback();
+    return schema.parse(fallbackInput) as ReturnType<S["parse"]>;
   }
 }
 
-const siteBehavior = parseWithFallback(
-  "site-behavior.json",
-  () => siteBehaviorSchema.parse(siteBehaviorJson),
-  () => siteBehaviorSchema.parse({}),
-);
-const homeHero = parseWithFallback(
-  "home-hero.json",
-  () => homeHeroSchema.parse(homeHeroJson),
-  () =>
-    homeHeroSchema.parse({
-      heading: "Послесловие к вашему дню",
-      leadLine1: "Послесловие к вашему ритуалу ухода",
-      leadLine2: "Ручная работа в Севастополе",
-      ctaLabel: "Оформить заказ",
-      backgroundMediaType: "image",
-      backgroundImage: "/images/photos/hero.jpg",
-      backgroundVideo: "",
-    }),
-);
-const homeFeatureCards = parseWithFallback(
+const siteBehavior = loadContent("site-behavior.json", siteBehaviorSchema, siteBehaviorJson, {});
+
+const homeHero = loadContent("home-hero.json", homeHeroSchema, homeHeroJson, {
+  heading: "Послесловие к вашему дню",
+  leadLine1: "Послесловие к вашему ритуалу ухода",
+  leadLine2: "Ручная работа в Севастополе",
+  ctaLabel: "Оформить заказ",
+  backgroundMediaType: "image",
+  backgroundImage: "/images/photos/hero.jpg",
+  backgroundVideo: "",
+});
+
+const homeFeatureCards = loadContent(
   "home-feature-cards.json",
-  () => homeFeatureCardsSchema.parse(homeFeatureCardsJson),
-  () => homeFeatureCardsSchema.parse({ sectionTitle: "Преимущества", cards: [] }),
+  homeFeatureCardsSchema,
+  homeFeatureCardsJson,
+  { sectionTitle: "Преимущества", cards: [] },
 );
-const homeProcessBombs = parseWithFallback(
+
+const homeProcessBombs = loadContent(
   "home-process-bombs.json",
-  () => homeProcessSectionSchema.parse(homeProcessBombsJson),
-  () =>
-    homeProcessSectionSchema.parse({
-      eyebrow: "Процесс",
-      title: "Как мы создаем бомбочки",
-      description: "Описание процесса временно недоступно.",
-      reverse: false,
-      slides: [{ image: "/images/photos/bombs-2.jpg", alt: "Бомбочки" }],
-    }),
+  homeProcessSectionSchema,
+  homeProcessBombsJson,
+  {
+    eyebrow: "Процесс",
+    title: "Как мы создаем бомбочки",
+    description: "Описание процесса временно недоступно.",
+    reverse: false,
+    slides: [{ image: "/images/photos/bombs-2.jpg", alt: "Бомбочки" }],
+  },
 );
-const homeProcessLavender = parseWithFallback(
+
+const homeProcessLavender = loadContent(
   "home-process-lavender.json",
-  () => homeProcessSectionSchema.parse(homeProcessLavenderJson),
-  () =>
-    homeProcessSectionSchema.parse({
-      eyebrow: "Процесс",
-      title: "Лаванда",
-      description: "Описание процесса временно недоступно.",
-      reverse: true,
-      slides: [{ image: "/images/photos/bombs-2.jpg", alt: "Лаванда" }],
-    }),
+  homeProcessSectionSchema,
+  homeProcessLavenderJson,
+  {
+    eyebrow: "Процесс",
+    title: "Лаванда",
+    description: "Описание процесса временно недоступно.",
+    reverse: true,
+    slides: [{ image: "/images/photos/bombs-2.jpg", alt: "Лаванда" }],
+  },
 );
-const homeProcessPacks = parseWithFallback(
+
+const homeProcessPacks = loadContent(
   "home-process-packs.json",
-  () => homeProcessSectionSchema.parse(homeProcessPacksJson),
-  () =>
-    homeProcessSectionSchema.parse({
-      eyebrow: "Процесс",
-      title: "Наборы",
-      description: "Описание процесса временно недоступно.",
-      reverse: false,
-      slides: [{ image: "/images/photos/bombs-2.jpg", alt: "Наборы" }],
-    }),
+  homeProcessSectionSchema,
+  homeProcessPacksJson,
+  {
+    eyebrow: "Процесс",
+    title: "Наборы",
+    description: "Описание процесса временно недоступно.",
+    reverse: false,
+    slides: [{ image: "/images/photos/bombs-2.jpg", alt: "Наборы" }],
+  },
 );
-const homeWhyUs = parseWithFallback(
-  "home-why-us.json",
-  () => homeWhyUsSchema.parse(homeWhyUsJson),
-  () =>
-    homeWhyUsSchema.parse({
-      kicker: "Почему мы",
-      title: "Почему выбирают нас",
-      backgroundImage: "/images/photos/hero.jpg",
-      reasons: [],
-    }),
-);
-const homeAbout = parseWithFallback(
-  "home-about.json",
-  () => homeAboutSchema.parse(homeAboutJson),
-  () =>
-    homeAboutSchema.parse({
-      kicker: "О нас",
-      title: "Послесловие",
-      paragraphs: ["Контент временно недоступен."],
-      image: "/images/photos/bombs-2.jpg",
-    }),
-);
-const homeReviews = parseWithFallback(
-  "home-reviews.json",
-  () => homeReviewsSchema.parse(homeReviewsJson),
-  () => homeReviewsSchema.parse({ kicker: "Отзывы", title: "Отзывы", items: [] }),
-);
-const homeCta = parseWithFallback(
-  "home-cta.json",
-  () => homeCtaSchema.parse(homeCtaJson),
-  () =>
-    homeCtaSchema.parse({
-      heading: "Оформите заказ",
-      text: "Свяжитесь с нами для оформления.",
-      buttonLabel: "Оформить заказ",
-      backgroundImage: "/images/photos/hero.jpg",
-    }),
-);
-const siteProducts = parseWithFallback(
-  "site-products.json",
-  () => siteProductsSchema.parse(siteProductsJson),
-  () => siteProductsSchema.parse({ items: [] }),
-);
+
+const homeWhyUs = loadContent("home-why-us.json", homeWhyUsSchema, homeWhyUsJson, {
+  kicker: "Почему мы",
+  title: "Почему выбирают нас",
+  backgroundImage: "/images/photos/hero.jpg",
+  reasons: [],
+});
+
+const homeAbout = loadContent("home-about.json", homeAboutSchema, homeAboutJson, {
+  kicker: "О нас",
+  title: "Послесловие",
+  paragraphs: ["Контент временно недоступен."],
+  image: "/images/photos/bombs-2.jpg",
+});
+
+const homeReviews = loadContent("home-reviews.json", homeReviewsSchema, homeReviewsJson, {
+  kicker: "Отзывы",
+  title: "Отзывы",
+  items: [],
+});
+
+const homeCta = loadContent("home-cta.json", homeCtaSchema, homeCtaJson, {
+  heading: "Оформите заказ",
+  text: "Свяжитесь с нами для оформления.",
+  buttonLabel: "Оформить заказ",
+  backgroundImage: "/images/photos/hero.jpg",
+});
+
+const homeFaq = loadContent("home-faq.json", homeFaqSchema, homeFaqJson, {
+  kicker: "Вопросы",
+  title: "FAQ",
+  items: [
+    {
+      question: "Как оформить заказ?",
+      answer: "Нажмите «Оформить заказ» и заполните форму на сайте.",
+    },
+  ],
+});
+
+const siteProducts = loadContent("site-products.json", siteProductsSchema, siteProductsJson, {
+  items: [],
+});
 
 export const globalOverlaysEnabled = Boolean(siteBehavior.enableGlobalOverlays);
 export const scrollAnimationsEnabled = Boolean(siteBehavior.enableScrollAnimations);
@@ -175,22 +183,6 @@ export const featureCardsSection = {
     icon: assetPath(card.icon),
   })),
 };
-
-const homeFaq = parseWithFallback(
-  "home-faq.json",
-  () => homeFaqSchema.parse(homeFaqJson),
-  () =>
-    homeFaqSchema.parse({
-      kicker: "Вопросы",
-      title: "FAQ",
-      items: [
-        {
-          question: "Как оформить заказ?",
-          answer: "Нажмите «Оформить заказ» и заполните форму на сайте.",
-        },
-      ],
-    }),
-);
 
 export const faqContent = homeFaq;
 
