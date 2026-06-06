@@ -31,6 +31,7 @@ export function toAbsoluteUrl(path: string) {
 
 export const seoConfig = {
   title: siteConfig.name,
+  metaTitle: siteConfig.seoTitle?.trim() || siteConfig.name,
   description: siteConfig.description,
   keywords: [
     "подарочные наборы",

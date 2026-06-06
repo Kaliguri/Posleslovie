@@ -36,7 +36,7 @@ const faviconUrl = siteConfig.favicon ? assetPath(siteConfig.favicon) : null;
 
 export const metadata: Metadata = {
   title: {
-    default: seoConfig.title,
+    default: seoConfig.metaTitle,
     template: `%s | ${seoConfig.title}`,
   },
   description: seoConfig.description,
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     url: "/",
     siteName: seoConfig.title,
-    title: seoConfig.title,
+    title: seoConfig.metaTitle,
     description: seoConfig.description,
     images: [
       {
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: seoConfig.title,
+    title: seoConfig.metaTitle,
     description: seoConfig.description,
     images: [toAbsoluteUrl(seoConfig.ogImage)],
   },
