@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { env } from "@/shared/config/env";
 import { withBasePath } from "@/shared/config/seo";
+import { cookieConsentEnabled } from "@/shared/config/site-behavior";
 import { YandexMetrica } from "@/shared/ui/yandex-metrica";
 
 const STORAGE_KEY = "posleslovie:cookie-consent";
@@ -11,10 +12,20 @@ const STORAGE_KEY = "posleslovie:cookie-consent";
 type Consent = "accepted" | "declined";
 
 /**
- * Cookie/analytics consent gate. Yandex.Metrica (which sets cookies) loads only after the user
- * accepts. Renders nothing when no Metrica counter is configured — there is nothing to consent to.
+ * Cookie/analytics gate.
+ *
+ * The consent banner is opt-in via the CMS (`enableCookieConsent`). When it is off (default),
+ * analytics load immediately; when on, Yandex.Metrica (which sets cookies) loads only after the
+ * visitor accepts. Renders nothing when no Metrica counter is configured.
  */
 export function CookieConsent() {
+  if (!cookieConsentEnabled) {
+    return <YandexMetrica />;
+  }
+  return <ConsentGate />;
+}
+
+function ConsentGate() {
   const [consent, setConsent] = useState<Consent | null>(null);
   const [resolved, setResolved] = useState(false);
 

@@ -10,7 +10,6 @@ import homeProcessLavenderJson from "../../../../content/home-process-lavender.j
 import homeProcessPacksJson from "../../../../content/home-process-packs.json";
 import homeReviewsJson from "../../../../content/home-reviews.json";
 import homeWhyUsJson from "../../../../content/home-why-us.json";
-import siteBehaviorJson from "../../../../content/site-behavior.json";
 import siteProductsJson from "../../../../content/site-products.json";
 import {
   homeAboutSchema,
@@ -21,7 +20,6 @@ import {
   homeProcessSectionSchema,
   homeReviewsSchema,
   homeWhyUsSchema,
-  siteBehaviorSchema,
   siteProductsSchema,
 } from "./content-schema";
 
@@ -47,8 +45,6 @@ function loadContent<S extends ParsingSchema>(
     return schema.parse(fallbackInput) as ReturnType<S["parse"]>;
   }
 }
-
-const siteBehavior = loadContent("site-behavior.json", siteBehaviorSchema, siteBehaviorJson, {});
 
 const homeHero = loadContent("home-hero.json", homeHeroSchema, homeHeroJson, {
   heading: "Послесловие к вашему дню",
@@ -148,8 +144,7 @@ const siteProducts = loadContent("site-products.json", siteProductsSchema, siteP
   items: [],
 });
 
-export const globalOverlaysEnabled = Boolean(siteBehavior.enableGlobalOverlays);
-export const scrollAnimationsEnabled = Boolean(siteBehavior.enableScrollAnimations);
+export { globalOverlaysEnabled, scrollAnimationsEnabled } from "@/shared/config/site-behavior";
 
 const fallbackCheckoutProduct = {
   title: "Бомбочка для ванны",
