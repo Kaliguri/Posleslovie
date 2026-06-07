@@ -90,11 +90,6 @@ export const homeCtaSchema = z.object({
   backgroundImage: z.string().min(1),
 });
 
-export const siteBehaviorSchema = z.object({
-  enableGlobalOverlays: z.boolean().default(true),
-  enableScrollAnimations: z.boolean().default(true),
-});
-
 export const siteProductsSchema = z.object({
   items: z.array(
     z.object({
