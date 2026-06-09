@@ -49,6 +49,7 @@ test("opens partners modal and submits lead form", async ({ page }) => {
   await page.getByLabel("Имя").fill("Тест Партнер");
   await page.getByLabel("Телефон").fill("+7 (999) 111-22-33");
   await page.getByLabel("Email").fill("partner@example.ru");
+  await page.getByRole("checkbox", { name: /персональных данных/i }).check();
   await page.getByRole("button", { name: "Стать партнером" }).click();
 
   await expect(page.getByText(/заявка отправлена/i)).toBeVisible();
