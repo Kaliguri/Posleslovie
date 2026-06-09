@@ -18,13 +18,7 @@
 
 <p>
   <a href="https://github.com/Kaliguri/Posleslovie/actions"><img alt="Deploy" src="https://img.shields.io/github/actions/workflow/status/Kaliguri/Posleslovie/pages.yml?branch=main&style=flat-square&label=Deploy&logo=githubactions&logoColor=white"/></a>
-  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white"/>
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white"/>
-  <img alt="Tailwind CSS v4" src="https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white"/>
-  <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare_Workers-F38020?style=flat-square&logo=cloudflareworkers&logoColor=white"/>
-  <img alt="GitHub Pages" src="https://img.shields.io/badge/GitHub_Pages-222222?style=flat-square&logo=githubpages&logoColor=white"/>
-  <img alt="Yandex Metrica" src="https://img.shields.io/badge/Yandex_Metrica-FC3F1D?style=flat-square&logo=yandexcloud&logoColor=white"/>
-  <img alt="Cloudflare Turnstile" src="https://img.shields.io/badge/Turnstile-F38020?style=flat-square&logo=cloudflare&logoColor=white"/>
+  <a href="https://posleslovie.online"><img alt="Status: live" src="https://img.shields.io/badge/Status-live-2ea043?style=flat-square"/></a>
   <img alt="License: All rights reserved" src="https://img.shields.io/badge/License-All_rights_reserved-red?style=flat-square"/>
 </p>
 
