@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { submitLeadToAmoCRM } from "@/features/checkout/model/api";
 import { env } from "@/shared/config/env";
+import { withBasePath } from "@/shared/config/seo";
 import { formatRussianPhoneInput } from "@/shared/lib/phone";
 import { reachGoal } from "@/shared/lib/metrica";
 import { reportError } from "@/shared/lib/report-error";
@@ -37,6 +38,8 @@ export function LeadForm({
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [consentAccepted, setConsentAccepted] = useState(false);
+  const consentRequired = !requiredOnly;
 
   const updateField = (field: keyof LeadFormValues, value: string) => {
     setFormValues((current) => ({ ...current, [field]: value }));
@@ -49,6 +52,10 @@ export function LeadForm({
         event.preventDefault();
         if (!formValues.name.trim() || !formValues.phone.trim() || !formValues.email.trim()) {
           setSubmitMessage("Заполните имя, телефон и email.");
+          return;
+        }
+        if (consentRequired && !consentAccepted) {
+          setSubmitMessage("Подтвердите согласие на обработку персональных данных.");
           return;
         }
         if (env.turnstileEnabled && !turnstileToken) {
@@ -131,10 +138,33 @@ export function LeadForm({
         <p className="text-xs font-light">( * - обязательные для заполнения )</p>
       ) : (
         <label className="mt-2 flex gap-3 text-base leading-[1.4]">
-          <input type="checkbox" className="mt-1 h-4 w-4 rounded border-[#0f172a]" />
+          <input
+            type="checkbox"
+            checked={consentAccepted}
+            onChange={(event) => setConsentAccepted(event.target.checked)}
+            aria-required="true"
+            className="mt-1 h-4 w-4 rounded border-[#0f172a]"
+          />
           <span className="min-w-0">
-            Нажимая на кнопку, вы соглашаетесь с обработкой <u>персональных данных</u>. Ознакомлены
-            с <u>политикой конфиденциальности</u>
+            Нажимая на кнопку, вы соглашаетесь с обработкой{" "}
+            <a
+              href={withBasePath("/images/documents/personal-data-consent.pdf")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline decoration-[#b08a35] underline-offset-2 hover:text-[#b08a35]"
+            >
+              персональных данных
+            </a>{" "}
+            и ознакомлены с{" "}
+            <a
+              href={withBasePath("/images/documents/privacy.pdf")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline decoration-[#b08a35] underline-offset-2 hover:text-[#b08a35]"
+            >
+              политикой конфиденциальности
+            </a>
+            .
           </span>
         </label>
       )}
