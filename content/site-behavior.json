@@ -1,5 +1,5 @@
 {
   "enableScrollAnimations": true,
   "enableGlobalOverlays": false,
-  "enableCookieConsent": false
+  "enableCookieConsent": true
 }
