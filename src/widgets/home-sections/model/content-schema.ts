@@ -12,6 +12,8 @@ export const homeHeroSchema = z.object({
   ctaLabel: z.string().min(1),
   backgroundMediaType: z.enum(["video", "image"]).catch("image"),
   backgroundImage: z.string().min(1),
+  backgroundImageMobile: z.string().optional(),
+  backgroundImageTablet: z.string().optional(),
   backgroundVideo: z.string().default(""),
 });
 

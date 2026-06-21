@@ -7,6 +7,7 @@ export function DesignButton({
   variant = "outline",
   disabled = false,
   showArrow = true,
+  className = "",
 }: Readonly<{
   children: React.ReactNode;
   onClick: () => void;
@@ -14,6 +15,7 @@ export function DesignButton({
   variant?: "outline" | "filled" | "ghost";
   disabled?: boolean;
   showArrow?: boolean;
+  className?: string;
 }>) {
   const isFilled = variant === "filled";
   const isGhost = variant === "ghost";
@@ -30,7 +32,7 @@ export function DesignButton({
               isFilled
                 ? "bg-brand-gold text-foreground hover:bg-brand-gold-hover"
                 : "text-brand-gold hover:bg-brand-gold hover:text-foreground"
-            } ${size === "xl" ? "px-5 py-3.5 text-lg sm:px-7 sm:py-4 sm:text-2xl" : "px-5 py-3 text-base sm:px-6 lg:text-xl xl:text-2xl"}`
+            } ${size === "xl" ? "px-5 py-3.5 text-lg sm:px-7 sm:py-4 sm:text-2xl" : "px-5 py-3 text-base sm:px-6 lg:text-xl xl:text-2xl"} ${className}`
       }`}
     >
       {children}

@@ -46,6 +46,11 @@ body {
   line-height: 0.97;
 }
 
+.hero-heading-stroke {
+  -webkit-text-stroke: 1px var(--brand-navy);
+  paint-order: stroke fill;
+}
+
 .text-h2 {
   font-size: var(--font-h2);
   line-height: 1.12;

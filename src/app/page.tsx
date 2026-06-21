@@ -78,6 +78,8 @@ export default function Home() {
         ctaLabel={heroContent.ctaLabel}
         backgroundMediaType={heroContent.backgroundMediaType}
         backgroundImage={heroContent.backgroundImage}
+        backgroundImageMobile={heroContent.backgroundImageMobile}
+        backgroundImageTablet={heroContent.backgroundImageTablet}
         backgroundVideo={heroContent.backgroundVideo}
         withOverlay={globalOverlaysEnabled}
       />

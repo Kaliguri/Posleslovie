@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { siteConfig } from "@/shared/config/site";
 import { assetPath } from "@/shared/lib/asset-path";
+import { SiteLogo } from "@/shared/ui/site-logo";
 import siteBehaviorJson from "../../../content/site-behavior.json";
 
 const navigationItems = [
@@ -24,6 +25,35 @@ const globalOverlaysEnabled = Boolean(siteBehaviorJson.enableGlobalOverlays);
 
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHeroHeaderLight, setIsHeroHeaderLight] = useState(true);
+
+  useEffect(() => {
+    const hero = document.getElementById("hero");
+
+    const updateHeaderTheme = () => {
+      if (!hero) {
+        setIsHeroHeaderLight(false);
+        return;
+      }
+
+      const heroBottom = hero.getBoundingClientRect().bottom;
+      setIsHeroHeaderLight(heroBottom > 120);
+    };
+
+    const frame = requestAnimationFrame(updateHeaderTheme);
+    if (!hero) {
+      return () => cancelAnimationFrame(frame);
+    }
+
+    window.addEventListener("scroll", updateHeaderTheme, { passive: true });
+    window.addEventListener("resize", updateHeaderTheme);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateHeaderTheme);
+      window.removeEventListener("resize", updateHeaderTheme);
+    };
+  }, []);
 
   const socialConfigByLabel = new Map(
     siteConfig.socials.map((social) => [
@@ -100,7 +130,11 @@ export function SiteHeader() {
         aria-expanded={isMobileMenuOpen}
         aria-controls="mobile-navigation"
         onClick={() => setIsMobileMenuOpen((current) => !current)}
-        className="fixed left-5 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[#e8c880] text-[#0f172a] shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition hover:bg-[#ffecbf] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden"
+        className={`fixed left-5 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden ${
+          isHeroHeaderLight && !isMobileMenuOpen
+            ? "bg-brand-navy text-white"
+            : "bg-[#e8c880] text-[#0f172a] shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:bg-[#ffecbf]"
+        }`}
       >
         <span className="sr-only">{isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}</span>
         <span className="flex w-5 flex-col gap-1.5" aria-hidden="true">
@@ -116,11 +150,11 @@ export function SiteHeader() {
         </span>
       </button>
 
-      <header className="absolute inset-x-0 top-0 z-40 text-white">
+      <header
+        className={`absolute inset-x-0 top-0 z-40 ${isHeroHeaderLight ? "text-brand-navy" : "text-white"}`}
+      >
         <div className="mx-auto max-w-[1720px] px-5 lg:px-[100px]">
           <div className="relative flex h-[76px] items-center lg:h-[85px]">
-            <HeaderRule />
-
             <div className="hidden items-center gap-3 lg:flex">
               {socialLinks.map((social) => (
                 <SocialIconButton
@@ -128,24 +162,22 @@ export function SiteHeader() {
                   label={social.label}
                   href={social.href}
                   icon={social.icon}
+                  light={isHeroHeaderLight}
                 />
               ))}
             </div>
 
             <Link
               href="/"
-              className="absolute left-1/2 top-1/2 ml-2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 sm:ml-0"
+              className="absolute left-1/2 top-1/2 flex max-w-[calc(100vw-10rem)] -translate-x-1/2 -translate-y-1/2 justify-center lg:max-w-none"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-[20px] border-2 border-white text-[16px] font-bold underline [font-family:var(--font-ermilov)] lg:h-10 lg:w-10 lg:rounded-[20px] lg:text-[16px]">
-                П.С
-              </span>
-              <span className="text-2xl font-normal leading-[1.1] [font-family:var(--font-educational)] sm:text-[30px]">
-                {siteConfig.name}
-              </span>
+              <SiteLogo variant={isHeroHeaderLight ? "dark" : "light"} />
             </Link>
             <a
               href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-              className="ml-auto hidden items-center text-lg font-medium leading-[1.1] [font-family:var(--font-inter)] lg:flex"
+              className={`relative z-10 ml-auto hidden items-center text-lg font-medium leading-[1.1] [font-family:var(--font-inter)] lg:flex ${
+                isHeroHeaderLight ? "text-brand-navy" : "text-white"
+              }`}
             >
               {siteConfig.phone}
             </a>
@@ -154,7 +186,11 @@ export function SiteHeader() {
           <nav className="hidden h-[100px] items-center justify-center lg:flex lg:-mt-6">
             <div className="flex items-center">
               {navigationItems.map((item) => (
-                <HeaderPill key={item.label} onClick={() => handleNavigation(item)}>
+                <HeaderPill
+                  key={item.label}
+                  light={isHeroHeaderLight}
+                  onClick={() => handleNavigation(item)}
+                >
                   {item.label}
                 </HeaderPill>
               ))}
@@ -214,28 +250,18 @@ export function SiteHeader() {
   );
 }
 
-function HeaderRule() {
-  return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute bottom-0 left-0 right-0 flex items-center"
-    >
-      <span className="h-2 w-2 shrink-0 rotate-45 bg-[#e8c880]" />
-      <span className="h-px flex-1 bg-[#e8c880]" />
-      <span className="h-2 w-2 shrink-0 rotate-45 bg-[#e8c880]" />
-    </div>
-  );
-}
-
 function HeaderPill({
+  light,
   onClick,
   children,
-}: Readonly<{ onClick: () => void; children: React.ReactNode }>) {
+}: Readonly<{ light: boolean; onClick: () => void; children: React.ReactNode }>) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group relative h-12 overflow-hidden px-2 py-3 text-base font-medium tracking-[0.5px] text-white outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
+      className={`group relative h-12 overflow-hidden px-2 py-3 text-base font-medium tracking-[0.5px] outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] ${
+        light ? "text-brand-navy" : "text-white"
+      }`}
     >
       <HeaderPillText>{children}</HeaderPillText>
     </button>
@@ -260,11 +286,15 @@ function SocialIconButton({
   label,
   href,
   icon,
+  light = false,
 }: Readonly<{
   label: "VK" | "TG" | "MAX";
   href: string;
   icon: string;
+  light?: boolean;
 }>) {
+  const iconSrc = light ? icon.replace(/\.svg$/, "-navy.svg") : icon;
+
   return (
     <a
       href={href}
@@ -273,7 +303,7 @@ function SocialIconButton({
       aria-label={label}
       className="flex h-9 w-9 items-center justify-center rounded-full transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880]"
     >
-      <img src={assetPath(icon)} alt={label} className="h-9 w-9 rounded-full object-cover" />
+      <img src={assetPath(iconSrc)} alt={label} className="h-9 w-9 rounded-full object-cover" />
     </a>
   );
 }

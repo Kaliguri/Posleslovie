@@ -174,6 +174,8 @@ export const primaryCheckoutProduct = checkoutProducts[0] ?? fallbackCheckoutPro
 type HeroContent = Omit<typeof homeHeroJson, "backgroundMediaType"> & {
   backgroundMediaType: "video" | "image";
   backgroundImage: string;
+  backgroundImageMobile: string;
+  backgroundImageTablet: string;
   backgroundVideo: string;
 };
 
@@ -181,6 +183,12 @@ export const heroContent: HeroContent = {
   ...homeHero,
   backgroundMediaType: homeHero.backgroundMediaType === "video" ? "video" : "image",
   backgroundImage: assetPath(homeHero.backgroundImage),
+  backgroundImageMobile: homeHero.backgroundImageMobile
+    ? assetPath(homeHero.backgroundImageMobile)
+    : assetPath(homeHero.backgroundImage),
+  backgroundImageTablet: homeHero.backgroundImageTablet
+    ? assetPath(homeHero.backgroundImageTablet)
+    : assetPath(homeHero.backgroundImage),
   backgroundVideo: homeHero.backgroundVideo ? assetPath(homeHero.backgroundVideo) : "",
 };
 
