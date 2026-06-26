@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Roboto } from "next/font/google";
-import localFont from "next/font/local";
 
 import { siteConfig } from "@/shared/config/site";
 import { seoConfig, siteUrl, toAbsoluteUrl } from "@/shared/config/seo";
@@ -18,17 +17,6 @@ const roboto = Roboto({
 const inter = Inter({
   subsets: ["cyrillic", "latin"],
   variable: "--font-inter",
-});
-
-const educationalGothic = localFont({
-  src: [
-    {
-      path: "./fonts/educational-gothic-regular.otf",
-      weight: "400",
-      style: "normal",
-    },
-  ],
-  variable: "--font-educational",
 });
 
 export const metadata: Metadata = {
@@ -85,7 +73,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body
-        className={`${roboto.variable} ${inter.variable} ${educationalGothic.variable} min-h-screen text-stone-950 antialiased`}
+        className={`${roboto.variable} ${inter.variable} min-h-screen bg-[#080a12] text-white antialiased`}
       >
         <div className="relative flex min-h-screen flex-col">
           <SiteHeader />

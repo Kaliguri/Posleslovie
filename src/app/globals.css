@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-gold: #e8c880;
-  --color-brand-gold-hover: #ffecbf;
-  --color-brand-gold-muted: #b08a35;
-  --color-brand-navy: #102038;
-  --color-surface: #f8f8f8;
-  --color-foreground: #0f172a;
-  --color-text-muted: #656565;
+  --color-brand-gold: #c1aeff;
+  --color-brand-gold-hover: #ded4ff;
+  --color-brand-gold-muted: #8e80c9;
+  --color-brand-navy: #080a12;
+  --color-surface: #f4f1ff;
+  --color-foreground: #080a12;
+  --color-text-muted: #74778a;
 }
 
 :root {
@@ -22,23 +22,116 @@
   --font-h3: clamp(1.3125rem, 1vw + 1rem, 1.5rem);
   --font-body: clamp(0.875rem, 0.35vw + 0.8rem, 1.25rem);
   --font-body-lg: clamp(1rem, 0.5vw + 0.85rem, 1.5625rem);
+  --ritual-ink: #080a12;
+  --ritual-smoke: #121522;
+  --ritual-porcelain: #f4f1ff;
+  --ritual-lilac: #c1aeff;
+  --ritual-mist: rgb(244 241 255 / 0.72);
 }
 
 html {
   overflow-x: hidden;
   scroll-behavior: smooth;
+  background: var(--ritual-ink);
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--ritual-ink);
+  color: var(--ritual-porcelain);
   font-family: var(--font-roboto), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: rgb(193 174 255 / 0.18);
 }
 
 ::selection {
-  background: #171717;
-  color: #f5f5f4;
+  background: var(--ritual-lilac);
+  color: var(--ritual-ink);
+}
+
+.ritual-page {
+  isolation: isolate;
+}
+
+.ritual-page::before {
+  background:
+    radial-gradient(circle at 12% 10%, rgb(193 174 255 / 0.18), transparent 24rem),
+    radial-gradient(circle at 88% 34%, rgb(86 104 255 / 0.12), transparent 26rem);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: -2;
+}
+
+.ritual-page::after {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  content: "";
+  inset: 0;
+  mask-image: linear-gradient(to bottom, rgb(0 0 0 / 0.5), transparent 70%);
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
+.ritual-hero-title {
+  font-family: var(--font-roboto), Arial, Helvetica, sans-serif;
+}
+
+.ritual-orbit {
+  animation: ritual-orbit 18s linear infinite;
+}
+
+.ritual-orbit::before,
+.ritual-orbit::after {
+  background: var(--ritual-lilac);
+  border-radius: 999px;
+  box-shadow: 0 0 42px rgb(193 174 255 / 0.55);
+  content: "";
+  height: 0.9rem;
+  position: absolute;
+  width: 0.9rem;
+}
+
+.ritual-orbit::before {
+  left: 16%;
+  top: 12%;
+}
+
+.ritual-orbit::after {
+  bottom: 14%;
+  right: 18%;
+}
+
+.ritual-product {
+  animation: ritual-float 7s cubic-bezier(0.45, 0, 0.2, 1) infinite alternate;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+summary {
+  outline-offset: 0.5rem;
+}
+
+@keyframes ritual-orbit {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes ritual-float {
+  from {
+    transform: translate(-50%, -52%) rotate(-1.5deg);
+  }
+
+  to {
+    transform: translate(-50%, -48%) rotate(1.5deg);
+  }
 }
 
 .text-display {
@@ -168,6 +261,23 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ritual-orbit,
+  .ritual-product {
+    animation: none;
+  }
+
   [data-scroll-pop] {
     opacity: 1;
     transition: none;

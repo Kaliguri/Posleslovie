@@ -7,60 +7,63 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export function SiteFooter() {
   return (
-    <footer id="contacts" className="bg-white">
-      <div className="mx-auto max-w-[1760px] px-4 py-10 sm:px-5 lg:px-20">
-        <div className="flex items-center gap-2 text-[#0f172a]">
-          <span className="flex h-8 w-8 items-center justify-center rounded-2xl border border-[#0f172a] text-[13px] font-bold underline [font-family:var(--font-ermilov)]">
-            П.С
-          </span>
-          <span className="text-2xl font-normal leading-[1.1] [font-family:var(--font-educational)]">
-            {siteConfig.name}
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-6 py-6 text-base text-[#0f172a] md:flex-row md:items-center md:justify-between">
-          <p className="flex-1">@ 2026 {siteConfig.name}</p>
-
-          <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
-            <a
-              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-              title="Call Posleslovie"
-              className="transition hover:text-slate-950"
-            >
-              {siteConfig.phone}
-            </a>
-            <a
-              href={`mailto:${siteConfig.email}`}
-              title="Email Posleslovie"
-              className="transition hover:text-slate-950"
-            >
-              {siteConfig.email}
-            </a>
+    <footer id="contacts" className="bg-[#080a12] text-white">
+      <div className="mx-auto max-w-[1540px] px-5 py-12 sm:px-8 lg:px-14 lg:py-16">
+        <div className="grid gap-8 rounded-[2.5rem] border border-white/10 bg-white/[0.045] p-7 sm:p-10 lg:grid-cols-[1.15fr_0.85fr]">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-[var(--ritual-lilac)] text-sm font-black text-[var(--ritual-ink)]">
+                ПС
+              </span>
+              <span className="text-2xl font-black tracking-[-0.05em]">{siteConfig.name}</span>
+            </div>
+            <p className="mt-8 max-w-[620px] text-[clamp(2.5rem,6vw,6.8rem)] font-black leading-[0.84] tracking-[-0.08em]">
+              Вода помнит детали.
+            </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            {siteConfig.socials.map((social) => (
-              <Link
-                key={social.href}
-                href={social.href}
-                title="Open social profile"
-                className="transition hover:text-slate-950"
+          <div className="flex flex-col justify-between gap-8">
+            <div className="grid gap-3 text-base text-white/76">
+              <a
+                href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
+                title="Позвонить Posleslovie"
+                className="rounded-full underline-offset-4 transition-colors hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ritual-lilac)]"
               >
-                {social.label}
-              </Link>
-            ))}
+                {siteConfig.phone}
+              </a>
+              <a
+                href={`mailto:${siteConfig.email}`}
+                title="Написать Posleslovie"
+                className="rounded-full underline-offset-4 transition-colors hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ritual-lilac)]"
+              >
+                {siteConfig.email}
+              </a>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {siteConfig.socials.map((social) => (
+                <Link
+                  key={social.href}
+                  href={social.href}
+                  title={`Открыть ${social.label}`}
+                  className="rounded-full border border-white/12 px-4 py-2 text-sm font-semibold text-white/72 transition-[background-color,border-color,color] hover:border-[var(--ritual-lilac)] hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ritual-lilac)]"
+                >
+                  {social.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="grid gap-x-10 gap-y-4 border-t border-[#e8c880]/50 pt-6 text-sm text-[#0f172a] sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-x-10 gap-y-4 border-t border-white/10 pt-6 text-sm text-white/56 sm:grid-cols-2 lg:grid-cols-3">
           {legalDocuments.map((document) => (
             <a
               key={document.slug}
               href={`${basePath}${document.pdfPath}`}
-              title={`Open ${document.shortTitle} PDF`}
+              title={`Открыть ${document.shortTitle}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="leading-[1.4] underline-offset-4 transition hover:text-[#e8c880] hover:underline focus-visible:text-[#e8c880] focus-visible:outline-none"
+              className="leading-[1.4] underline-offset-4 transition-colors hover:text-[var(--ritual-lilac)] hover:underline focus-visible:text-[var(--ritual-lilac)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ritual-lilac)]"
             >
               {document.shortTitle}
             </a>

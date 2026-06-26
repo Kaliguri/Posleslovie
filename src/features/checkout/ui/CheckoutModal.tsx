@@ -151,7 +151,7 @@ export function HomeModal({
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center px-2 py-2 sm:px-4 sm:py-6 ${
-        withOverlay ? "bg-black/60 backdrop-blur-sm" : "bg-transparent"
+        withOverlay ? "bg-black/70 backdrop-blur-md" : "bg-black/55 backdrop-blur-md"
       }`}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
@@ -162,20 +162,20 @@ export function HomeModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="relative flex max-h-[calc(100dvh-16px)] w-full max-w-[920px] flex-col overflow-hidden rounded-[22px] bg-white pb-3 shadow-2xl sm:max-h-[92vh] sm:rounded-[36px] sm:pb-8 lg:rounded-[50px] lg:pb-12"
+        className="relative flex max-h-[calc(100dvh-16px)] w-full max-w-[960px] flex-col overflow-hidden rounded-[22px] border border-white/20 bg-[#f4f1ff] pb-3 text-[#080a12] shadow-[0_40px_140px_rgba(0,0,0,0.52)] sm:max-h-[92vh] sm:rounded-[36px] sm:pb-8 lg:rounded-[46px] lg:pb-12"
       >
-        <div className="sticky top-0 z-20 bg-white px-4 pb-4 pt-5 shadow-[0_12px_30px_rgba(15,23,42,0.08)] sm:px-6 sm:pb-6 sm:pt-8 lg:px-12 lg:pt-12">
+        <div className="sticky top-0 z-20 bg-[#f4f1ff]/96 px-4 pb-4 pt-5 shadow-[0_12px_40px_rgba(8,10,18,0.12)] backdrop-blur-xl sm:px-6 sm:pb-6 sm:pt-8 lg:px-12 lg:pt-12">
           <button
             type="button"
             onClick={onClose}
             aria-label="Закрыть"
-            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#e8c880] text-[#e8c880] transition hover:bg-[#e8c880] hover:text-[#0f172a] sm:right-6 sm:top-6 sm:h-12 sm:w-12"
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full border border-[#080a12]/15 bg-white/60 text-[#080a12] transition-[background-color,border-color,transform] hover:-translate-y-0.5 hover:border-[#080a12]/35 hover:bg-white sm:right-6 sm:top-6 sm:h-12 sm:w-12"
           >
             <CrossIcon />
           </button>
           <div className="pr-12 sm:pr-16">
             <SectionKicker>{header.kicker}</SectionKicker>
-            <h2 className="mt-2 text-[24px] font-extrabold leading-[1.12] sm:text-3xl lg:text-[40px]">
+            <h2 className="mt-2 text-[24px] font-black leading-[1] tracking-[-0.055em] sm:text-3xl lg:text-[44px]">
               {header.title}
             </h2>
           </div>

@@ -25,13 +25,13 @@ export function DesignButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex items-center justify-center font-bold tracking-[0.5px] transition disabled:cursor-not-allowed disabled:opacity-60 ${
+      className={`inline-flex items-center justify-center font-black tracking-[-0.02em] transition-[background-color,border-color,color,opacity,transform] disabled:cursor-not-allowed disabled:opacity-60 ${
         isGhost
-          ? "gap-2 rounded-lg px-0 py-2 text-brand-gold underline decoration-brand-gold/60 underline-offset-4 hover:text-brand-gold-muted hover:decoration-brand-gold"
+          ? "gap-2 rounded-lg px-0 py-2 text-brand-gold underline decoration-brand-gold/60 underline-offset-4 hover:text-brand-gold-hover hover:decoration-brand-gold"
           : `gap-4 rounded-full border-2 border-brand-gold ${
               isFilled
-                ? "bg-brand-gold text-foreground hover:bg-brand-gold-hover"
-                : "text-brand-gold hover:bg-brand-gold hover:text-foreground"
+                ? "bg-brand-gold text-foreground shadow-[0_18px_50px_rgba(193,174,255,0.28)] hover:-translate-y-0.5 hover:bg-brand-gold-hover"
+                : "text-brand-gold hover:-translate-y-0.5 hover:bg-brand-gold hover:text-foreground"
             } ${size === "xl" ? "px-5 py-3.5 text-lg sm:px-7 sm:py-4 sm:text-2xl" : "px-5 py-3 text-base sm:px-6 lg:text-xl xl:text-2xl"} ${className}`
       }`}
     >
