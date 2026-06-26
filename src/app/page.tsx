@@ -38,7 +38,7 @@ export default function Home() {
   const [modal, setModal] = useState<ModalType>(null);
   const [isHeroVideoOpen, setIsHeroVideoOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const { checkoutState, updateQuantity, updateField, updateTab } = useCheckoutState();
+  const { checkoutState, updateQuantity, updateField } = useCheckoutState();
 
   useEffect(() => {
     if (window.location.hash) {
@@ -139,7 +139,6 @@ export default function Home() {
         checkoutState={checkoutState}
         onCheckoutFieldChange={updateField}
         onCheckoutQuantityChange={updateQuantity}
-        onCheckoutTabChange={updateTab}
         withOverlay={globalOverlaysEnabled}
         onClose={() => setModal(null)}
       />

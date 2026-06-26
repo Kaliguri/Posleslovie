@@ -39,9 +39,5 @@ export function useCheckoutState() {
     }));
   };
 
-  const updateTab = (tab: "personal" | "company") => {
-    setCheckoutState((current) => ({ ...current, tab: "personal" }));
-  };
-
-  return { checkoutState, updateQuantity, updateField, updateTab };
+  return { checkoutState, updateQuantity, updateField };
 }

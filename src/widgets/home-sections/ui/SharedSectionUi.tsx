@@ -1,4 +1,3 @@
-import { GoldRule } from "@/shared/ui/GoldRule";
 import { SectionKicker } from "@/shared/ui/SectionKicker";
 
 export function SectionHeading({
@@ -15,7 +14,7 @@ export function SectionHeading({
   typewriter?: boolean;
 }>) {
   return (
-    <div className={`${centered ? "mx-auto text-center" : ""} max-w-[780px]`}>
+    <div data-reveal-child className={`${centered ? "mx-auto text-center" : ""} max-w-[780px]`}>
       {kicker ? <SectionKicker>{kicker}</SectionKicker> : null}
       <h2
         data-typewriter={typewriter ? true : undefined}
@@ -23,7 +22,6 @@ export function SectionHeading({
       >
         {title}
       </h2>
-      <GoldRule centered={centered} />
     </div>
   );
 }

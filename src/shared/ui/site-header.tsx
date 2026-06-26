@@ -25,34 +25,15 @@ const globalOverlaysEnabled = Boolean(siteBehaviorJson.enableGlobalOverlays);
 
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isHeroHeaderLight, setIsHeroHeaderLight] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const hero = document.getElementById("hero");
+    const updateScrolled = () => setIsScrolled(window.scrollY > 8);
 
-    const updateHeaderTheme = () => {
-      if (!hero) {
-        setIsHeroHeaderLight(false);
-        return;
-      }
+    updateScrolled();
+    window.addEventListener("scroll", updateScrolled, { passive: true });
 
-      const heroBottom = hero.getBoundingClientRect().bottom;
-      setIsHeroHeaderLight(heroBottom > 120);
-    };
-
-    const frame = requestAnimationFrame(updateHeaderTheme);
-    if (!hero) {
-      return () => cancelAnimationFrame(frame);
-    }
-
-    window.addEventListener("scroll", updateHeaderTheme, { passive: true });
-    window.addEventListener("resize", updateHeaderTheme);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", updateHeaderTheme);
-      window.removeEventListener("resize", updateHeaderTheme);
-    };
+    return () => window.removeEventListener("scroll", updateScrolled);
   }, []);
 
   const socialConfigByLabel = new Map(
@@ -131,7 +112,7 @@ export function SiteHeader() {
         aria-controls="mobile-navigation"
         onClick={() => setIsMobileMenuOpen((current) => !current)}
         className={`fixed left-5 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden ${
-          isHeroHeaderLight && !isMobileMenuOpen
+          !isMobileMenuOpen
             ? "bg-brand-navy text-white"
             : "bg-[#e8c880] text-[#0f172a] shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:bg-[#ffecbf]"
         }`}
@@ -151,51 +132,49 @@ export function SiteHeader() {
       </button>
 
       <header
-        className={`absolute inset-x-0 top-0 z-40 ${isHeroHeaderLight ? "text-brand-navy" : "text-white"}`}
+        className={`fixed inset-x-0 top-0 z-40 bg-white text-brand-navy transition-shadow duration-300 ${
+          isScrolled ? "shadow-[0_12px_30px_rgba(16,32,56,0.08)]" : "shadow-none"
+        }`}
       >
-        <div className="mx-auto max-w-[1720px] px-5 lg:px-[100px]">
-          <div className="relative flex h-[76px] items-center lg:h-[85px]">
-            <div className="hidden items-center gap-3 lg:flex">
-              {socialLinks.map((social) => (
-                <SocialIconButton
-                  key={social.label}
-                  label={social.label}
-                  href={social.href}
-                  icon={social.icon}
-                  light={isHeroHeaderLight}
-                />
-              ))}
-            </div>
-
+        <div className="mx-auto max-w-[1720px] px-5 lg:px-10 xl:px-[100px]">
+          <div className="relative flex h-[76px] items-center lg:h-[88px]">
             <Link
               href="/"
-              className="absolute left-1/2 top-1/2 flex max-w-[calc(100vw-10rem)] -translate-x-1/2 -translate-y-1/2 justify-center lg:max-w-none"
+              className="absolute left-1/2 top-1/2 flex max-w-[calc(100vw-10rem)] -translate-x-1/2 -translate-y-1/2 justify-center lg:static lg:left-auto lg:top-auto lg:z-10 lg:max-w-none lg:-translate-x-0 lg:-translate-y-0"
             >
-              <SiteLogo variant={isHeroHeaderLight ? "dark" : "light"} />
+              <SiteLogo variant="dark" />
             </Link>
-            <a
-              href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
-              className={`relative z-10 ml-auto hidden items-center text-lg font-medium leading-[1.1] [font-family:var(--font-inter)] lg:flex ${
-                isHeroHeaderLight ? "text-brand-navy" : "text-white"
-              }`}
-            >
-              {siteConfig.phone}
-            </a>
-          </div>
 
-          <nav className="hidden h-[100px] items-center justify-center lg:flex lg:-mt-6">
-            <div className="flex items-center">
-              {navigationItems.map((item) => (
-                <HeaderPill
-                  key={item.label}
-                  light={isHeroHeaderLight}
-                  onClick={() => handleNavigation(item)}
-                >
-                  {item.label}
-                </HeaderPill>
-              ))}
+            <nav className="hidden lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2 lg:items-center lg:justify-center">
+              <div className="flex items-center">
+                {navigationItems.map((item) => (
+                  <HeaderPill key={item.label} light onClick={() => handleNavigation(item)}>
+                    {item.label}
+                  </HeaderPill>
+                ))}
+              </div>
+            </nav>
+
+            <div className="ml-auto hidden items-center gap-8 lg:flex">
+              <a
+                href={`tel:${siteConfig.phone.replace(/\D/g, "")}`}
+                className="relative z-10 items-center text-base font-medium leading-none tracking-[0.5px] text-brand-navy [font-family:var(--font-roboto)]"
+              >
+                {siteConfig.phone}
+              </a>
+              <div className="flex items-center gap-3">
+                {socialLinks.map((social) => (
+                  <SocialIconButton
+                    key={social.label}
+                    label={social.label}
+                    href={social.href}
+                    icon={social.icon}
+                    light
+                  />
+                ))}
+              </div>
             </div>
-          </nav>
+          </div>
         </div>
       </header>
 

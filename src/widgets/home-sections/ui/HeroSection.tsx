@@ -21,26 +21,31 @@ function HeroVideoButton({
 }: Readonly<{
   onClick: () => void;
   isStaticHeroImage: boolean;
-  layout: "mobile" | "desktop";
+  layout: "mobile" | "tablet" | "desktop";
 }>) {
   const isMobile = layout === "mobile";
+  const isTablet = layout === "tablet";
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`group inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
-        isMobile ? "gap-3" : "gap-4"
+      className={`group inline-flex max-w-full items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
+        isMobile ? "gap-3" : isTablet ? "gap-3.5" : "gap-4"
       } ${isStaticHeroImage ? "text-brand-navy" : "text-white"}`}
     >
       <HeroPlayIcon
         className={`shrink-0 transition-transform duration-200 group-hover:scale-105 ${
-          isMobile ? "h-11 w-11" : "h-14 w-14 lg:h-16 lg:w-16"
+          isMobile ? "h-11 w-11" : isTablet ? "h-12 w-12" : "h-14 w-14 lg:h-16 lg:w-16"
         }`}
       />
       <span
         className={`text-left font-normal [font-family:var(--font-roboto)] ${
-          isMobile ? "text-base leading-none" : "max-w-[285px] text-xl leading-none lg:text-2xl"
+          isMobile
+            ? "text-[15px] leading-[1.05] sm:text-base sm:leading-none"
+            : isTablet
+              ? "max-w-[240px] text-lg leading-[1.05]"
+              : "max-w-[285px] text-xl leading-none lg:text-2xl"
         }`}
       >
         Как мы делаем
@@ -72,11 +77,12 @@ function HeroHeading({
         layout === "mobile" ? (
           <>
             Послесловие
-            <br />к вашему дню
+            <br />
+            <span className="whitespace-nowrap">к вашему дню</span>
           </>
         ) : (
           <>
-            Послесловие к
+            <span className="whitespace-nowrap">Послесловие к</span>
             <br />
             вашему дню
           </>
@@ -125,7 +131,7 @@ export function HeroSection({
   return (
     <section
       id="hero"
-      className={`relative min-h-[100dvh] overflow-hidden md:min-h-[100dvh] lg:min-h-[1080px] ${
+      className={`relative min-h-[100dvh] overflow-hidden md:min-h-[100dvh] 2xl:min-h-[1080px] ${
         isStaticHeroImage ? "bg-white" : "bg-brand-navy"
       }`}
     >
@@ -138,7 +144,7 @@ export function HeroSection({
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover object-center md:hidden"
+            className="absolute inset-0 h-full w-full min-w-full scale-[1.02] object-cover object-right md:hidden"
           />
           <img
             src={tabletBackground}
@@ -147,7 +153,7 @@ export function HeroSection({
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-0 hidden h-full w-full object-cover object-center md:block lg:hidden"
+            className="absolute inset-0 hidden h-full w-full min-w-full object-cover object-[72%_center] md:block 2xl:hidden"
           />
           <img
             src={backgroundImage}
@@ -156,7 +162,7 @@ export function HeroSection({
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-0 hidden h-full w-full object-cover object-left lg:block"
+            className="absolute inset-0 hidden h-full w-full object-cover object-left 2xl:block"
           />
         </>
       ) : (
@@ -193,24 +199,24 @@ export function HeroSection({
       ) : null}
 
       {/* Mobile layout */}
-      <div className="relative mx-auto flex min-h-[100dvh] max-w-[1720px] flex-col px-5 pb-8 pt-[calc(76px+40px)] md:hidden">
+      <div className="relative mx-auto flex min-h-[100dvh] max-w-[1720px] flex-col px-5 pb-6 pt-[calc(76px+40px)] max-[740px]:pb-4 max-[740px]:pt-[calc(76px+28px)] md:hidden">
         <HeroHeading
           heading={heading}
           isStaticHeroImage={isStaticHeroImage}
           layout="mobile"
-          className="mx-auto text-center text-[46px] leading-[0.97]"
+          className="mx-auto text-center text-[clamp(2.125rem,10.5vw,2.875rem)] leading-[0.97]"
         />
 
-        <div className="relative mt-8 min-h-[clamp(20rem,46vh,26rem)] flex-1">
+        <div className="relative mt-6 min-h-[clamp(11rem,34vh,22rem)] flex-1 max-[740px]:mt-4 max-[740px]:min-h-[clamp(9rem,28vh,15rem)]">
           <p
-            className={`absolute left-0 top-[4%] max-w-[160px] text-left text-sm font-extralight leading-[0.9] [font-family:var(--font-roboto)] ${
+            className={`absolute left-0 top-[4%] max-w-[150px] text-left text-[13px] font-extralight leading-[0.9] [font-family:var(--font-roboto)] sm:max-w-[160px] sm:text-sm ${
               isStaticHeroImage ? "text-brand-navy" : "text-[#dfdfdf]"
             }`}
           >
             {leadLine1}
           </p>
           <p
-            className={`absolute -right-1 top-[calc(66%+2.5rem)] max-w-[118px] text-left text-sm font-extralight leading-[0.9] [font-family:var(--font-roboto)] ${
+            className={`absolute right-0 top-[calc(66%+2.5rem)] max-w-[112px] text-left text-[13px] font-extralight leading-[0.9] [font-family:var(--font-roboto)] sm:max-w-[118px] sm:text-sm ${
               isStaticHeroImage ? "text-white" : "text-[#dfdfdf]"
             }`}
           >
@@ -228,26 +234,70 @@ export function HeroSection({
           </p>
         </div>
 
-        <div className="mt-auto w-full px-5 pt-2">
-          <HeroVideoButton
-            onClick={onOpenHowWeMakeVideo}
-            isStaticHeroImage={isStaticHeroImage}
-            layout="mobile"
-          />
+        <div className="mt-auto w-full shrink-0 pt-2">
+          <div className="hero-video-safe">
+            <HeroVideoButton
+              onClick={onOpenHowWeMakeVideo}
+              isStaticHeroImage={isStaticHeroImage}
+              layout="mobile"
+            />
+          </div>
           <DesignButton
             size="md"
             variant="filled"
             onClick={onOrder}
-            className="mt-4 w-full justify-center gap-3 px-6 py-2.5 text-base"
+            className="mt-3 w-full justify-center gap-3 px-6 py-2.5 text-base max-[740px]:mt-2.5 sm:mt-4"
           >
             {ctaLabel}
           </DesignButton>
         </div>
       </div>
 
-      {/* Tablet + desktop layout */}
-      <div className="relative mx-auto hidden min-h-[100dvh] max-w-[1720px] flex-col px-10 pb-14 pt-[calc(76px+5rem)] text-left md:flex lg:min-h-[1080px] lg:px-[100px] lg:pt-[331px]">
-        <div className="max-w-[min(100%,28rem)] lg:max-w-[1000px]">
+      {/* Tablet layout: text top, wide CTA bottom (video stays on white) */}
+      <div className="relative mx-auto hidden min-h-[100dvh] max-w-[1720px] flex-col md:flex 2xl:hidden">
+        <div className="px-8 pt-[calc(76px+100px+0.75rem)] text-left lg:px-10 lg:pt-[calc(85px+100px+1rem)] xl:px-[100px]">
+          <div className="hero-heading-safe max-w-[min(100%,34rem)] lg:max-w-[36rem] xl:max-w-[40rem]">
+            <HeroHeading
+              heading={heading}
+              isStaticHeroImage={isStaticHeroImage}
+              layout="desktop"
+              className="text-display"
+            />
+            <p
+              className={`text-body-lg mt-5 max-w-[32rem] font-medium leading-[1.5] [font-family:var(--font-roboto)] lg:mt-6 ${
+                isStaticHeroImage ? "text-brand-navy" : "text-[#dfdfdf]"
+              }`}
+            >
+              <span className="block">{leadLine1}</span>
+              <span className="block">{leadLine2}</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex-1" aria-hidden="true" />
+
+        <div className="px-8 pb-8 lg:px-10 xl:px-[100px]">
+          <div className="hero-video-safe">
+            <HeroVideoButton
+              onClick={onOpenHowWeMakeVideo}
+              isStaticHeroImage={isStaticHeroImage}
+              layout="tablet"
+            />
+          </div>
+          <DesignButton
+            size="xl"
+            variant="filled"
+            onClick={onOrder}
+            className="mt-4 w-full justify-center lg:mt-5"
+          >
+            {ctaLabel}
+          </DesignButton>
+        </div>
+      </div>
+
+      {/* Desktop layout */}
+      <div className="relative mx-auto hidden min-h-[1080px] max-w-[1720px] flex-col px-[100px] pb-14 pt-[331px] text-left 2xl:flex">
+        <div className="max-w-[1000px]">
           <HeroHeading
             heading={heading}
             isStaticHeroImage={isStaticHeroImage}
@@ -255,14 +305,14 @@ export function HeroSection({
             className="text-display"
           />
           <p
-            className={`text-body-lg mt-4 max-w-[860px] font-medium leading-[1.5] [font-family:var(--font-roboto)] lg:mt-6 ${
+            className={`text-body-lg mt-6 max-w-[860px] font-medium leading-[1.5] [font-family:var(--font-roboto)] ${
               isStaticHeroImage ? "text-brand-navy" : "text-[#dfdfdf]"
             }`}
           >
             <span className="block">{leadLine1}</span>
             <span className="block">{leadLine2}</span>
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-6 lg:mt-16 lg:gap-10">
+          <div className="mt-16 flex flex-wrap items-center gap-10">
             <DesignButton size="xl" variant="filled" onClick={onOrder}>
               {ctaLabel}
             </DesignButton>

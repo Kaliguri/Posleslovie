@@ -1,7 +1,9 @@
 import type { AmoCRMCheckoutPayload, AmoCRMLeadPayload } from "./types";
 
+const defaultAmoCRMWorkerUrl = "https://posleslovie-amocrm.kailgurika.workers.dev/";
+
 function getAmoCRMWorkerUrl() {
-  const configuredUrl = process.env.NEXT_PUBLIC_AMOCRM_WORKER_URL?.trim();
+  const configuredUrl = process.env.NEXT_PUBLIC_AMOCRM_WORKER_URL?.trim() || defaultAmoCRMWorkerUrl;
   if (!configuredUrl) {
     throw new Error("NEXT_PUBLIC_AMOCRM_WORKER_URL is not configured.");
   }

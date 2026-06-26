@@ -21,11 +21,6 @@ test.describe("Checkout modal", () => {
     await expect(page.getByText(/укажите имя/i)).toBeVisible();
   });
 
-  test("переключение вкладки «Для компании» показывает поле компании", async ({ page }) => {
-    await page.getByRole("button", { name: /для компании/i }).click();
-    await expect(page.getByPlaceholder(/название компании/i)).toBeVisible();
-  });
-
   test("счётчик товаров работает корректно", async ({ page }) => {
     const quantityInput = page.getByRole("spinbutton").first();
     await expect(quantityInput).toBeVisible();

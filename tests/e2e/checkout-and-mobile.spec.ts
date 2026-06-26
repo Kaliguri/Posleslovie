@@ -19,7 +19,7 @@ test("opens mobile menu and checkout action", async ({ page }) => {
   await expect(page.getByRole("dialog")).toBeVisible();
 });
 
-test("opens partners modal and submits lead form", async ({ page }) => {
+test("opens partners modal and requires consent for lead form", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Для партнеров" }).first().click();
   await expect(page.getByRole("dialog")).toBeVisible();
@@ -30,5 +30,13 @@ test("opens partners modal and submits lead form", async ({ page }) => {
   await page.getByLabel("Email").fill("partner@example.ru");
   await page.getByRole("button", { name: "Стать партнером" }).click();
 
-  await expect(page.getByText("Отправляем заявку...")).toBeVisible();
+  await expect(
+    page.getByText("Подтвердите согласие с обработкой персональных данных."),
+  ).toBeVisible();
+  await page
+    .getByLabel(/Нажимая на кнопку, вы соглашаетесь с обработкой персональных данных/)
+    .check();
+  await expect(
+    page.getByText("Подтвердите согласие с обработкой персональных данных."),
+  ).not.toBeVisible();
 });

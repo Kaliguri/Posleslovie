@@ -32,6 +32,7 @@ export function LeadForm({
   });
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isConsentAccepted, setIsConsentAccepted] = useState(false);
 
   const updateField = (field: keyof LeadFormValues, value: string) => {
     setFormValues((current) => ({ ...current, [field]: value }));
@@ -44,6 +45,10 @@ export function LeadForm({
         event.preventDefault();
         if (!formValues.name.trim() || !formValues.phone.trim() || !formValues.email.trim()) {
           setSubmitMessage("Заполните имя, телефон и email.");
+          return;
+        }
+        if (!requiredOnly && !isConsentAccepted) {
+          setSubmitMessage("Подтвердите согласие с обработкой персональных данных.");
           return;
         }
         setIsSubmitting(true);
@@ -120,7 +125,17 @@ export function LeadForm({
         <p className="text-xs font-light">( * - обязательные для заполнения )</p>
       ) : (
         <label className="mt-2 flex gap-3 text-base leading-[1.4]">
-          <input type="checkbox" className="mt-1 h-4 w-4 rounded border-[#0f172a]" />
+          <input
+            type="checkbox"
+            checked={isConsentAccepted}
+            onChange={(event) => {
+              setIsConsentAccepted(event.target.checked);
+              if (event.target.checked) {
+                setSubmitMessage(null);
+              }
+            }}
+            className="mt-1 h-4 w-4 rounded border-[#0f172a]"
+          />
           <span className="min-w-0">
             Нажимая на кнопку, вы соглашаетесь с обработкой <u>персональных данных</u>. Ознакомлены
             с <u>политикой конфиденциальности</u>

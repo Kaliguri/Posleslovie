@@ -6,7 +6,6 @@ import { legalDocuments, type LegalDocumentSlug } from "@/shared/config/legal-do
 import { siteConfig } from "@/shared/config/site";
 import { formatRussianPhoneInput } from "@/shared/lib/phone";
 import { CrossIcon } from "@/shared/ui/CrossIcon";
-import { GoldRule } from "@/shared/ui/GoldRule";
 import { SectionKicker } from "@/shared/ui/SectionKicker";
 import { submitCheckoutToAmoCRM } from "@/features/checkout/model/api";
 import {
@@ -101,7 +100,6 @@ export function HomeModal({
   checkoutState,
   onCheckoutFieldChange,
   onCheckoutQuantityChange,
-  onCheckoutTabChange,
   withOverlay,
   onClose,
 }: Readonly<{
@@ -110,7 +108,6 @@ export function HomeModal({
   checkoutState: CheckoutState;
   onCheckoutFieldChange: (field: CheckoutField, value: string) => void;
   onCheckoutQuantityChange: (quantity: number) => void;
-  onCheckoutTabChange: (tab: "personal" | "company") => void;
   withOverlay: boolean;
   onClose: () => void;
 }>) {
@@ -179,7 +176,6 @@ export function HomeModal({
               {header.title}
             </h2>
           </div>
-          <GoldRule fullWidth />
           {isCheckout && !isCheckoutComplete ? (
             <CheckoutStepper
               step={checkoutStep}
@@ -201,7 +197,6 @@ export function HomeModal({
               onStepChange={setCheckoutStep}
               onFieldChange={onCheckoutFieldChange}
               onQuantityChange={onCheckoutQuantityChange}
-              onTabChange={onCheckoutTabChange}
               onClose={onClose}
               onCheckoutComplete={() => setIsCheckoutComplete(true)}
             />
@@ -223,7 +218,6 @@ function PartnersModal() {
       <p className="mt-6 max-w-[620px] text-lg font-bold leading-[1.6] sm:mt-8 sm:text-xl sm:leading-[1.8]">
         Оставьте заявку и мы свяжемся с вами, чтобы обсудить все детали
       </p>
-      <GoldRule />
       <LeadForm submitLabel="Стать партнером" company />
     </div>
   );
@@ -261,7 +255,6 @@ function CheckoutModal({
   onStepChange,
   onFieldChange,
   onQuantityChange,
-  onTabChange,
   onClose,
   onCheckoutComplete,
 }: Readonly<{
@@ -271,7 +264,6 @@ function CheckoutModal({
   onStepChange: (step: CheckoutStepNumber) => void;
   onFieldChange: (field: CheckoutField, value: string) => void;
   onQuantityChange: (quantity: number) => void;
-  onTabChange: (tab: "personal" | "company") => void;
   onClose: () => void;
   onCheckoutComplete: () => void;
 }>) {

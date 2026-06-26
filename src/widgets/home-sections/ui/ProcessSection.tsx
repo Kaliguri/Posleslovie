@@ -4,7 +4,6 @@ import { useRef } from "react";
 
 import { ArrowIcon } from "@/shared/ui/ArrowIcon";
 import { DesignButton } from "@/shared/ui/DesignButton";
-import { GoldRule } from "@/shared/ui/GoldRule";
 import { SectionKicker } from "@/shared/ui/SectionKicker";
 import { useInfiniteCarousel } from "@/widgets/shared/use-infinite-carousel";
 
@@ -38,11 +37,11 @@ export function ProcessSection({
   return (
     <section
       data-scroll-pop
-      className="relative bg-[#f8f8f8] px-3 py-3 sm:px-5 sm:py-6 lg:px-[100px] lg:py-[56px]"
+      className="relative bg-[#f8f8f8] px-3 py-3 sm:px-5 sm:py-6 lg:px-10 lg:py-10 xl:px-[100px] xl:py-[56px]"
     >
-      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white shadow-none sm:rounded-[42px] lg:rounded-[70px]">
+      <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-white shadow-none sm:rounded-[42px] xl:rounded-[70px]">
         <div
-          className={`pointer-events-none absolute inset-0 hidden lg:grid ${
+          className={`pointer-events-none absolute inset-0 hidden xl:grid ${
             reverse ? "grid-cols-[1fr_323px]" : "grid-cols-[323px_1fr]"
           }`}
         >
@@ -62,12 +61,11 @@ export function ProcessSection({
           />
         ) : null}
 
-        <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:grid-cols-[525px_552px] lg:items-start lg:gap-16 lg:p-12">
-          <div className={reverse ? "lg:order-1" : "lg:order-2"}>
+        <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:p-10 xl:grid-cols-[525px_552px] xl:items-start xl:gap-16 xl:p-12">
+          <div data-reveal-child className={reverse ? "xl:order-1" : "xl:order-2"}>
             <div className="max-w-[552px]">
               <SectionKicker>{eyebrow}</SectionKicker>
               <h2 className="text-h2 mt-2 font-extrabold lg:text-[40px] xl:text-5xl">{title}</h2>
-              <GoldRule />
               <p className="mt-4 text-[15px] leading-7 [font-family:var(--font-inter)] sm:text-base sm:leading-8 lg:text-lg lg:leading-[1.8] xl:text-xl">
                 {description}
               </p>
@@ -110,7 +108,8 @@ function ProductGallery({
 
   return (
     <div
-      className={`${reverse ? "lg:order-2 lg:justify-self-end" : "lg:order-1"}`}
+      data-reveal-child
+      className={`${reverse ? "xl:order-2 xl:justify-self-end" : "xl:order-1"}`}
       aria-label="Галерея"
     >
       <div className="relative">
@@ -153,7 +152,7 @@ function TapeImageCarousel({
 
   return (
     <div
-      className="mx-auto aspect-square w-full max-w-[525px] overflow-hidden rounded-[24px] bg-[#f8f8f8] sm:rounded-[32px] lg:h-[525px] lg:w-[525px] lg:rounded-[50px]"
+      className="mx-auto aspect-square w-full max-w-[525px] overflow-hidden rounded-[24px] bg-[#f8f8f8] sm:rounded-[32px] xl:h-[525px] xl:w-[525px] xl:rounded-[50px]"
       onTouchStart={(event) => {
         const touch = event.touches[0];
         if (!touch) return;
@@ -200,7 +199,7 @@ function DecorativeObject({ image, className }: Readonly<{ image: string; classN
       src={image}
       alt=""
       aria-hidden="true"
-      className={`pointer-events-none hidden object-contain lg:block ${className}`}
+      className={`pointer-events-none hidden object-contain xl:block ${className}`}
     />
   );
 }

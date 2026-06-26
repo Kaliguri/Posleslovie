@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-import { GoldRule } from "@/shared/ui/GoldRule";
 import { SectionHeading } from "@/widgets/home-sections/ui/SharedSectionUi";
 
 export function FaqSection({
@@ -19,7 +18,7 @@ export function FaqSection({
   return (
     <section
       data-scroll-pop
-      className="bg-surface px-3 py-6 sm:px-5 sm:py-9 lg:px-[100px] lg:py-14"
+      className="bg-surface px-3 py-6 sm:px-5 sm:py-9 lg:px-10 lg:py-14 xl:px-[100px]"
     >
       <div className="mx-auto max-w-[900px]">
         <SectionHeading kicker={kicker} title={title} centered />
@@ -29,6 +28,7 @@ export function FaqSection({
             return (
               <div
                 key={item.question}
+                data-reveal-child
                 className="overflow-hidden rounded-[20px] bg-white shadow-[0_4px_20px_rgba(15,23,42,0.06)] sm:rounded-[24px]"
               >
                 <button
@@ -60,9 +60,6 @@ export function FaqSection({
               </div>
             );
           })}
-        </div>
-        <div className="mt-8 hidden sm:block">
-          <GoldRule centered />
         </div>
       </div>
     </section>

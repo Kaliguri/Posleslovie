@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
   assetPrefix: githubPagesBasePath,
   env: {
     NEXT_PUBLIC_BASE_PATH: githubPagesBasePath,
+    NEXT_PUBLIC_AMOCRM_WORKER_URL: process.env.NEXT_PUBLIC_AMOCRM_WORKER_URL ?? "",
   },
 };
 
