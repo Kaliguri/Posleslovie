@@ -69,7 +69,7 @@ export function SiteHeader() {
     };
 
     const onResize = () => {
-      if (window.innerWidth >= 1024) {
+      if (window.innerWidth >= 1280) {
         setIsMobileMenuOpen(false);
       }
     };
@@ -111,7 +111,7 @@ export function SiteHeader() {
         aria-expanded={isMobileMenuOpen}
         aria-controls="mobile-navigation"
         onClick={() => setIsMobileMenuOpen((current) => !current)}
-        className={`fixed left-5 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] lg:hidden ${
+        className={`fixed left-5 top-3 z-50 flex h-[46px] w-[46px] items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8c880] xl:hidden ${
           !isMobileMenuOpen
             ? "bg-brand-navy text-white"
             : "bg-[#e8c880] text-[#0f172a] shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:bg-[#ffecbf]"
@@ -140,12 +140,12 @@ export function SiteHeader() {
           <div className="relative flex h-[76px] items-center lg:h-[88px]">
             <Link
               href="/"
-              className="absolute left-1/2 top-1/2 flex max-w-[calc(100vw-10rem)] -translate-x-1/2 -translate-y-1/2 justify-center lg:static lg:left-auto lg:top-auto lg:z-10 lg:max-w-none lg:-translate-x-0 lg:-translate-y-0"
+              className="absolute left-1/2 top-1/2 flex max-w-[calc(100vw-10rem)] -translate-x-1/2 -translate-y-1/2 justify-center xl:static xl:left-auto xl:top-auto xl:z-10 xl:max-w-none xl:-translate-x-0 xl:-translate-y-0"
             >
               <SiteLogo variant="dark" />
             </Link>
 
-            <nav className="hidden lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2 lg:items-center lg:justify-center">
+            <nav className="hidden xl:absolute xl:left-1/2 xl:flex xl:-translate-x-1/2 xl:items-center xl:justify-center">
               <div className="flex items-center">
                 {navigationItems.map((item) => (
                   <HeaderPill key={item.label} light onClick={() => handleNavigation(item)}>
@@ -181,7 +181,7 @@ export function SiteHeader() {
       {isMobileMenuOpen ? (
         <div
           id="mobile-navigation"
-          className={`fixed inset-0 z-40 px-5 pb-8 pt-24 text-white lg:hidden ${
+          className={`fixed inset-0 z-40 px-5 pb-8 pt-24 text-white xl:hidden ${
             globalOverlaysEnabled ? "bg-[#102038]/95 backdrop-blur-md" : "bg-[#102038]"
           }`}
         >

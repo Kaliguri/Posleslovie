@@ -26,23 +26,27 @@ export function AboutSection({
           <div />
           <div className="bg-white mix-blend-lighten" />
         </div>
-        <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:p-10 xl:min-h-[665px] xl:grid-cols-2 xl:items-start xl:gap-16 xl:p-12">
-          <div className="max-w-[552px]">
-            <SectionKicker>{kicker}</SectionKicker>
-            <h2 className="mt-2 text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
-              {title}
-            </h2>
-            <div className="mt-4 space-y-3 text-[15px] leading-7 [font-family:var(--font-inter)] sm:mt-5 sm:space-y-6 sm:text-base sm:leading-8 lg:text-xl lg:leading-[1.8]">
-              {paragraphs.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
+        <div className="relative grid items-start gap-6 p-3 sm:gap-10 sm:p-8 md:min-h-[500px] md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10 lg:p-10 xl:min-h-[665px] xl:grid-cols-2 xl:gap-16 xl:p-12">
+          <div>
+            <div className="max-w-[552px] md:w-full">
+              <SectionKicker>{kicker}</SectionKicker>
+              <h2 className="mt-2 text-[26px] font-extrabold leading-[1.12] sm:text-4xl lg:text-5xl">
+                {title}
+              </h2>
+              <div className="mt-4 space-y-3 text-[15px] leading-7 [font-family:var(--font-inter)] sm:mt-5 sm:space-y-6 sm:text-base sm:leading-8 lg:text-xl lg:leading-[1.8]">
+                {paragraphs.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
             </div>
           </div>
-          <ZoomImage
-            image={image}
-            label="Бомбочки Послесловие"
-            className="mx-auto aspect-square w-full max-w-[525px] rounded-[24px] sm:rounded-[32px] xl:h-[525px] xl:w-[525px] xl:rounded-[50px]"
-          />
+          <div>
+            <ZoomImage
+              image={image}
+              label="Бомбочки Послесловие"
+              className="mx-auto aspect-square w-full max-w-[525px] rounded-[24px] sm:rounded-[32px] md:max-w-none xl:h-[525px] xl:w-[525px] xl:rounded-[50px]"
+            />
+          </div>
         </div>
       </div>
     </section>

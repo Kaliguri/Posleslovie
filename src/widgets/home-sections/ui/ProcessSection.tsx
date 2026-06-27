@@ -61,22 +61,22 @@ export function ProcessSection({
           />
         ) : null}
 
-        <div className="relative grid items-center gap-6 p-3 sm:gap-10 sm:p-8 lg:p-10 xl:grid-cols-[525px_552px] xl:items-start xl:gap-16 xl:p-12">
-          <div data-reveal-child className={reverse ? "xl:order-1" : "xl:order-2"}>
-            <div className="max-w-[552px]">
+        <div className="relative grid items-start gap-6 p-3 sm:gap-10 sm:p-8 md:min-h-[500px] md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10 lg:p-10 xl:min-h-0 xl:grid-cols-[525px_552px] xl:gap-16 xl:p-12">
+          <div data-reveal-child className={reverse ? "md:order-1" : "md:order-2"}>
+            <div className="max-w-[552px] md:w-full">
               <SectionKicker>{eyebrow}</SectionKicker>
               <h2 className="text-h2 mt-2 font-extrabold lg:text-[40px] xl:text-5xl">{title}</h2>
               <p className="mt-4 text-[15px] leading-7 [font-family:var(--font-inter)] sm:text-base sm:leading-8 lg:text-lg lg:leading-[1.8] xl:text-xl">
                 {description}
               </p>
               {button ? (
-                <div className="mt-8 lg:mt-16">
+                <div className="mt-6 sm:mt-8 md:mt-7 xl:mt-16">
                   {buttonHref ? (
                     <a
                       href={buttonHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn-secondary text-base sm:px-6 lg:text-xl xl:text-2xl"
+                      className="btn-secondary text-base sm:px-6 lg:text-base xl:text-2xl"
                     >
                       {button}
                       <ArrowIcon />
@@ -89,7 +89,7 @@ export function ProcessSection({
             </div>
           </div>
 
-          <ProductGallery reverse={reverse} slides={slides} />
+          <ProductGallery reverse={reverse} slides={slides} enableCarousel={index !== 2} />
         </div>
       </div>
     </section>
@@ -99,33 +99,49 @@ export function ProcessSection({
 function ProductGallery({
   reverse,
   slides,
+  enableCarousel,
 }: Readonly<{
   reverse: boolean;
   slides: readonly GallerySlide[];
+  enableCarousel: boolean;
 }>) {
   const { orderedItems, offset, isTransitioning, transitionDuration, move } =
     useInfiniteCarousel(slides);
+  const primarySlide = slides[0];
 
   return (
     <div
       data-reveal-child
-      className={`${reverse ? "xl:order-2 xl:justify-self-end" : "xl:order-1"}`}
+      className={`md:w-full ${reverse ? "md:order-2 xl:justify-self-end" : "md:order-1"}`}
       aria-label="Галерея"
     >
-      <div className="relative">
-        <TapeImageCarousel
-          slides={orderedItems}
-          offset={offset}
-          isTransitioning={isTransitioning}
-          transitionDuration={transitionDuration}
-          onSwipe={(direction) => move(direction === "left" ? 1 : -1)}
-        />
-        <div
-          className={`mt-4 flex justify-center gap-4 ${reverse ? "lg:justify-end" : "lg:justify-start"}`}
-        >
-          <ArrowButton direction="left" onClick={() => move(-1)} />
-          <ArrowButton direction="right" onClick={() => move(1)} />
-        </div>
+      <div className="relative w-full">
+        {enableCarousel ? (
+          <>
+            <TapeImageCarousel
+              slides={orderedItems}
+              offset={offset}
+              isTransitioning={isTransitioning}
+              transitionDuration={transitionDuration}
+              onSwipe={(direction) => move(direction === "left" ? 1 : -1)}
+            />
+            <div
+              className={`mt-4 flex justify-center gap-4 ${
+                reverse ? "md:justify-end" : "md:justify-start"
+              }`}
+            >
+              <ArrowButton direction="left" onClick={() => move(-1)} />
+              <ArrowButton direction="right" onClick={() => move(1)} />
+            </div>
+          </>
+        ) : (
+          <TapeImageCarousel
+            slides={primarySlide ? [primarySlide] : []}
+            offset={0}
+            isTransitioning={false}
+            transitionDuration={0}
+          />
+        )}
       </div>
     </div>
   );

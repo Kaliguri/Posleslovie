@@ -44,7 +44,7 @@ export function ReviewsSection({
     >
       <div className="mx-auto max-w-[1280px]">
         <SectionHeading kicker={kicker} title={title} centered />
-        <div className="mt-8 overflow-hidden [--carousel-gap:1rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] sm:mt-14 sm:[--carousel-gap:2rem] lg:[--carousel-step:calc((100%_-_var(--carousel-gap))/2_+_var(--carousel-gap))] xl:[--carousel-gap:3rem] xl:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
+        <div className="mt-8 overflow-hidden [--carousel-gap:1rem] [--carousel-step:calc(100%_+_var(--carousel-gap))] sm:mt-14 sm:[--carousel-gap:2rem] md:[--carousel-step:calc((100%_-_var(--carousel-gap))/2_+_var(--carousel-gap))] xl:[--carousel-gap:3rem] xl:[--carousel-step:calc((100%_-_var(--carousel-gap)*2)/3_+_var(--carousel-gap))]">
           <div
             className={`flex gap-[var(--carousel-gap)] ${isTransitioning ? "transition-transform ease-out" : ""}`}
             style={{
@@ -75,7 +75,7 @@ export function ReviewsSection({
               <article
                 key={review.name}
                 data-reveal-child
-                className="group flex min-h-[470px] w-full shrink-0 basis-full flex-col justify-between rounded-[18px] bg-white p-4 transition duration-300 hover:-translate-y-2 hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:min-h-[560px] sm:p-8 lg:min-h-[560px] lg:basis-[calc((100%_-_var(--carousel-gap))/2)] xl:min-h-[600px] xl:basis-[calc((100%_-_var(--carousel-gap)*2)/3)]"
+                className="group flex min-h-[470px] w-full shrink-0 basis-full flex-col justify-between rounded-[18px] bg-white p-4 transition duration-300 hover:-translate-y-2 hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:min-h-[560px] sm:p-8 md:basis-[calc((100%_-_var(--carousel-gap))/2)] lg:min-h-[560px] xl:min-h-[600px] xl:basis-[calc((100%_-_var(--carousel-gap)*2)/3)]"
               >
                 <div>
                   <div className="relative">
